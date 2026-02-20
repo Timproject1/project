@@ -24,7 +24,7 @@
           alt="main_logo"
         />
         <span class="ms-2 font-weight-bold text-white"
-          >Material Dashboard 2</span
+          >장애인발달지원 프로그램</span
         >
       </a>
     </div>
