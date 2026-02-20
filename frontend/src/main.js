@@ -16,5 +16,5 @@ appInstance.use(router);
 appInstance.use(MaterialDashboard);
 appInstance.mount("#app");
 
-App.use(pinia);
-App.mount("#app");
+// App.use(pinia);
+// App.mount("#app");

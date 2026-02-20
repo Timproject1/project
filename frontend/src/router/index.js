@@ -7,7 +7,6 @@ import { createRouter, createWebHistory } from "vue-router";
 // import Profile from "../views/Profile.vue";
 import SignIn from "../views/SignIn.vue";
 // import SignUp from "../views/SignUp.vue";
-// import form from "../views/work/form.vue";
 import work from "../views/work/work.vue";
 const routes = [
   {
@@ -18,35 +17,30 @@ const routes = [
       {
         path: "plan",
         components: {
-          // left: form,
           right: () => import("../views/work/plan.vue"),
         },
       },
       {
         path: "priority",
         components: {
-          // left: form,
           right: () => import("../views/work/priority.vue"),
         },
       },
       {
         path: "record",
         components: {
-          // left: form,
           right: () => import("../views/work/record.vue"),
         },
       },
       {
         path: "result",
         components: {
-          // left: form,
           right: () => import("../views/work/result.vue"),
         },
       },
       {
         path: "representative",
         components: {
-          // left: form,
           right: () => import("../views/work/representative.vue"),
         },
       },

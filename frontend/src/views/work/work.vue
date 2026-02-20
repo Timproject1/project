@@ -29,7 +29,7 @@ const gorepresentative = () => {
     <div class="container">
       <div class="left">
         <RouterView name="left" />
-        <div>
+        <div class="button">
           <material-button @click="gorepresentative" size="lg"
             >담당자 변경</material-button
           >
