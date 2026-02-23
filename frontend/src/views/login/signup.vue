@@ -1,24 +1,24 @@
 <script setup>
-import { ref, computed } from "vue";
-const id = ref("");
-const password = ref("");
-const pwcheck = ref("");
-const email = ref("");
-var idcheck = false;
-const check = async function () {
-  const result = await fetch(
-    `http://localhost:3000/user/check/${id.value}`,
-  ).then((res) => {
-    return res.json();
-  });
-  console.log(result);
-  if (result.result.count == 0) {
-    alert("사용가능합니다");
-    idcheck = true;
-  } else {
-    alert("이미사용중입니다");
-  }
-};
+// import { ref, computed } from "vue";
+// const id = ref("");
+// const password = ref("");
+// const pwcheck = ref("");
+// const email = ref("");
+// var idcheck = false;
+// const check = async function () {
+//   const result = await fetch(
+//     `http://localhost:3000/user/check/${id.value}`,
+//   ).then((res) => {
+//     return res.json();
+//   });
+//   console.log(result);
+//   if (result.result.count == 0) {
+//     alert("사용가능합니다");
+//     idcheck = true;
+//   } else {
+//     alert("이미사용중입니다");
+//   }
+// };
 </script>
 
 <template>

@@ -1,46 +1,46 @@
 <script setup>
-import { mapMutations } from "vuex";
-import { ref, computed, watch, onMounted } from "vue";
-const id = ref("");
-const password = ref("");
-const pwcheck = ref("");
-const email = ref("");
-const grade = ref("a1");
-const options = [
-  "{item:`a1`,value=`일반 회원`}",
-  "{item:`a2`,value=`기관담당자`}",
-];
-const selected = ref([]);
-var idDuplicate = false;
-watch(id, () => {
-  idDuplicate = false;
-});
-onMounted(console.log(selected.value));
-var pwIsEqual = false;
-const pwcheck_fun = computed(() => {
-  if (pwcheck.value == password.value) {
-    pwIsEqual = true;
-    return "비밀번호가 일치 합니다";
-  } else {
-    pwIsEqual = false;
-    return "비밀번호가 다릅니다";
-  }
-});
-const checkIdDuplicate = async function () {
-  const result = await fetch(
-    `http://localhost:3000/user/check/${id.value}`,
-  ).then((res) => {
-    return res.json();
-  });
-  console.log(result);
-  if (result.result.count == 0) {
-    alert("사용가능합니다");
-    idDuplicate = true;
-  } else {
-    alert("이미사용중입니다");
-    idDuplicate = false;
-  }
-};
+// import { mapMutations } from "vuex";
+// import { ref, computed, watch, onMounted } from "vue";
+// const id = ref("");
+// const password = ref("");
+// const pwcheck = ref("");
+// const email = ref("");
+// const grade = ref("a1");
+// const options = [
+//   "{item:`a1`,value=`일반 회원`}",
+//   "{item:`a2`,value=`기관담당자`}",
+// ];
+// const selected = ref([]);
+// var idDuplicate = false;
+// watch(id, () => {
+//   idDuplicate = false;
+// });
+// onMounted(console.log(selected.value));
+// var pwIsEqual = false;
+// const pwcheck_fun = computed(() => {
+//   if (pwcheck.value == password.value) {
+//     pwIsEqual = true;
+//     return "비밀번호가 일치 합니다";
+//   } else {
+//     pwIsEqual = false;
+//     return "비밀번호가 다릅니다";
+//   }
+// });
+// const checkIdDuplicate = async function () {
+//   const result = await fetch(
+//     `http://localhost:3000/user/check/${id.value}`,
+//   ).then((res) => {
+//     return res.json();
+//   });
+//   console.log(result);
+//   if (result.result.count == 0) {
+//     alert("사용가능합니다");
+//     idDuplicate = true;
+//   } else {
+//     alert("이미사용중입니다");
+//     idDuplicate = false;
+//   }
+// };
 </script>
 <template>
   <div class="bg-white">
@@ -255,8 +255,8 @@ export default {
     this.toggleHideConfig();
     body.classList.add("bg-gray-100");
   },
-  methods: {
-    ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
-  },
+  // methods: {
+  //   ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
+  // },
 };
 </script>
