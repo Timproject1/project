@@ -23,7 +23,7 @@ const routes = [
       {
         path: "priority",
         components: {
-          right: () => import("../views/work/priority.vue"),
+          right: () => import("../views/work/priority_manager.vue"),
         },
       },
       {
