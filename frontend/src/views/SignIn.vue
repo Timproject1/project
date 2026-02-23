@@ -78,6 +78,46 @@
               </form>
             </div>
           </div>
+          <div class="card-body">
+            <form role="form" class="text-start mt-3">
+              <div class="mb-3">
+                <material-input
+                  id="email"
+                  type="email"
+                  label="Email"
+                  name="email"
+                />
+              </div>
+              <div class="mb-3">
+                <material-input
+                  id="password"
+                  type="password"
+                  label="Password"
+                  name="password"
+                />
+              </div>
+              <material-switch id="rememberMe" name="rememberMe"
+                >Remember me</material-switch
+              >
+              <div class="text-center">
+                <material-button
+                  class="my-4 mb-2"
+                  variant="gradient"
+                  color="success"
+                  fullWidth
+                  >Sign in</material-button
+                >
+              </div>
+              <p class="mt-4 text-sm text-center">
+                Don't have an account?
+                <router-link
+                  :to="{ name: 'SignUp' }"
+                  class="text-success text-gradient font-weight-bold"
+                  >Sign up</router-link
+                >
+              </p>
+            </form>
+          </div>
         </div>
       </div>
     </div>

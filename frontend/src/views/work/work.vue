@@ -1,6 +1,8 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
 import { useRouter } from "vue-router";
+import { ref, onBeforeMount } from "vue";
+import axios from "axios";
 
 const router = useRouter();
 
@@ -23,6 +25,21 @@ const goresult = () => {
 const gorepresentative = () => {
   router.push("/work/representative");
 };
+
+let doc = ref([]);
+const getdoc = async () => {
+  let result = await axios(`/api/work`).catch((err) => console.error(err));
+  doc.value = result.data;
+};
+// import { useRouter } from "vue-router";
+// const router = useRouter();
+// const gotodoc = async (docno) => {
+// router.push({ path: "info", query: { no: docno } });
+// };
+
+onBeforeMount(() => {
+  getdoc();
+});
 </script>
 <template>
   <div class="layout">
@@ -50,8 +67,31 @@ const gorepresentative = () => {
             >지원결과서</material-button
           >
         </div>
+        <br />
+        <br />
+        <div id="doc">
+          <h3>지원신청서</h3>
+          <table border="1px solid #000">
+            <thead>
+              <tr>
+                <th>number</th>
+                <th>질문</th>
+                <th>답</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="docs in doc" :key="docs.responce_num">
+                <td>{{ docs.responce_num }}</td>
+                <td>{{ docs.question_num }}</td>
+                <td v-if="docs.answer_text == null">
+                  {{ docs.select_answer }}
+                </td>
+                <td v-else>{{ docs.answer_text }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-
       <div class="right">
         <RouterView name="right" />
       </div>
