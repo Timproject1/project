@@ -6,7 +6,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // import Notifications from "../views/Notifications.vue";
 // import Profile from "../views/Profile.vue";
 import SignIn from "../views/SignIn.vue";
-// import SignUp from "../views/SignUp.vue";
+import SignUp from "../views/SignUp.vue";
 import work from "../views/work/work.vue";
 const routes = [
   {
@@ -44,9 +44,20 @@ const routes = [
           right: () => import("../views/work/representative.vue"),
         },
       },
+      {
+        path: "login",
+        components: {
+          right: () => import("../views/login/login.vue"),
+        },
+      },
+      {
+        path: "signup",
+        components: {
+          right: () => import("../views/login/signup.vue"),
+        },
+      },
     ],
   },
-
   // {
   //   path: "/",
   //   name: "/",
@@ -87,11 +98,11 @@ const routes = [
     name: "SignIn",
     component: SignIn,
   },
-  // {
-  //   path: "/sign-up",
-  //   name: "SignUp",
-  //   component: SignUp,
-  // },
+  {
+    path: "/sign-up",
+    name: "SignUp",
+    component: SignUp,
+  },
 ];
 
 const router = createRouter({
