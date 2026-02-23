@@ -6,6 +6,8 @@ import { createRouter, createWebHistory } from "vue-router";
 // import Notifications from "../views/Notifications.vue";
 // import Profile from "../views/Profile.vue";
 import SignIn from "../views/SignIn.vue";
+// import SignUp from "../views/SignUp.vue";
+import list from "../views/list/list.vue";
 import SignUp from "../views/SignUp.vue";
 import work from "../views/work/work.vue";
 const routes = [
@@ -55,6 +57,21 @@ const routes = [
         components: {
           right: () => import("../views/login/signup.vue"),
         },
+      },
+    ],
+  },
+  {
+    path: "/list",
+    name: "List",
+    component: list,
+    children: [
+      {
+        path: "supported",
+        component: () => import("../views/list/supportedList.vue"),
+      },
+      {
+        path: "info",
+        component: () => import("../views/list/SupportedInfo.vue"),
       },
     ],
   },
