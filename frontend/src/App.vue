@@ -89,9 +89,9 @@ export default {
   },
 };
 
-fetch(`http://localhost:3000/`).then((res) => {
-  console.log(res);
-});
+// fetch(`http://localhost:3000/`).then((res) => {
+//   console.log(res);
+// });
 </script>
 <style>
 .container {

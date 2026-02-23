@@ -1,8 +1,8 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
 import { useRouter } from "vue-router";
-// import { ref, computed, onBeforeMount } from "vue";
-// import axios from "axios";
+import { ref, onBeforeMount } from "vue";
+import axios from "axios";
 
 const router = useRouter();
 
@@ -26,10 +26,20 @@ const gorepresentative = () => {
   router.push("/work/representative");
 };
 
-// let doc = ref([]);
-// const count= computed(()=>{
-//   return doc.value.length
-// })
+let doc = ref([]);
+const getdoc = async () => {
+  let result = await axios(`/api/work`).catch((err) => console.error(err));
+  doc.value = result.data;
+};
+// import { useRouter } from "vue-router";
+// const router = useRouter();
+// const gotodoc = async (docno) => {
+// router.push({ path: "info", query: { no: docno } });
+// };
+
+onBeforeMount(() => {
+  getdoc();
+});
 </script>
 <template>
   <div class="layout">
@@ -60,10 +70,8 @@ const gorepresentative = () => {
         <br />
         <br />
         <div id="doc">
-          <table>
-            <caption>
-              지원신청서
-            </caption>
+          <h3>지원신청서</h3>
+          <table border="1px solid #000">
             <thead>
               <tr>
                 <th>number</th>
@@ -72,9 +80,14 @@ const gorepresentative = () => {
               </tr>
             </thead>
             <tbody>
-              <!-- <tr v-for doc in dooc>
-                <td></td> -->
-              <!-- </tr> -->
+              <tr v-for="docs in doc" :key="docs.responce_num">
+                <td>{{ docs.responce_num }}</td>
+                <td>{{ docs.question_num }}</td>
+                <td v-if="docs.answer_text == null">
+                  {{ docs.select_answer }}
+                </td>
+                <td v-else>{{ docs.answer_text }}</td>
+              </tr>
             </tbody>
           </table>
         </div>

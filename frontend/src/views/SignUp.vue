@@ -1,44 +1,43 @@
 <script setup>
 import { mapMutations } from "vuex";
-import { ref, computed, watch, onMounted } from "vue";
-const id = ref("");
-const password = ref("");
-const pwcheck = ref("");
-const email = ref("");
-const grade = ref("a1");
-const options = [
-  "{item:`a1`,value=`일반 회원`}",
-  "{item:`a2`,value=`기관담당자`}",
-];
-const selected = ref([]);
-var idDuplicate = false;
-watch(id, () => {
-  idDuplicate = false;
-});
-onMounted(console.log(selected.value));
-var pwIsEqual = false;
-const pwcheck_fun = computed(() => {
-  if (pwcheck.value == password.value) {
-    pwIsEqual = true;
-    return "비밀번호가 일치 합니다";
-  } else {
-    pwIsEqual = false;
-    return "비밀번호가 다릅니다";
-  }
-});
+// import { ref, computed, watch, onMounted } from "vue";
+// const id = ref("");
+// const password = ref("");
+// const pwcheck = ref("");
+// const email = ref("");
+// const grade = ref("a1");
+// const options = [
+//   "{item:`a1`,value=`일반 회원`}",
+//   "{item:`a2`,value=`기관담당자`}",
+// ];
+// const selected = ref([]);
+// var idDuplicate = false;
+// watch(id, () => {
+//   idDuplicate = false;
+// });
+// onMounted(console.log(selected.value));
+// var pwIsEqual = false;
+// const pwcheck_fun = computed(() => {
+//   if (pwcheck.value == password.value) {
+//     pwIsEqual = true;
+//     return "비밀번호가 일치 합니다";
+//   } else {
+//     pwIsEqual = false;
+//     return "비밀번호가 다릅니다";
+//   }
+// });
 const checkIdDuplicate = async function () {
-  const result = await fetch(
-    `http://localhost:3000/user/check/${id.value}`,
-  ).then((res) => {
+  const result = await fetch().then((res) => {
+  // `http://localhost:3000/user/check/${id.value}`,
     return res.json();
   });
   console.log(result);
   if (result.result.count == 0) {
     alert("사용가능합니다");
-    idDuplicate = true;
+    // idDuplicate = true;
   } else {
     alert("이미사용중입니다");
-    idDuplicate = false;
+    // idDuplicate = false;
   }
 };
 </script>
@@ -236,7 +235,7 @@ import Navbar from "@/examples/PageLayout/Navbar.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 // import MaterialCheckbox from "@/components/MaterialCheckbox.vue";
 import MaterialButton from "@/components/MaterialButton.vue";
-const body = document.getElementsByTagName("body")[0];
+// const body = document.getElementsByTagName("body")[0];
 import MaterialRadio from "@/components/MaterialRadio.vue";
 export default {
   name: "SignUp",
