@@ -115,7 +115,7 @@ watch(id, () => {
           <navbar
             isBlur="blur my-3 py-2 mt-4 start-0 end-0 mx-4 shadow blur border-radius-lg"
             btnBackground="bg-gradient-success"
-            v-bind:darkMode="true"
+            :darkMode="true"
           />
         </div>
       </div>
@@ -295,6 +295,7 @@ watch(id, () => {
   </div>
 </template>
 <script>
+// 2. 컴포넌트 경로를 프로젝트 구조에 맞춰 정확히 지정
 import Navbar from "@/examples/PageLayout/Navbar.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 // import MaterialCheckbox from "@/components/MaterialCheckbox.vue";
@@ -302,28 +303,54 @@ import MaterialButton from "@/components/MaterialButton.vue";
 const body = document.getElementsByTagName("body")[0];
 import MaterialRadio from "@/components/MaterialRadio.vue";
 export default {
-  name: "sign-up",
+  name: "SignUp",
   components: {
-    Navbar,
+    navbar: Navbar, // 템플릿 태그 <navbar>와 매칭
     MaterialInput,
     MaterialButton,
     MaterialRadio,
   },
-  beforeMount() {
-    this.toggleEveryDisplay();
-    this.toggleHideConfig();
-    body.classList.remove("bg-gray-100");
+  data() {
+    return {
+      form: {
+        user_id: "",
+        user_pw: "",
+        confirm_pw: "",
+        user_name: "",
+        phone: "",
+        email: "",
+        org_name: "",
+      },
+      errors: { idExists: false, emailExists: false },
+    };
   },
-  beforeUnmount() {
-    this.toggleEveryDisplay();
-    this.toggleHideConfig();
-    body.classList.add("bg-gray-100");
+  computed: {
+    isPwMismatch() {
+      return (
+        this.form.user_pw !== this.form.confirm_pw &&
+        this.form.confirm_pw !== ""
+      );
+    },
   },
   methods: {
     ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
+    checkId() {
+      alert("아이디 중복 확인");
+    },
+    openOrgSearch() {
+      window.open("/org-search", "orgSearch", "width=500,height=600");
+    },
+    handleRegister() {
+      alert("가입 완료!");
+    },
+  },
+  mounted() {
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
   },
 };
 </script>
+<<<<<<< HEAD
 <style scoped>
 .modal-backdrop {
   position: fixed;
@@ -353,5 +380,41 @@ export default {
 
 .list-group-item:hover {
   background-color: #f8f9fa;
+=======
+
+<style scoped>
+/* 시안의 레이아웃을 위한 스타일 */
+.custom-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+.custom-label {
+  width: 120px;
+  min-width: 120px;
+  padding-top: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #344767;
+  text-align: left;
+}
+.custom-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.error-msg {
+  color: #f44335;
+  font-size: 0.7rem;
+  margin-top: 2px;
+  text-align: left;
+}
+.required-text {
+  color: #f44335;
+  font-size: 0.7rem;
+  padding-top: 12px;
+  margin-left: 10px;
+  white-space: nowrap;
+>>>>>>> 9f7abfb552c342311f1aea568975b98d66c57ddc
 }
 </style>
