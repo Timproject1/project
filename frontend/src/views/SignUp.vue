@@ -19,9 +19,8 @@ const pwcheck_fun = computed(() => {
   }
 });
 const checkIdDuplicate = async function () {
-  const result = await fetch(
-    `http://localhost:3000/user/check/${id.value}`,
-  ).then((res) => {
+  const result = await fetch().then((res) => {
+  // `http://localhost:3000/user/check/${id.value}`,
     return res.json();
   });
   console.log(result);
@@ -300,7 +299,7 @@ import Navbar from "@/examples/PageLayout/Navbar.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 // import MaterialCheckbox from "@/components/MaterialCheckbox.vue";
 import MaterialButton from "@/components/MaterialButton.vue";
-const body = document.getElementsByTagName("body")[0];
+// const body = document.getElementsByTagName("body")[0];
 import MaterialRadio from "@/components/MaterialRadio.vue";
 export default {
   name: "SignUp",
@@ -350,7 +349,6 @@ export default {
   },
 };
 </script>
-<<<<<<< HEAD
 <style scoped>
 .modal-backdrop {
   position: fixed;
@@ -380,7 +378,6 @@ export default {
 
 .list-group-item:hover {
   background-color: #f8f9fa;
-=======
 
 <style scoped>
 /* 시안의 레이아웃을 위한 스타일 */
@@ -415,6 +412,5 @@ export default {
   padding-top: 12px;
   margin-left: 10px;
   white-space: nowrap;
->>>>>>> 9f7abfb552c342311f1aea568975b98d66c57ddc
 }
 </style>
