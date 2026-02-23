@@ -1,9 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const pool = require("./db/mapper.js");
+const cors = require("cors");
 const transporter = require("./util/mail.js");
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.listen(3000, () => {
   console.log("http://localhost:3000");
