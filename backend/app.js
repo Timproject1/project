@@ -1,14 +1,21 @@
 require("dotenv").config();
 const express = require("express");
 const pool = require("./db/mapper.js");
+const cors = require("cors");
 const transporter = require("./util/mail.js");
 const app = express();
+const user_route = require("./routes/user_router.js");
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
 app.use(express.json());
+app.use(cors());
 
 app.listen(3000, () => {
   console.log("http://localhost:3000");
 });
 
+app.use("/user", user_route);
 app.get("/", async (req, res) => {
   try {
     // res.send("test");
