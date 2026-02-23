@@ -1,7 +1,7 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
 import { useRouter } from "vue-router";
-// import { ref } from "vue";
+// import { ref, computed, onBeforeMount } from "vue";
 // import axios from "axios";
 
 const router = useRouter();
@@ -26,7 +26,10 @@ const gorepresentative = () => {
   router.push("/work/representative");
 };
 
-// let doc = ref({});
+// let doc = ref([]);
+// const count= computed(()=>{
+//   return doc.value.length
+// })
 </script>
 <template>
   <div class="layout">
