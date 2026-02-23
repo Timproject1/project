@@ -11,18 +11,20 @@ app.listen(3000, () => {
 
 app.get("/", async (req, res) => {
   try {
-    // const result = await pool.query(query);
-    // res.json(result);
-    const option = {
-      from: process.env.MAIL_USER,
-      to: "jcwoo1213@naver.com",
-      text: "1234",
-      subject: "1234",
-    };
-    transporter.sendMail(option, (err, info) => {
-      if (err) console.log(err);
-    });
-    res.send("test1234");
+    // res.send("test");
+    const query = "show tables";
+    const result = await pool.query(query);
+    res.json(result);
+    // const option = {
+    //   from: process.env.MAIL_USER,
+    //   to: "jcwoo1213@naver.com",
+    //   text: "1234",
+    //   subject: "1234",
+    // };
+    // transporter.sendMail(option, (err, info) => {
+    //   if (err) console.log(err);
+    // });
+    // res.send("test1234");
   } catch (error) {
     console.log(error);
   }
