@@ -8,6 +8,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import SignIn from "../views/SignIn.vue";
 // import SignUp from "../views/SignUp.vue";
 import list from "../views/list/list.vue";
+import SignUp from "../views/SignUp.vue";
 import work from "../views/work/work.vue";
 const routes = [
   {
@@ -24,7 +25,7 @@ const routes = [
       {
         path: "priority",
         components: {
-          right: () => import("../views/work/priority.vue"),
+          right: () => import("../views/work/priority_manager.vue"),
         },
       },
       {
@@ -43,6 +44,18 @@ const routes = [
         path: "representative",
         components: {
           right: () => import("../views/work/representative.vue"),
+        },
+      },
+      {
+        path: "login",
+        components: {
+          right: () => import("../views/login/login.vue"),
+        },
+      },
+      {
+        path: "signup",
+        components: {
+          right: () => import("../views/login/signup.vue"),
         },
       },
     ],
@@ -102,11 +115,11 @@ const routes = [
     name: "SignIn",
     component: SignIn,
   },
-  // {
-  //   path: "/sign-up",
-  //   name: "SignUp",
-  //   component: SignUp,
-  // },
+  {
+    path: "/sign-up",
+    name: "SignUp",
+    component: SignUp,
+  },
 ];
 
 const router = createRouter({
