@@ -18,7 +18,29 @@ const activeStyle = (color) => ({
 });
 </script>
 <template>
-  <h2>지원자 관리1</h2>
+  <h2>우선순위 관련</h2>
+  <div id="rea_container">
+    <div id="rea">
+      <h3>{{ name }}님의 대기단계</h3>
+      <div class="wrapper">
+        <div
+          v-for="item in items"
+          :key="item.id"
+          class="circle"
+          :style="selected === item.id ? activeStyle(item.color) : {}"
+          @click="select(item.id)"
+        >
+          {{ item.label }}
+        </div>
+      </div>
+      <br />
+      <textarea name="reason" id="reason" placeholder="사유"></textarea>
+      <br />
+      <div id="btnmargin">
+        <button type="button" class="app">승인 요청</button>
+      </div>
+    </div>
+  </div>
 </template>
 <style scoped>
 .wrapper {
