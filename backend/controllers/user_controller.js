@@ -5,9 +5,9 @@ const ctrl = {
     const { id, password } = req.body;
     console.log(id, password);
     try {
-      const result = await service.login({ id, password });
-      console.log(result);
-      res.json({ retCode: "OK", result });
+      const info = await service.login({ id, password });
+      console.log(info);
+      res.json({ retCode: "OK", info });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG" });

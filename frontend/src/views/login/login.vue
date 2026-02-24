@@ -1,5 +1,8 @@
 <script setup>
+import { useRouter } from "vue-router";
 import { ref } from "vue";
+
+const router = useRouter();
 const id = ref("");
 const password = ref("");
 const login = async function () {
@@ -13,7 +16,18 @@ const login = async function () {
   }).then((res) => {
     return res.json();
   });
+
   console.log(result);
+  if (result.retCode == "OK") {
+    memberStore.setMember({
+      id: result.info.user_id,
+      center: result.info.registernum,
+      grade: result.info.grade,
+    });
+    if (result.info.approve == "k1") {
+      router.push("/list/document");
+    }
+  }
 };
 </script>
 
