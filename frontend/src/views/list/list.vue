@@ -23,6 +23,7 @@ const gorepresentative = () => {
     <div class="container">
       <div class="left">
         <RouterView name="left" />
+
         <div class="button">
           <material-button @click="gorepresentative" size="lg"
             >Home</material-button
@@ -37,12 +38,11 @@ const gorepresentative = () => {
           >
 
           <material-button @click="goplan" size="lg">로그아웃</material-button>
-          <RouterView />
         </div>
       </div>
 
       <div class="right">
-        <RouterView name="right" />
+        <RouterView />
       </div>
     </div>
   </div>
