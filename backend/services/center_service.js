@@ -5,8 +5,8 @@ const service = {
     console.log("ser");
     console.log(filter);
     try {
-      const query = `select registernum,center_name,center_addr,center_tel from center where runed!="g3" and (center_name like "%?%" or center_addr like "%?%")`;
-      const result = await pool.query(query, [filter, filter]);
+      const query = `select registernum,center_name,center_addr,center_tel from center where runed!="g3" and center_name like ?`;
+      const result = await pool.query(query, [`%${filter}%`]);
       console.log(result);
       return result;
     } catch (error) {

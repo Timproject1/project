@@ -10,13 +10,9 @@ const login = async function () {
       "content-type": "application/json",
     },
     body: JSON.stringify(member),
-  })
-    .then((res) => {
-      return res.json();
-    })
-    .then((res) => {
-      console.log(res);
-    });
+  }).then((res) => {
+    return res.json();
+  });
   console.log(result);
 };
 </script>

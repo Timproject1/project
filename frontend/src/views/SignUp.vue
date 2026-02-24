@@ -1,13 +1,18 @@
 <script setup>
 import { mapMutations } from "vuex";
 import { ref, computed, watch } from "vue";
-const id = ref("");
-const password = ref("");
-const pwcheck = ref("");
-const email = ref("");
-const grade = ref("a1");
-const center = ref("");
-const idDuplicate = ref(false);
+const id = ref(""); //아이디
+const password = ref(""); //비밀번호
+const pwcheck = ref(""); //비밀번호확인
+const email = ref(""); //이메일
+const grade = ref("a1"); //등급 a1:일반 ,a2:기관담당자
+const center_name = ref(""); //센터명
+const registernum = ref(""); //센터 사업자번호
+const idDuplicate = ref(false); //중복체크 여부
+const filter = ref(""); //검색 필더
+const tel = ref(""); //전화번호
+const centerList = ref([]); //센터목록
+const address = ref(""); //주소
 var pwIsEqual = false;
 const pwcheck_fun = computed(() => {
   if (pwcheck.value == password.value) {
@@ -18,6 +23,7 @@ const pwcheck_fun = computed(() => {
     return "비밀번호가 다릅니다";
   }
 });
+//아이디 중복체크
 const checkIdDuplicate = async function () {
   const result = await fetch(
     `http://localhost:3000/user/check/${id.value}`,
@@ -33,24 +39,51 @@ const checkIdDuplicate = async function () {
     idDuplicate.value = false;
   }
 };
+//회원가입
 const signUp = async function () {
   if (!idDuplicate.value) {
     alert("아이디 중복체크 해주세요");
     return;
   }
-  if (!pwIsEqual) {
+  if (!pwIsEqual || !pwcheck.value || !password.value) {
     alert("비밀번호를 확인 해 주세요");
     return;
   }
-  console.log(id.value);
-  console.log(password.value);
-  console.log(email.value);
-  console.log(grade.value);
+
+  const member = {
+    id: id.value,
+    password: password.value,
+    email: email.value,
+    tel: tel.value,
+    grade: grade.value,
+    address: address.value,
+    center: registernum.value,
+  };
+
+  const result = await fetch(`http://localhost:3000/user/signup`, {
+    method: "post",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(member),
+  });
+  console.log(member);
 };
 const showModal = ref(false); // 모달 상태 관리
-
+//센터 목록을 받아오는 함수
+const searchCenter = async (filter = "") => {
+  const result = await fetch(
+    `http://localhost:3000/center/list/?filter=${filter}`,
+  ).then((res) => {
+    return res.json();
+  });
+  return result;
+};
 // 검색 버튼 클릭 시 실행
-const openAddressSearch = () => {
+const openCenterSearch = async () => {
+  const list = await searchCenter();
+  centerList.value = list.result;
+  console.log(list);
   showModal.value = true;
 };
 
@@ -59,9 +92,18 @@ const closeModal = () => {
   showModal.value = false;
 };
 
+//모달창에서 검색버튼 클릭시
+const clickSearch = async () => {
+  const list = await searchCenter(filter.value);
+  centerList.value = list.result;
+
+  showModal.value = true;
+};
 // 기관 선택 시 실행 (예시)
-const selectCenter = (name) => {
-  center.value = name;
+const selectCenter = (num, name) => {
+  registernum.value = num;
+  center_name.value = name;
+  document.querySelector("#center").focus();
   closeModal();
 };
 
@@ -86,20 +128,39 @@ watch(id, () => {
           </button>
         </div>
         <div class="card-body">
-          <material-input label="기관명 입력" class="mb-3" />
-          <div class="list-group">
-            <button
-              @click="selectCenter('A 복지관')"
-              class="list-group-item list-group-item-action text-sm"
+          <material-input
+            label="기관명 입력"
+            class="mb-3"
+            v-model:value="filter"
+          />
+          <material-button
+            class="mt-4"
+            variant="gradient"
+            color="success"
+            fullWidth
+            size="lg"
+            type="button"
+            @click="clickSearch()"
+            >검색</material-button
+          >
+          <div class="list-group scroll-area">
+            <div
+              v-for="center in centerList"
+              :key="center.registernum"
+              class="mb-2"
+              @click="selectCenter(center.registernum, center.center_name)"
             >
-              A 복지관 (서울시 강남구...)
-            </button>
-            <button
-              @click="selectCenter('B 요양원')"
-              class="list-group-item list-group-item-action text-sm"
-            >
-              B 요양원 (경기도 수원시...)
-            </button>
+              <material-button
+                variant="gradient"
+                color="success"
+                fullWidth
+                size="lg"
+              >
+                기관명: {{ center.center_name }} <br />
+                기관주소: {{ center.center_addr }} <br />
+                연락처: {{ center.center_tel }}
+              </material-button>
+            </div>
           </div>
         </div>
         <div class="card-footer text-end">
@@ -139,7 +200,8 @@ watch(id, () => {
                         label="아이디"
                         name="id"
                         size="lg"
-                        v-model:value="id"
+                        v-model="id"
+                        :required="true"
                       />
                       {{ id }}
                       {{ idDuplicate }}
@@ -163,7 +225,8 @@ watch(id, () => {
                         label="비밀번호"
                         name="password"
                         size="lg"
-                        v-model:value="password"
+                        :required="true"
+                        v-model="password"
                       />
                     </div>
 
@@ -172,9 +235,10 @@ watch(id, () => {
                         id="pwcheck"
                         type="password"
                         label="비밀번호 확인"
+                        :required="true"
                         name="passwordCheck"
                         size="lg"
-                        v-model:value="pwcheck"
+                        v-model="pwcheck"
                       />
                       <p class="text-xs text-danger mt-1">
                         {{ pwcheck_fun }}
@@ -183,22 +247,24 @@ watch(id, () => {
 
                     <div class="mb-3">
                       <material-input
-                        id="email"
-                        type="email"
+                        id="name"
+                        type="text"
                         label="이름"
                         name="email"
+                        :required="true"
                         size="lg"
-                        v-model:value="name"
+                        v-model="name"
                       />
                     </div>
                     <div class="mb-3">
                       <material-input
-                        id="email"
+                        id="tel"
                         type="text"
                         label="연락처"
                         name="tel"
+                        :required="true"
                         size="lg"
-                        v-model:value="tel"
+                        v-model="tel"
                       />
                     </div>
                     <div class="mb-3">
@@ -207,8 +273,9 @@ watch(id, () => {
                         type="email"
                         label="이메일"
                         name="email"
+                        :required="true"
                         size="lg"
-                        v-model:value="email"
+                        v-model="email"
                       />
                     </div>
 
@@ -217,30 +284,33 @@ watch(id, () => {
                         id="address"
                         type="text"
                         label="주소"
+                        :required="true"
                         name="address"
                         size="lg"
-                        v-model:value="address"
-                        readonly
+                        v-model="address"
                       />
                     </div>
                     <div class="mb-3">
                       <material-input
-                        id="address"
+                        id="center"
                         type="text"
                         label="기관"
                         name="address"
+                        :required="true"
                         size="lg"
-                        v-model:value="center"
-                        readonly
+                        v-model="center_name"
+                        :readonly="true"
                       />
                       <material-button
                         variant="outline"
                         color="success"
                         size="sm"
                         class="mt-2"
-                        @click="openAddressSearch"
+                        @click="openCenterSearch"
                         >검색</material-button
                       >
+                      {{ center_name }}
+                      {{ registernum }}
                     </div>
                     <div class="mb-3">
                       <material-radio
@@ -300,7 +370,6 @@ import Navbar from "@/examples/PageLayout/Navbar.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 // import MaterialCheckbox from "@/components/MaterialCheckbox.vue";
 import MaterialButton from "@/components/MaterialButton.vue";
-const body = document.getElementsByTagName("body")[0];
 import MaterialRadio from "@/components/MaterialRadio.vue";
 export default {
   name: "SignUp",
@@ -334,15 +403,15 @@ export default {
   },
   methods: {
     ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
-    checkId() {
-      alert("아이디 중복 확인");
-    },
-    openOrgSearch() {
-      window.open("/org-search", "orgSearch", "width=500,height=600");
-    },
-    handleRegister() {
-      alert("가입 완료!");
-    },
+    // checkId() {
+    //   alert("아이디 중복 확인");
+    // },
+    // openOrgSearch() {
+    //   window.open("/org-search", "orgSearch", "width=500,height=600");
+    // },
+    // handleRegister() {
+    //   alert("가입 완료!");
+    // },
   },
   mounted() {
     this.toggleEveryDisplay();
@@ -350,7 +419,6 @@ export default {
   },
 };
 </script>
-<<<<<<< HEAD
 <style scoped>
 .modal-backdrop {
   position: fixed;
@@ -380,41 +448,9 @@ export default {
 
 .list-group-item:hover {
   background-color: #f8f9fa;
-=======
-
-<style scoped>
-/* 시안의 레이아웃을 위한 스타일 */
-.custom-row {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
 }
-.custom-label {
-  width: 120px;
-  min-width: 120px;
-  padding-top: 10px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #344767;
-  text-align: left;
-}
-.custom-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-.error-msg {
-  color: #f44335;
-  font-size: 0.7rem;
-  margin-top: 2px;
-  text-align: left;
-}
-.required-text {
-  color: #f44335;
-  font-size: 0.7rem;
-  padding-top: 12px;
-  margin-left: 10px;
-  white-space: nowrap;
->>>>>>> 9f7abfb552c342311f1aea568975b98d66c57ddc
+.scroll-area {
+  max-height: 250px;
+  overflow-y: auto;
 }
 </style>
