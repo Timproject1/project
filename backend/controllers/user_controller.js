@@ -24,5 +24,14 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  info: async (req, res) => {
+    console.log(req.params.id);
+    try {
+      const result = await service.info(req.params.id);
+      res.json({ retCode: "OK", result });
+    } catch (err) {
+      res.json({ retCode: "NG" });
+    }
+  },
 };
 module.exports = ctrl;

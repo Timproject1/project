@@ -98,3 +98,16 @@ onBeforeMount(() => {
     </div>
   </div>
 </template>
+<style scoped>
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* body 스크롤 차단 */
+}
+
+.left,
+.right {
+  flex: 1;
+  overflow-y: auto; /* 각각 독립 스크롤 */
+}
+</style>

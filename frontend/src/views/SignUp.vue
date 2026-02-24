@@ -380,6 +380,18 @@ watch([id, password, pwcheck], () => {
   width: 100%;
   max-width: 800px;
 }
+
+
+.list-group-item {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* 시안의 레이아웃을 위한 스타일 */
 .field-row {
   display: flex;
   margin-bottom: 25px;
