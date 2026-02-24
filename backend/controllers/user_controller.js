@@ -5,9 +5,9 @@ const ctrl = {
     const { id, password } = req.body;
     console.log(id, password);
     try {
-      const result = await service.login({ id, password });
-      console.log(result);
-      res.json({ retCode: "OK", result });
+      const info = await service.login({ id, password });
+      console.log(info);
+      res.json({ retCode: "OK", info });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG" });
@@ -24,6 +24,18 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  signUp: async function (req, res) {
+    console.log("signup con");
+    console.log(req.body);
+    const member = req.body;
+    try {
+      const result = await service.signUp(member);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
   info: async (req, res) => {
     console.log(req.params.id);
     try {

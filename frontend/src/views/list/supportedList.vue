@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 const isOpen = ref(false);
 const currentTab = ref("list");
 const toggleMenu = () => {
@@ -81,14 +83,14 @@ const supported = ref([
         <ul v-if="isOpen" class="menu-list">
           <li
             :class="{ active: currentTab === 'list' }"
-            @click="currentTab = 'list'"
+            @click="router.push('/list/list')"
           >
             - 지원자 목록
           </li>
           <li
             class="sub-item"
             :class="{ active: currentTab === 'info' }"
-            @click="currentTab = 'info'"
+            @click="router.push('/list/info')"
           >
             - 지원자 정보
           </li>

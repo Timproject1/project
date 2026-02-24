@@ -8,10 +8,11 @@
       class="form-control"
       :rows="rows"
       :name="name"
-      :value="value"
+      :value="modelValue"
       :placeholder="placeholder"
       :isRequired="isRequired"
       :disabled="disabled"
+      @input="$emit('update:modelValue', $event.target.value)"
     ></textarea>
   </div>
 </template>
@@ -34,7 +35,7 @@ export default {
       type: String,
       default: "",
     },
-    value: {
+    modelValue: {
       type: String,
       default: "",
     },
