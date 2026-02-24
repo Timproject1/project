@@ -79,7 +79,7 @@ const revision = reactive([
       <material-input id="text" placeholder="내용입력" />
       <material-button type="button">첨부파일 등록</material-button>
       <p>파일이름</p>
-      <material-button type="button">승인 요청</material-button>
+      <material-button type="button">등록</material-button>
     </template>
     <template #actions="{ close }">
       <material-button type="button" @click="close">취소</material-button>
@@ -89,52 +89,16 @@ const revision = reactive([
   <div v-for="Plan in Plans" :key="Plan.count">
     <p>{{ Plan.date }} 지원계획 {{ Plan.count }}</p>
     <material-button type="button" size="sm" @click="modifyPlan = true"
-      >수정</material-button
+      >승인</material-button
     >
     <material-button type="button" size="sm" @click="Plan.showPlanDelete = true"
-      >삭제</material-button
+      >반려</material-button
     >
-    <!-- 수정 모달 -->
-    <modal v-if="modifyPlan" @close="modifyPlan = false">
-      <template #content>
-        <material-input
-          id="text"
-          placeholder="제목입력"
-          :value="`${Plan.planName}`"
-        />
-        <material-input
-          id="text"
-          placeholder="내용입력"
-          :value="`${Plan.planContent}`"
-        />
-        <material-input id="text" placeholder="수정사유" />
-        <material-button type="button">첨부파일 등록</material-button>
-        <div v-for="file in Plan.file" :key="file">
-          <p>{{ file }}</p>
-        </div>
-        <material-button type="button">수정 완료</material-button>
-      </template>
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">취소</material-button>
-      </template>
-    </modal>
-    <!-- 삭제 모달 -->
-    <Modal v-if="Plan.showPlanDelete" @close="Plan.showPlanDelete = false">
-      <template #content>
-        <p>해당 지원계획서를 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger">예</material-button>
-      </template>
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">아니오</material-button>
-      </template>
-    </Modal>
-    <div>
-      <!-- 목표 및 내용 출력 -->
-      <h4>{{ Plan.planName }}</h4>
-      <br />
-      <p>{{ Plan.planContent }}</p>
-      <br />
-    </div>
+    <!-- 목표 및 내용 출력 -->
+    <h4>{{ Plan.planName }}</h4>
+    <br />
+    <p>{{ Plan.planContent }}</p>
+    <br />
     <!-- 첨부파일 -->
     <div v-for="file in Plan.file" :key="file">
       <p>첨부파일</p>
