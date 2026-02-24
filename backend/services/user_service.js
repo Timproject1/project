@@ -42,6 +42,17 @@ values(?,?,?,?,?,?,?,?);`;
       return result;
     } catch (error) {
       console.log(error);
+    }
+  }
+  info: async (id) => {
+    try {
+      const query = `select manager, priority, write_date from documents where user_id=?`;
+      const query1 = `select sup_name,sup_reg_date,sup_gender from supported where user_id=? `;
+      const result = await pool.query(query, [id]);
+      const result1 = await pool.query(query1, [id]);
+      return (result[0], result1[0]);
+    } catch (err) {
+      console.log(err);
       return;
     }
   },

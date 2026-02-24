@@ -7,205 +7,193 @@
     "
   >
     <span class="mask bg-gradient-dark opacity-6"></span>
-    <div class="container my-auto">
-      <div class="row">
-        <div class="col-lg-4 col-md-8 col-12 mx-auto">
-          <div class="card z-index-0 fadeIn3 fadeInBottom">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-              <div
-                class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1"
-              >
-                <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">
-                  Sign in
-                </h4>
-                <div class="row mt-3">
-                  <div class="col-2 text-center ms-auto">
-                    <a class="btn btn-link px-3" href="javascript:;">
-                      <i class="fab fa-facebook text-white text-lg"></i>
-                    </a>
-                  </div>
-                  <div class="col-2 text-center px-1">
-                    <a class="btn btn-link px-3" href="javascript:;">
-                      <i class="fab fa-github text-white text-lg"></i>
-                    </a>
-                  </div>
-                  <div class="col-2 text-center me-auto">
-                    <a class="btn btn-link px-3" href="javascript:;">
-                      <i class="fab fa-google text-white text-lg"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <form role="form" class="text-start mt-3">
-                <div class="mb-3">
-                  <material-input
-                    id="email"
-                    type="email"
-                    label="Email"
-                    name="email"
-                  />
-                </div>
-                <div class="mb-3">
-                  <material-input
-                    id="password"
-                    type="password"
-                    label="Password"
-                    name="password"
-                  />
-                </div>
-                <material-switch id="rememberMe" name="rememberMe"
-                  >Remember me</material-switch
-                >
-                <div class="text-center">
-                  <material-button
-                    class="my-4 mb-2"
-                    variant="gradient"
-                    color="success"
-                    fullWidth
-                    >Sign in</material-button
-                  >
-                </div>
-                <p class="mt-4 text-sm text-center">
-                  Don't have an account?
-                  <router-link
-                    :to="{ name: 'SignUp' }"
-                    class="text-success text-gradient font-weight-bold"
-                    >Sign up</router-link
-                  >
-                </p>
-              </form>
-            </div>
+
+    <div
+      class="container d-flex justify-content-center align-items-center min-vh-100"
+    >
+      <div class="login-card-box">
+        <div class="header-bar bg-gradient-success shadow-success">
+          <h4 class="text-white font-weight-bolder mb-0">
+            발달장애인 지원 프로그램
+          </h4>
+        </div>
+
+        <div class="login-content">
+          <div class="error-msg-area">
+            <p v-if="loginError" class="text-danger text-sm">
+              * 입력된 정보를 확인해주십시오.
+            </p>
           </div>
-          <div class="card-body">
-            <form role="form" class="text-start mt-3">
-              <div class="mb-3">
-                <material-input
-                  id="email"
-                  type="email"
-                  label="Email"
-                  name="email"
-                />
-              </div>
-              <div class="mb-3">
-                <material-input
-                  id="password"
-                  type="password"
-                  label="Password"
-                  name="password"
-                />
-              </div>
-              <material-switch id="rememberMe" name="rememberMe"
-                >Remember me</material-switch
+
+          <form role="form" @submit.prevent="handleLogin">
+            <div class="row-input mb-4">
+              <label class="row-label">아이디</label>
+              <material-input
+                id="id"
+                v-model:value="userId"
+                class="row-field"
+              />
+            </div>
+
+            <div class="row-input mb-5">
+              <label class="row-label">비밀번호</label>
+              <material-input
+                id="password"
+                type="password"
+                v-model:value="password"
+                class="row-field"
+              />
+            </div>
+
+            <material-button
+              class="action-btn mb-3"
+              variant="gradient"
+              color="success"
+              fullWidth
+              size="lg"
+              type="submit"
+              >로 그 인</material-button
+            >
+
+            <router-link :to="{ name: 'SignUp' }">
+              <material-button
+                class="action-btn mb-3"
+                variant="gradient"
+                color="success"
+                fullWidth
+                size="lg"
+                >회 원 가 입</material-button
               >
-              <div class="text-center">
-                <material-button
-                  class="my-4 mb-2"
-                  variant="gradient"
-                  color="success"
-                  fullWidth
-                  >Sign in</material-button
-                >
-              </div>
-              <p class="mt-4 text-sm text-center">
-                Don't have an account?
-                <router-link
-                  :to="{ name: 'SignUp' }"
-                  class="text-success text-gradient font-weight-bold"
-                  >Sign up</router-link
-                >
-              </p>
-            </form>
-          </div>
+            </router-link>
+
+            <div class="text-end mt-2">
+              <a href="javascript:;" class="find-link-text"
+                >아이디/비밀번호 찾기</a
+              >
+            </div>
+          </form>
         </div>
       </div>
     </div>
-    <footer class="footer position-absolute bottom-2 py-2 w-100">
-      <div class="container">
-        <div class="row align-items-center justify-content-lg-between">
-          <div class="col-12 col-md-6 my-auto">
-            <div class="copyright text-center text-sm text-white text-lg-start">
-              © {{ new Date().getFullYear() }}, made with
-              <i class="fa fa-heart" aria-hidden="true"></i> by
-              <a
-                href="https://www.creative-tim.com"
-                class="font-weight-bold text-white"
-                target="_blank"
-                >Creative Tim</a
-              >
-              for a better web.
-            </div>
-          </div>
-          <div class="col-12 col-md-6">
-            <ul
-              class="nav nav-footer justify-content-center justify-content-lg-end"
-            >
-              <li class="nav-item">
-                <a
-                  href="https://www.creative-tim.com"
-                  class="nav-link text-white"
-                  target="_blank"
-                  >Creative Tim</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  href="https://www.creative-tim.com/presentation"
-                  class="nav-link text-white"
-                  target="_blank"
-                  >About Us</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  href="https://www.creative-tim.com/blog"
-                  class="nav-link text-white"
-                  target="_blank"
-                  >Blog</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  href="https://www.creative-tim.com/license"
-                  class="nav-link pe-0 text-white"
-                  target="_blank"
-                  >License</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onBeforeMount, onBeforeUnmount } from "vue";
+import { useStore } from "vuex";
 import Navbar from "@/examples/PageLayout/Navbar.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
-import MaterialSwitch from "@/components/MaterialSwitch.vue";
 import MaterialButton from "@/components/MaterialButton.vue";
-import { mapMutations } from "vuex";
 
-export default {
-  name: "sign-in",
-  components: {
-    Navbar,
-    MaterialInput,
-    MaterialSwitch,
-    MaterialButton,
-  },
-  beforeMount() {
-    this.toggleEveryDisplay();
-    this.toggleHideConfig();
-  },
-  beforeUnmount() {
-    this.toggleEveryDisplay();
-    this.toggleHideConfig();
-  },
-  methods: {
-    ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
-  },
+const store = useStore();
+const userId = ref("");
+const password = ref("");
+const loginError = ref(false);
+
+// 가상의 DB 데이터 (실제 DB 연동 전 테스트용)
+const mockDB = [
+  { id: "admin", pw: "1234", name: "관리자" },
+  { id: "user01", pw: "password", name: "홍길동" },
+  { id: "admin", pw: "1234", name: "이민호" },
+];
+
+const handleLogin = () => {
+  // 1. 입력값이 비어있는지 확인
+  if (!userId.value || !password.value) {
+    loginError.value = true;
+    alert("아이디와 비밀번호를 모두 입력해주세요.");
+    return;
+  }
+
+  // 사용자 찾기
+  const user = mockDB.find(
+    (u) => u.id === userId.value && u.pw === password.value,
+  );
+
+  if (user) {
+    // 로그인 정보가 있으면 환영합니다. ***님 메시지 전송
+    loginError.value = false;
+    alert(`환영합니다. ${user.name}님!`);
+    console.log("로그인 성공");
+  } else {
+    // 로그인 정보가 없으면 정보를 다시 입력해주세요. 메시지 전송
+    loginError.value = true;
+    alert("등록된 회원 정보가 없습니다. 정보를 다시 입력해주세요.");
+  }
 };
+
+onBeforeMount(() => {
+  store.commit("toggleEveryDisplay");
+  store.commit("toggleHideConfig");
+});
+onBeforeUnmount(() => {
+  store.commit("toggleEveryDisplay");
+  store.commit("toggleHideConfig");
+});
 </script>
+
+<style scoped>
+/* 화면 중앙 고정 박스  */
+.login-card-box {
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: visible;
+  z-index: 5;
+}
+
+.header-bar {
+  margin: -25px 20px 0 20px;
+  padding: 20px 0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.login-content {
+  padding: 40px 40px 30px 40px;
+}
+
+.row-input {
+  display: flex;
+  align-items: center;
+}
+
+.row-label {
+  width: 100px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+  color: #344767;
+}
+
+.row-field {
+  flex: 1;
+}
+
+/* 버튼 스타일 */
+.action-btn {
+  font-size: 1.1rem !important;
+  font-weight: bold !important;
+  letter-spacing: 5px;
+  border-radius: 10px !important;
+  margin: 0;
+}
+
+.error-msg-area {
+  height: 25px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.find-link-text {
+  font-size: 0.9rem;
+  color: #7b809a;
+  text-decoration: none;
+}
+.find-link-text:hover {
+  color: #4caf50;
+}
+</style>

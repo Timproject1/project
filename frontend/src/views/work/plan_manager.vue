@@ -32,15 +32,6 @@ const Plans = reactive([
     showPlanDelete: false,
     app: "승인 재요청",
   },
-  {
-    count: 3,
-    date: "2026-02-24",
-    planName: "목표",
-    planContent: "내용",
-    file: ["파일4.png"],
-    showPlanDelete: false,
-    app: "반려",
-  },
 ]);
 
 const today = new Date();
@@ -50,7 +41,6 @@ const dd = String(today.getDate()).padStart(2, "0");
 const day = ref(`${yyyy}-${mm}-${dd}`);
 
 const newPlan = ref(false);
-const modifyPlan = ref(false);
 
 const revision = reactive([
   {
@@ -73,8 +63,7 @@ const revision = reactive([
   },
 ]);
 
-const returnPlan = ref(false);
-const returnPlanContent = ref("어림도없지");
+const returnplan = ref(false);
 </script>
 <template>
   <h4>지원계획서</h4>
@@ -91,7 +80,7 @@ const returnPlanContent = ref("어림도없지");
       <material-input id="text" placeholder="내용입력" />
       <material-button type="button">첨부파일 등록</material-button>
       <p>파일이름</p>
-      <material-button type="button">승인 요청</material-button>
+      <material-button type="button">등록</material-button>
     </template>
     <template #actions="{ close }">
       <material-button type="button" @click="close">취소</material-button>
@@ -100,53 +89,11 @@ const returnPlanContent = ref("어림도없지");
   <!-- 지원기획서 출력 -->
   <div v-for="Plan in Plans" :key="Plan.count">
     <p>{{ Plan.date }} 지원계획 {{ Plan.count }}</p>
-    <material-button type="button" size="sm" @click="modifyPlan = true"
-      >수정</material-button
-    >
-    <material-button type="button" size="sm" @click="Plan.showPlanDelete = true"
-      >삭제</material-button
-    >
-    <!-- 수정 모달 -->
-    <modal v-if="modifyPlan" @close="modifyPlan = false">
-      <template #content>
-        <material-input
-          id="text"
-          placeholder="제목입력"
-          :value="`${Plan.planName}`"
-        />
-        <material-input
-          id="text"
-          placeholder="내용입력"
-          :value="`${Plan.planContent}`"
-        />
-        <material-input id="text" placeholder="수정사유" />
-        <material-button type="button">첨부파일 등록</material-button>
-        <div v-for="file in Plan.file" :key="file">
-          <p>{{ file }}</p>
-        </div>
-        <material-button type="button">수정 완료</material-button>
-      </template>
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">취소</material-button>
-      </template>
-    </modal>
-    <!-- 삭제 모달 -->
-    <Modal v-if="Plan.showPlanDelete" @close="Plan.showPlanDelete = false">
-      <template #content>
-        <p>해당 지원계획서를 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger">예</material-button>
-      </template>
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">아니오</material-button>
-      </template>
-    </Modal>
-    <div>
-      <!-- 목표 및 내용 출력 -->
-      <h4>{{ Plan.planName }}</h4>
-      <br />
-      <p>{{ Plan.planContent }}</p>
-      <br />
-    </div>
+    <!-- 목표 및 내용 출력 -->
+    <h4>{{ Plan.planName }}</h4>
+    <br />
+    <p>{{ Plan.planContent }}</p>
+    <br />
     <!-- 첨부파일 -->
     <div v-for="file in Plan.file" :key="file">
       <p>첨부파일</p>
@@ -187,31 +134,21 @@ const returnPlanContent = ref("어림도없지");
         >승인 완료</material-button
       >
     </p>
-    <p v-else-if="Plan.app == '승인 대기 중'">
-      <material-button type="button" color="warning"
-        >승인 대기 중</material-button
-      ><material-button type="button" color="danger"
-        >승인 요청 취소</material-button
-      >
-    </p>
-    <p v-else-if="Plan.app == '반려'">
-      <material-button type="button" color="warning" @click="returnPlan = true"
+    <p v-else>
+      <material-button type="button" color="warning">승인</material-button
+      ><material-button type="button" color="danger" @click="returnplan = true"
         >반려</material-button
       >
-      <Modal v-if="returnPlan" @close="returnPlan = false">
+      <Modal v-if="returnplan" @close="returnplan = false">
         <template #content>
-          <h4>반려 사유</h4>
-          <p>{{ returnPlanContent }}</p>
+          <h4>반려사유</h4>
+          <material-input id="text" placeholder="반려사유작성" />
+          <material-button type="button">반려</material-button>
         </template>
         <template #actions="{ close }">
-          <material-button type="button" @click="close">닫기</material-button>
+          <material-button type="button" @click="close">취소</material-button>
         </template>
       </Modal>
-    </p>
-    <p v-else>
-      <material-button type="button" color="warning"
-        >승인 재요청</material-button
-      >
     </p>
   </div>
 </template>

@@ -34,6 +34,14 @@ const ctrl = {
       res.json({ retCode: "OK" });
     } catch (error) {
       console.log(error);
+    }
+  }
+  info: async (req, res) => {
+    console.log(req.params.id);
+    try {
+      const result = await service.info(req.params.id);
+      res.json({ retCode: "OK", result });
+    } catch (err) {
       res.json({ retCode: "NG" });
     }
   },
