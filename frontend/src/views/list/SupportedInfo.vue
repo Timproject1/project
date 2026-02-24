@@ -9,19 +9,28 @@ const toggleMenu = () => {
 };
 
 // 장애 유형을 보는 모달창
-const Modal = ref(false);
+const detailModal = ref(false);
 const selectMember = ref(null);
 
-// 모달 여는 함수
-const openModal = (member) => {
+// 지원자 추가
+const addModal = ref(false);
+
+// 장애 유형 보기 버튼 제어
+const openDetailModal = (member) => {
   selectMember.value = member;
-  Modal.value = true;
+  detailModal.value = true;
 };
-// 모달창 닫기
-const closeModal = () => {
-  console.log("닫기 버튼 클릭됨");
-  Modal.value = false;
+// 장애 유형 버튼 닫기
+const closeDetailModal = () => {
+  detailModal.value = false;
   selectMember.value = null;
+};
+// 지원자 추가 버튼 제어
+const openAddModal = () => {
+  addModal.value = true;
+};
+const closeAddModal = () => {
+  addModal.value = false;
 };
 
 // 지원자 목록 데이터 부분
@@ -141,7 +150,7 @@ const supported = ref([
               <td>{{ member.sup_tel }}</td>
               <td>{{ member.sup_address }}</td>
               <td>
-                <button class="view-btn" @click="openModal(member)">
+                <button class="view-btn" @click="openDetailModal(member)">
                   보기
                 </button>
               </td>
@@ -162,16 +171,16 @@ const supported = ref([
   </div>
   <!-- 모달창 부분 -->
   <!-- 지원자의 장애 유형 보는 모달 창 -->
-  <div v-if="Modal" class="modal-overlay">
+  <div v-if="detailModal" class="modal-overlay">
     <div class="modal-content">
       <h3>장애 유형</h3>
       <p><span>지원자명</span></p>
       <p><span>등록한 장애유형</span></p>
-      <button class="close-btn" @click="closeModal">닫기</button>
+      <button class="close-btn" @click="closeDetailModal">닫기</button>
     </div>
   </div>
   <!-- 지원자 추가 모달창 -->
-  <div v-if="Modal" class="modal-overlay">
+  <div v-if="addModal" class="modal-overlay">
     <div class="modal-content">
       <h3>지원자 추가</h3>
       <div>
@@ -183,13 +192,15 @@ const supported = ref([
         </p>
       </div>
       <div>
-        <input
-          type="checkbox"
-          v-model="sup_gender"
-          true-value="남성"
-          false-value="여성"
-        />성별
+        <span>성별</span>
+        <label style="margin-right: 15px"
+          ><input type="radio" v-model="sup_gender" value="남성" /> 남성</label
+        >
+        <label
+          ><input type="radio" v-model="sup_gender" value="여성" />여성</label
+        >
       </div>
+      <button class="close-btn" @click="closeAddModal">저장</button>
     </div>
   </div>
 </template>
@@ -358,7 +369,7 @@ td {
 
 /* 모달 박스 */
 .modal-content {
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   padding: 30px;
   border-radius: 8px;
   width: 400px;
