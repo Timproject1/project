@@ -1,6 +1,7 @@
 <script setup>
 import { mapMutations } from "vuex";
 import { ref, computed, watch } from "vue";
+import { useRouter } from "vue-router";
 const id = ref(""); //아이디
 const password = ref(""); //비밀번호
 const pwcheck = ref(""); //비밀번호확인
@@ -13,7 +14,9 @@ const filter = ref(""); //검색 필더
 const tel = ref(""); //전화번호
 const centerList = ref([]); //센터목록
 const address = ref(""); //주소
-var pwIsEqual = false;
+const name = ref(""); //이름
+const router = useRouter(); //이동용 라우터
+var pwIsEqual = false; //비번일치유무
 const pwcheck_fun = computed(() => {
   if (pwcheck.value == password.value) {
     pwIsEqual = true;
@@ -49,7 +52,7 @@ const signUp = async function () {
     alert("비밀번호를 확인 해 주세요");
     return;
   }
-
+  //멤버
   const member = {
     id: id.value,
     password: password.value,
@@ -58,6 +61,7 @@ const signUp = async function () {
     grade: grade.value,
     address: address.value,
     center: registernum.value,
+    name: name.value,
   };
 
   const result = await fetch(`http://localhost:3000/user/signup`, {
@@ -66,8 +70,14 @@ const signUp = async function () {
       "content-type": "application/json",
     },
     body: JSON.stringify(member),
-  });
-  console.log(member);
+  }).then((res) => res.json());
+
+  if (result.retCode == "OK") {
+    alert("회원가입 성공");
+    router.push("/sign-in");
+  } else {
+    alert("회원가입 실패");
+  }
 };
 const showModal = ref(false); // 모달 상태 관리
 //센터 목록을 받아오는 함수
@@ -96,7 +106,6 @@ const closeModal = () => {
 const clickSearch = async () => {
   const list = await searchCenter(filter.value);
   centerList.value = list.result;
-
   showModal.value = true;
 };
 // 기관 선택 시 실행 (예시)
@@ -217,7 +226,6 @@ watch(id, () => {
                         *이미 사용 중인 아이디입니다.
                       </p>
                     </div>
-
                     <div class="mb-3">
                       <material-input
                         id="password"
@@ -229,7 +237,6 @@ watch(id, () => {
                         v-model="password"
                       />
                     </div>
-
                     <div class="mb-3">
                       <material-input
                         id="pwcheck"
@@ -244,7 +251,6 @@ watch(id, () => {
                         {{ pwcheck_fun }}
                       </p>
                     </div>
-
                     <div class="mb-3">
                       <material-input
                         id="name"
@@ -278,7 +284,6 @@ watch(id, () => {
                         v-model="email"
                       />
                     </div>
-
                     <div class="mb-3">
                       <material-input
                         id="address"

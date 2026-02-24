@@ -24,5 +24,18 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  signUp: async function (req, res) {
+    console.log("signup con");
+    console.log(req.body);
+    const member = req.body;
+    try {
+      const result = await service.signUp(member);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
 };
 module.exports = ctrl;
