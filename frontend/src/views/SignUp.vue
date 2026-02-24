@@ -203,23 +203,21 @@ watch(id, () => {
                 <div class="card-body">
                   <form role="form" @submit.prevent="handleRegister">
                     <div class="mb-3">
+                      <!-- 아이디 양방향 연결 -->
                       <material-input
                         id="id"
                         type="text"
                         label="아이디"
                         name="id"
                         size="lg"
-                        v-model="id"
                         :required="true"
                       />
-                      {{ id }}
-                      {{ idDuplicate }}
+                      <!-- 클릭시 아이디 중복체크 -->
                       <material-button
                         variant="outline"
                         color="dark"
                         size="sm"
                         class="mt-2"
-                        @click="checkIdDuplicate"
                         >중복체크</material-button
                       >
                       <p v-if="idError" class="text-xs text-danger mt-1">
@@ -227,6 +225,7 @@ watch(id, () => {
                       </p>
                     </div>
                     <div class="mb-3">
+                      <!-- 비밀번호 양방향연결 -->
                       <material-input
                         id="password"
                         type="password"
@@ -234,10 +233,10 @@ watch(id, () => {
                         name="password"
                         size="lg"
                         :required="true"
-                        v-model="password"
                       />
                     </div>
                     <div class="mb-3">
+                      <!-- 비밀번호확인 양방향연결 -->
                       <material-input
                         id="pwcheck"
                         type="password"
@@ -245,24 +244,24 @@ watch(id, () => {
                         :required="true"
                         name="passwordCheck"
                         size="lg"
-                        v-model="pwcheck"
                       />
                       <p class="text-xs text-danger mt-1">
                         {{ pwcheck_fun }}
                       </p>
                     </div>
                     <div class="mb-3">
+                      <!-- 이름 양방향 연결 -->
                       <material-input
                         id="name"
                         type="text"
                         label="이름"
-                        name="email"
+                        name="name"
                         :required="true"
                         size="lg"
-                        v-model="name"
                       />
                     </div>
                     <div class="mb-3">
+                      <!-- 전화번호 양방향 연결 -->
                       <material-input
                         id="tel"
                         type="text"
@@ -270,10 +269,10 @@ watch(id, () => {
                         name="tel"
                         :required="true"
                         size="lg"
-                        v-model="tel"
                       />
                     </div>
                     <div class="mb-3">
+                      <!-- 이메일 양방향 연결 -->
                       <material-input
                         id="email"
                         type="email"
@@ -281,10 +280,10 @@ watch(id, () => {
                         name="email"
                         :required="true"
                         size="lg"
-                        v-model="email"
                       />
                     </div>
                     <div class="mb-3">
+                      <!-- 주소 양방향 연결 -->
                       <material-input
                         id="address"
                         type="text"
@@ -292,7 +291,6 @@ watch(id, () => {
                         :required="true"
                         name="address"
                         size="lg"
-                        v-model="address"
                       />
                     </div>
                     <div class="mb-3">
@@ -303,8 +301,8 @@ watch(id, () => {
                         name="address"
                         :required="true"
                         size="lg"
-                        v-model="center_name"
                         :readonly="true"
+                        v-model="registernum"
                       />
                       <material-button
                         variant="outline"
@@ -314,8 +312,6 @@ watch(id, () => {
                         @click="openCenterSearch"
                         >검색</material-button
                       >
-                      {{ center_name }}
-                      {{ registernum }}
                     </div>
                     <div class="mb-3">
                       <material-radio
@@ -335,9 +331,9 @@ watch(id, () => {
                       >
                         기관관리자
                       </material-radio>
-                      {{ grade }}
                     </div>
                     <div class="text-center">
+                      <!-- 클릭시 가입 함수 실행 -->
                       <material-button
                         class="mt-4"
                         variant="gradient"
@@ -345,7 +341,6 @@ watch(id, () => {
                         fullWidth
                         size="lg"
                         type="button"
-                        @click="signUp"
                         >가입하기</material-button
                       >
                     </div>
