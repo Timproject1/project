@@ -6,6 +6,7 @@ const transporter = require("./util/mail.js");
 const app = express();
 const user_route = require("./routes/user_router.js");
 const center_route = require("./routes/center_router.js");
+const doc_route = require("./routes/document_router.js");
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
@@ -15,8 +16,9 @@ app.use(cors());
 app.listen(3000, () => {
   console.log("http://localhost:3000");
 });
-app.use("/center", center_route);
+app.use("/center", center_route); //센터 라우트
 app.use("/user", user_route); //유저 라우트
+app.use("/document", doc_route);
 app.get("/", async (req, res) => {
   try {
     // res.send("test");

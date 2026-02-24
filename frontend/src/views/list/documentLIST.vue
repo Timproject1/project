@@ -1,4 +1,13 @@
-<script setup></script>
+<script setup>
+import { useMemberStore } from "@/store/member";
+
+const memberStore = useMemberStore();
+import axios from "axios";
+console.log(memberStore.id);
+axios.get("/api/users", {
+  params: {},
+});
+</script>
 <template>
   <div class="container-fluid py-4">
     <!-- Authors Table -->
@@ -85,6 +94,7 @@
 import MaterialButton from "@/components/MaterialButton.vue";
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
+
 export default {
   name: "tables",
   components: { MaterialButton, MaterialPagination, MaterialPaginationItem },
