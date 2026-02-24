@@ -41,7 +41,6 @@ const dd = String(today.getDate()).padStart(2, "0");
 const day = ref(`${yyyy}-${mm}-${dd}`);
 
 const newPlan = ref(false);
-const modifyPlan = ref(false);
 
 const revision = reactive([
   {
@@ -63,6 +62,8 @@ const revision = reactive([
     revisionPlan: false,
   },
 ]);
+
+const returnplan = ref(false);
 </script>
 <template>
   <h4>지원계획서</h4>
@@ -88,12 +89,6 @@ const revision = reactive([
   <!-- 지원기획서 출력 -->
   <div v-for="Plan in Plans" :key="Plan.count">
     <p>{{ Plan.date }} 지원계획 {{ Plan.count }}</p>
-    <material-button type="button" size="sm" @click="modifyPlan = true"
-      >승인</material-button
-    >
-    <material-button type="button" size="sm" @click="Plan.showPlanDelete = true"
-      >반려</material-button
-    >
     <!-- 목표 및 내용 출력 -->
     <h4>{{ Plan.planName }}</h4>
     <br />
@@ -139,17 +134,21 @@ const revision = reactive([
         >승인 완료</material-button
       >
     </p>
-    <p v-else-if="Plan.app == '승인 대기 중'">
-      <material-button type="button" color="warning"
-        >승인 대기 중</material-button
-      ><material-button type="button" color="danger"
-        >승인 요청 취소</material-button
-      >
-    </p>
     <p v-else>
-      <material-button type="button" color="warning"
-        >승인 재요청</material-button
+      <material-button type="button" color="warning">승인</material-button
+      ><material-button type="button" color="danger" @click="returnplan = true"
+        >반려</material-button
       >
+      <Modal v-if="returnplan" @close="returnplan = false">
+        <template #content>
+          <h4>반려사유</h4>
+          <material-input id="text" placeholder="반려사유작성" />
+          <material-button type="button">반려</material-button>
+        </template>
+        <template #actions="{ close }">
+          <material-button type="button" @click="close">취소</material-button>
+        </template>
+      </Modal>
     </p>
   </div>
 </template>

@@ -32,6 +32,15 @@ const Plans = reactive([
     showPlanDelete: false,
     app: "승인 재요청",
   },
+  {
+    count: 3,
+    date: "2026-02-24",
+    planName: "목표",
+    planContent: "내용",
+    file: ["파일4.png"],
+    showPlanDelete: false,
+    app: "반려",
+  },
 ]);
 
 const today = new Date();
@@ -63,6 +72,9 @@ const revision = reactive([
     revisionPlan: false,
   },
 ]);
+
+const returnPlan = ref(false);
+const returnPlanContent = ref("어림도없지");
 </script>
 <template>
   <h4>지원계획서</h4>
@@ -181,6 +193,20 @@ const revision = reactive([
       ><material-button type="button" color="danger"
         >승인 요청 취소</material-button
       >
+    </p>
+    <p v-else-if="Plan.app == '반려'">
+      <material-button type="button" color="warning" @click="returnPlan = true"
+        >반려</material-button
+      >
+      <Modal v-if="returnPlan" @close="returnPlan = false">
+        <template #content>
+          <h4>반려 사유</h4>
+          <p>{{ returnPlanContent }}</p>
+        </template>
+        <template #actions="{ close }">
+          <material-button type="button" @click="close">닫기</material-button>
+        </template>
+      </Modal>
     </p>
     <p v-else>
       <material-button type="button" color="warning"
