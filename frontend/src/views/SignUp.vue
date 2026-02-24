@@ -20,7 +20,7 @@ const pwcheck_fun = computed(() => {
 });
 const checkIdDuplicate = async function () {
   const result = await fetch().then((res) => {
-  // `http://localhost:3000/user/check/${id.value}`,
+    // `http://localhost:3000/user/check/${id.value}`,
     return res.json();
   });
   console.log(result);
@@ -379,38 +379,39 @@ export default {
 .list-group-item:hover {
   background-color: #f8f9fa;
 
-<style scoped>
-/* 시안의 레이아웃을 위한 스타일 */
-.custom-row {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-}
-.custom-label {
-  width: 120px;
-  min-width: 120px;
-  padding-top: 10px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #344767;
-  text-align: left;
-}
-.custom-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-.error-msg {
-  color: #f44335;
-  font-size: 0.7rem;
-  margin-top: 2px;
-  text-align: left;
-}
-.required-text {
-  color: #f44335;
-  font-size: 0.7rem;
-  padding-top: 12px;
-  margin-left: 10px;
-  white-space: nowrap;
+  /* <style scoped> */
+  /* 시안의 레이아웃을 위한 스타일 */
+  /* .custom-row { */
+  /* display: flex; */
+  /* align-items: flex-start; */
+  /* width: 100%; */
+  /* } */
+  .custom-label {
+    width: 120px;
+    min-width: 120px;
+    padding-top: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #344767;
+    text-align: left;
+  }
+  .custom-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .error-msg {
+    color: #f44335;
+    font-size: 0.7rem;
+    margin-top: 2px;
+    text-align: left;
+  }
+  .required-text {
+    color: #f44335;
+    font-size: 0.7rem;
+    padding-top: 12px;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
 }
 </style>
