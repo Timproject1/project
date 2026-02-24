@@ -73,6 +73,10 @@ const routes = [
         path: "info",
         component: () => import("../views/list/SupportedInfo.vue"),
       },
+      {
+        path: "document",
+        component: () => import("../views/list/documentLIST.vue"),
+      },
     ],
   },
   // {

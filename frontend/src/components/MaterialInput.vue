@@ -10,11 +10,12 @@
       class="form-control"
       :class="getClasses(size)"
       :name="name"
-      :value="value"
+      :value="modelValue"
       :placeholder="placeholder"
-      :isRequired="isRequired"
+      :required="isRequired"
       :disabled="disabled"
-      @input="$emit('update:value', $event.target.value)"
+      :readonly="readonly"
+      @input="$emit('update:modelValue', $event.target.value)"
     />
   </div>
 </template>
@@ -25,6 +26,11 @@ import setMaterialInput from "@/assets/js/material-input.js";
 export default {
   name: "MaterialInput",
   props: {
+    // value 대신 modelValue로 변경 (Vue 3 표준)
+    modelValue: {
+      type: [String, Number],
+      default: "",
+    },
     variant: {
       type: String,
       default: "outline",
@@ -57,10 +63,6 @@ export default {
       type: String,
       required: true,
     },
-    value: {
-      type: String,
-      default: "",
-    },
     placeholder: {
       type: String,
       default: "",
@@ -73,31 +75,26 @@ export default {
       type: Boolean,
       default: false,
     },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
-  emits: ["update:value"],
+  emits: ["update:modelValue"], // 이벤트명 변경
   mounted() {
-    setMaterialInput();
+    // material-input 초기화 함수 실행
+    if (setMaterialInput) {
+      setMaterialInput();
+    }
   },
   methods: {
     getClasses: (size) => {
-      let sizeValue;
-
-      sizeValue = size ? `form-control-${size}` : null;
-
-      return sizeValue;
+      return size && size !== "default" ? `form-control-${size}` : "";
     },
     getStatus: (error, success) => {
-      let isValidValue;
-
-      if (success) {
-        isValidValue = "is-valid";
-      } else if (error) {
-        isValidValue = "is-invalid";
-      } else {
-        isValidValue = null;
-      }
-
-      return isValidValue;
+      if (success) return "is-valid";
+      if (error) return "is-invalid";
+      return "";
     },
   },
 };
