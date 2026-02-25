@@ -7,10 +7,6 @@ export const useMemberStore = defineStore("member", {
     grade: "a1",
   }),
 
-  getters: {
-    doubleCount: (state) => state.count * 2,
-  },
-
   actions: {
     setMember(data) {
       this.id = data.id;

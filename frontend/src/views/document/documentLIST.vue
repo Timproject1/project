@@ -2,7 +2,8 @@
 import { useMemberStore } from "@/store/member";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
+// import { useUtilStore } from "../../store/util";
+// const utilStore = useUtilStore();
 const router = useRouter();
 const memberStore = useMemberStore();
 import axios from "axios";

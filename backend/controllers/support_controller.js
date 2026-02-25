@@ -2,8 +2,8 @@ const service = require("../services/support_service");
 const ctrl = {
   getList: async (req, res) => {
     try {
-      console.log(req.params);
-      const result = await service.getNums(req.params.id);
+      console.log(req.query);
+      const result = await service.getList(req.query.id);
       console.log("contr");
       console.log(result);
       res.json({ retCode: "OK", result });
