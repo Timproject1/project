@@ -2,7 +2,7 @@ const service = require("../services/center_service");
 const ctrl = {
   // 기존 목록 불러오기
   getList: async function (req, res) {
-    const filter = req.query ? req.query.filter : "";
+    const filter = req.query.filter ? req.query.filter : "";
     try {
       const result = await service.getList(filter);
       console.log(result);

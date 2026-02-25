@@ -6,6 +6,7 @@ const app = express();
 const user_route = require("./routes/user_router.js");
 const center_route = require("./routes/center_router.js");
 const doc_route = require("./routes/document_router.js");
+const sup_route = require("./routes/support_router.js");
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
@@ -19,6 +20,7 @@ app.listen(3000, () => {
 app.use("/center", center_route); //센터 라우트
 app.use("/user", user_route); //유저 라우트
 app.use("/document", doc_route);
+app.use("/support", sup_route);
 app.get("/", async (req, res) => {
   try {
     const query = "show tables";
