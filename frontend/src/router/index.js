@@ -69,7 +69,7 @@ const routes = [
       },
       {
         path: "document",
-        component: () => import("../views/document/documentLIST.vue"),
+        component: () => import("../views/list/documentLIST.vue"),
       },
     ],
   },
