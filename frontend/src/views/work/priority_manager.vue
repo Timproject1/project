@@ -1,10 +1,32 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
-import { ref, onMounted } from "vue";
-const name = ref("홍길동");
+import { ref, onMounted, onBeforeMount } from "vue";
+import { useMemberStore } from "@/store/member";
+import axios from "axios";
 
-const items = [{ id: 1, label: "계획", color: "blue" }];
-const reason = ref("승인 혹은 반려");
+import { useRoute } from "vue-router";
+const route = useRoute();
+
+const memberStore = useMemberStore();
+
+let prioritydb = ref({});
+
+const priorityData = async (id) => {
+  let result = await axios
+    .get(`user/priority/${id}`)
+    .catch((err) => console.log(err));
+  prioritydb.value = result.value;
+};
+onBeforeMount(() => {
+  let searchId = route.query.no;
+  priorityData(searchId);
+});
+
+const items = [
+  { id: 1, label: "계획", color: "blue", cord: "c3" },
+  { id: 2, label: "중점", color: "green", cord: "c4" },
+  { id: 3, label: "긴급", color: "red", cord: "c5" },
+];
 
 const box = ref(null);
 
@@ -24,8 +46,8 @@ const nonedisplay = () => {
 <template>
   <div id="rea_container">
     <div id="rea">
-      <h3>{{ name }}님의 대기단계</h3>
-      <div class="wrapper">
+      <h3>{{ memberStore.id }}님의 대기단계</h3>
+      <div class="wrapper" v-if="prioritydb.priority == 'c3'">
         <div
           class="circle"
           :style="{ backgroundColor: items[0].color, color: '#fff' }"
@@ -34,9 +56,27 @@ const nonedisplay = () => {
           {{ items[0].label }}
         </div>
       </div>
+      <div class="wrapper" v-else-if="prioritydb.priority == 'c4'">
+        <div
+          class="circle"
+          :style="{ backgroundColor: items[1].color, color: '#fff' }"
+          disabled
+        >
+          {{ items[1].label }}
+        </div>
+      </div>
+      <div class="wrapper" v-else>
+        <div
+          class="circle"
+          :style="{ backgroundColor: items[2].color, color: '#fff' }"
+          disabled
+        >
+          {{ items[2].label }}
+        </div>
+      </div>
       <br />
       <div id="reasonbox">
-        <p>{{ reason }}</p>
+        <p>{{ prioritydb.priority_reason }}</p>
         <div class="return" ref="box">
           <h5>반려 사유</h5>
           <textarea
