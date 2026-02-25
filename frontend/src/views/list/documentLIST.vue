@@ -1,6 +1,6 @@
 <script setup>
 import { useMemberStore } from "@/store/member";
-
+import { RouterLink } from "vue-router";
 const memberStore = useMemberStore();
 import axios from "axios";
 console.log(memberStore.id);
@@ -45,7 +45,9 @@ axios.get("/api/users", {
                         color="success"
                         size="sm"
                         class="mt-2"
-                        >신청서보기</material-button
+                        ><RouterLink :to="{ path: '/work/priority' }"
+                          >신청서보기</RouterLink
+                        ></material-button
                       >
                     </td>
                     <td>미정</td>

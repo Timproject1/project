@@ -11,6 +11,7 @@ BigInt.prototype.toJSON = function () {
 };
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.listen(3000, () => {

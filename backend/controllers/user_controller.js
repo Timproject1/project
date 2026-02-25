@@ -35,13 +35,28 @@ const ctrl = {
     } catch (error) {
       console.log(error);
     }
-  }
-  info: async (req, res) => {
-    console.log(req.params.id);
+  },
+  prioritySetting: async (req, res) => {
+    console.log(req.body);
+    const priority = req.body;
     try {
-      const result = await service.info(req.params.id);
-      res.json({ retCode: "OK", result });
-    } catch (err) {
+      const result = await service.prioritySetting(priority);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  priorityApp: async (req, res) => {
+    console.log(req.params.id);
+    const priority = req.params.id;
+    try {
+      const result = await service.priorityApp(priority);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
       res.json({ retCode: "NG" });
     }
   },
