@@ -58,7 +58,12 @@ const routes = [
     path: "/list",
     name: "List",
     component: list,
+    redirect: "/list/supported",
     children: [
+      {
+        path: "list",
+        redirect: "/list/supported",
+      },
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
@@ -66,6 +71,10 @@ const routes = [
       {
         path: "info",
         component: () => import("../views/list/SupportedInfo.vue"),
+      },
+      {
+        path: "add",
+        component: () => import("../views/list/supportedAdd.vue"),
       },
       {
         path: "document",

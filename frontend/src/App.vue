@@ -93,13 +93,13 @@ export default {
   },
 };
 
-fetch(`http://localhost:3000/`)
-  .then((res) => {
-    return res.json();
-  })
-  .then((res) => {
-    console.log(res);
-  });
+// // fetch(`http://localhost:3000/`)
+// //   .then((res) => {
+// //     return res.json();
+// //   })
+//   .then((res) => {
+//     console.log(res);
+//   });
 </script>
 <style>
 .container {
