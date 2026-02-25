@@ -1,6 +1,8 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import { useMemberStore } from "@/store/member";
+const memberStore = useMemberStore();
 const router = useRouter();
 const id = ref("");
 const password = ref("");

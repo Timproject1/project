@@ -43,7 +43,7 @@ values(?,?,?,?,?,?,?,?);`;
     } catch (error) {
       console.log(error);
     }
-  }
+  },
   info: async (id) => {
     try {
       const query = `select manager, priority, write_date from documents where user_id=?`;
