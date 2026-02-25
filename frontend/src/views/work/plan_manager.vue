@@ -13,6 +13,7 @@ const Plans = reactive([
     file: ["파일1.png", "파일2.jpg"],
     showPlanDelete: false,
     app: "승인 완료",
+    modifyPlan: false,
   },
   {
     count: 2,
@@ -22,6 +23,7 @@ const Plans = reactive([
     file: ["파일3.png"],
     showPlanDelete: false,
     app: "승인 대기 중",
+    modifyPlan: false,
   },
   {
     count: 3,
@@ -31,6 +33,17 @@ const Plans = reactive([
     file: ["파일4.png"],
     showPlanDelete: false,
     app: "승인 재요청",
+    modifyPlan: false,
+  },
+  {
+    count: 3,
+    date: "2026-02-24",
+    planName: "목표",
+    planContent: "내용",
+    file: ["파일4.png"],
+    showPlanDelete: false,
+    app: "반려",
+    modifyPlan: false,
   },
 ]);
 
