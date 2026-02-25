@@ -52,12 +52,6 @@ const routes = [
           right: () => import("../views/login/login.vue"),
         },
       },
-      {
-        path: "signup",
-        components: {
-          right: () => import("../views/login/signup.vue"),
-        },
-      },
     ],
   },
   {
@@ -79,6 +73,18 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/document",
+    name: "Document",
+    component: list,
+    children: [
+      {
+        path: "write",
+        component: () => import("../views/document/write_document.vue"),
+      },
+    ],
+  },
+
   // {
   //   path: "/",
   //   name: "/",

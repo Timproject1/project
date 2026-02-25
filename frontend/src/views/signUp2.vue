@@ -378,8 +378,7 @@ export default {
 
 .list-group-item:hover {
   background-color: #f8f9fa;
-
-<style scoped>
+}
 /* 시안의 레이아웃을 위한 스타일 */
 .custom-row {
   display: flex;
