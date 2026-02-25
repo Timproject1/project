@@ -13,8 +13,8 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 -->
 <script setup>
-import { useMemberStore } from "@/store/member";
-const memberStore = useMemberStore();
+// import { useMemberStore } from "@/store/member";
+// const memberStore = useMemberStore();
 </script>
 <template>
   <!-- <sidenav
@@ -93,13 +93,13 @@ export default {
   },
 };
 
-fetch(`http://localhost:3000/`)
-  .then((res) => {
-    return res.json();
-  })
-  .then((res) => {
-    console.log(res);
-  });
+// // fetch(`http://localhost:3000/`)
+// //   .then((res) => {
+// //     return res.json();
+// //   })
+//   .then((res) => {
+//     console.log(res);
+//   });
 </script>
 <style>
 .container {

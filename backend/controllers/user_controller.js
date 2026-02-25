@@ -35,7 +35,7 @@ const ctrl = {
     } catch (error) {
       console.log(error);
     }
-  }
+  },
   info: async (req, res) => {
     console.log(req.params.id);
     try {
