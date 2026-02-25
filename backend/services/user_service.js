@@ -43,16 +43,31 @@ values(?,?,?,?,?,?,?,?);`;
     } catch (error) {
       console.log(error);
     }
-  }
-  info: async (id) => {
+  },
+  prioritySetting: async (id) => {
     try {
-      const query = `select manager, priority, write_date from documents where user_id=?`;
-      const query1 = `select sup_name,sup_reg_date,sup_gender from supported where user_id=? `;
+      const query = `insert into priority_req ( priority_req_num, doc_num, priority_reason, priority, priority_app_manager, priority_approved) values (?,?,?,?,?,?) `;
+      const result = await pool.query(query, [
+        id.priority_req_num,
+        id.doc_num,
+        id.priority_reason,
+        id.priority,
+        id.priority_app_manager,
+        id.priority_approved,
+      ]);
+      return result[0];
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  },
+  priorityApp: async (id) => {
+    try {
+      const query = `select priority_req_num, priority_reason, priority from priority_req where priority_req_num =?`;
       const result = await pool.query(query, [id]);
-      const result1 = await pool.query(query1, [id]);
-      return (result[0], result1[0]);
+      return result[0];
     } catch (err) {
-      console.log(err);
+      console.log(error);
       return;
     }
   },

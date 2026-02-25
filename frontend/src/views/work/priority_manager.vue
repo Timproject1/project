@@ -1,9 +1,20 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, onMounted } from "vue";
-const name = ref("홍길동");
+import { useMemberStore } from "@/store/member";
+// import axios from "axios";
 
-const items = [{ id: 1, label: "계획", color: "blue" }];
+const memberStore = useMemberStore();
+
+// const priorityData = axios.get(()=>{
+//   params: {},
+// })
+
+const items = [
+  { id: 1, label: "계획", color: "blue", cord: "c3" },
+  { id: 2, label: "중점", color: "green", cord: "c4" },
+  { id: 3, label: "긴급", color: "red", cord: "c5" },
+];
 const reason = ref("승인 혹은 반려");
 
 const box = ref(null);
@@ -24,7 +35,7 @@ const nonedisplay = () => {
 <template>
   <div id="rea_container">
     <div id="rea">
-      <h3>{{ name }}님의 대기단계</h3>
+      <h3>{{ memberStore.id }}님의 대기단계</h3>
       <div class="wrapper">
         <div
           class="circle"
