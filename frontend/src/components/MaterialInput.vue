@@ -82,7 +82,6 @@ export default {
   },
   emits: ["update:modelValue"], // 이벤트명 변경
   mounted() {
-    // material-input 초기화 함수 실행
     if (setMaterialInput) {
       setMaterialInput();
     }
