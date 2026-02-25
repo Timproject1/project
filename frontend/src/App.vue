@@ -14,7 +14,7 @@ Coded by www.creative-tim.com
 -->
 <script setup>
 // import { useMemberStore } from "@/store/member";
-//const memberStore = useMemberStore();
+// const memberStore = useMemberStore();
 </script>
 <template>
   <!-- <sidenav
