@@ -6,5 +6,6 @@ router.get("/check/:id", ctrl.check); //중복체크
 router.post("/signup", ctrl.signUp);
 router.post("/priority", ctrl.prioritySetting);
 router.get("/priority/:id", ctrl.priorityApp);
+// router.post("", ctrl.appPriority);
 
 module.exports = router;
