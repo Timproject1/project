@@ -80,6 +80,14 @@ const routes = [
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
+      {
+        path: "look",
+        component: () => import("../views/list/manager_lookList.vue"),
+      },
+      {
+        path: "center",
+        component: () => import("../views/list/centerList.vue"),
+      },
     ],
   },
   {
