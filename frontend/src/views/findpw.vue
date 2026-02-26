@@ -113,7 +113,6 @@ const handleUpdatePw = () => {
 </script>
 
 <style scoped>
-/* 기존 시안들과 동일한 스타일 유지 */
 .login-card-box {
   width: 100%;
   max-width: 500px;
