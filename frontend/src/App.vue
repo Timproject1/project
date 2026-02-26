@@ -14,7 +14,7 @@ Coded by www.creative-tim.com
 -->
 <script setup>
 // import { useMemberStore } from "@/store/member";
-//const memberStore = useMemberStore();
+// const memberStore = useMemberStore();
 </script>
 <template>
   <!-- <sidenav
@@ -93,13 +93,13 @@ export default {
   },
 };
 
-fetch(`http://localhost:3000/`)
-  .then((res) => {
-    return res.json();
-  })
-  .then((res) => {
-    console.log(res);
-  });
+// // fetch(`http://localhost:3000/`)
+// //   .then((res) => {
+// //     return res.json();
+// //   })
+//   .then((res) => {
+//     console.log(res);
+//   });
 </script>
 <style>
 .container {

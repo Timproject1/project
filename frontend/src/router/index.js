@@ -52,19 +52,18 @@ const routes = [
           right: () => import("../views/login/login.vue"),
         },
       },
-      {
-        path: "signup",
-        components: {
-          right: () => import("../views/login/signup.vue"),
-        },
-      },
     ],
   },
   {
     path: "/list",
     name: "List",
     component: list,
+    redirect: "/list/supported",
     children: [
+      {
+        path: "list",
+        redirect: "/list/supported",
+      },
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
@@ -74,11 +73,27 @@ const routes = [
         component: () => import("../views/list/SupportedInfo.vue"),
       },
       {
+        path: "add",
+        component: () => import("../views/list/supportedAdd.vue"),
+      },
+      {
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
     ],
   },
+  {
+    path: "/document",
+    name: "Document",
+    component: list,
+    children: [
+      {
+        path: "write",
+        component: () => import("../views/document/write_document.vue"),
+      },
+    ],
+  },
+
   // {
   //   path: "/",
   //   name: "/",

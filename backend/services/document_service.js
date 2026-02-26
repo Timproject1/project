@@ -31,5 +31,17 @@ const service = {
       console.log(error);
     }
   },
+  getForm: async () => {
+    try {
+      const query = 'select form_ver from form_version where `usage`="h1"';
+      const ver = await pool.query(query);
+      const query1 = `select bcategory,scategory,question,response,number,value,question_num,exam_num from getForm`;
+      const form = await pool.query(query1);
+      return { ver: ver[0], form };
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  writeDoc: async () => {},
 };
 module.exports = service;
