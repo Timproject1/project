@@ -73,19 +73,18 @@ const routes = [
           right: () => import("../views/login/login.vue"),
         },
       },
-      {
-        path: "signup",
-        components: {
-          right: () => import("../views/login/signup.vue"),
-        },
-      },
     ],
   },
   {
     path: "/list",
     name: "List",
     component: list,
+    redirect: "/list/supported",
     children: [
+      {
+        path: "list",
+        redirect: "/list/supported",
+      },
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
@@ -95,11 +94,62 @@ const routes = [
         component: () => import("../views/list/SupportedInfo.vue"),
       },
       {
+        path: "add",
+        component: () => import("../views/list/supportedAdd.vue"),
+      },
+      {
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
     ],
   },
+  {
+    path: "/document",
+    name: "Document",
+    component: list,
+    children: [
+      {
+        path: "write",
+        component: () => import("../views/document/write_document.vue"),
+      },
+    ],
+  },
+
+  // {
+  //   path: "/",
+  //   name: "/",
+  //   redirect: "/dashboard",
+  // },
+  // {
+  //   path: "/dashboard",
+  //   name: "Dashboard",
+  //   component: Dashboard,
+  // },
+  // {
+  //   path: "/tables",
+  //   name: "Tables",
+  //   component: Tables,
+  // },
+  // {
+  //   path: "/billing",
+  //   name: "Billing",
+  //   component: Billing,
+  // },
+  // {
+  //   path: "/rtl-page",
+  //   name: "RTL",
+  //   component: RTL,
+  // },
+  // {
+  //   path: "/notifications",
+  //   name: "Notifications",
+  //   component: Notifications,
+  // },
+  // {
+  //   path: "/profile",
+  //   name: "Profile",
+  //   component: Profile,
+  // },
   {
     path: "/sign-in",
     name: "SignIn",

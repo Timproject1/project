@@ -1,6 +1,9 @@
-const userService = require("../services/user_service");
 
-const signup = async (req, res) => {
+
+
+const service = require("../services/user_service");
+const ctrl = {
+  signup : async (req, res) => {
   try {
     const result = await userService.registerUser(req.body);
     return res.status(200).json({ success: true, message: "회원가입 성공" });

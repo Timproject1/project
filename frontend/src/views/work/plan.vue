@@ -13,6 +13,7 @@ const Plans = reactive([
     file: ["파일1.png", "파일2.jpg"],
     showPlanDelete: false,
     app: "승인 완료",
+    modifyPlan: false,
   },
   {
     count: 2,
@@ -22,6 +23,7 @@ const Plans = reactive([
     file: ["파일3.png"],
     showPlanDelete: false,
     app: "승인 대기 중",
+    modifyPlan: false,
   },
   {
     count: 3,
@@ -31,6 +33,7 @@ const Plans = reactive([
     file: ["파일4.png"],
     showPlanDelete: false,
     app: "승인 재요청",
+    modifyPlan: false,
   },
   {
     count: 3,
@@ -40,6 +43,7 @@ const Plans = reactive([
     file: ["파일4.png"],
     showPlanDelete: false,
     app: "반려",
+    modifyPlan: false,
   },
 ]);
 
@@ -50,7 +54,6 @@ const dd = String(today.getDate()).padStart(2, "0");
 const day = ref(`${yyyy}-${mm}-${dd}`);
 
 const newPlan = ref(false);
-const modifyPlan = ref(false);
 
 const revision = reactive([
   {
@@ -100,14 +103,14 @@ const returnPlanContent = ref("어림도없지");
   <!-- 지원기획서 출력 -->
   <div v-for="Plan in Plans" :key="Plan.count">
     <p>{{ Plan.date }} 지원계획 {{ Plan.count }}</p>
-    <material-button type="button" size="sm" @click="modifyPlan = true"
+    <material-button type="button" size="sm" @click="Plan.modifyPlan = true"
       >수정</material-button
     >
     <material-button type="button" size="sm" @click="Plan.showPlanDelete = true"
       >삭제</material-button
     >
     <!-- 수정 모달 -->
-    <modal v-if="modifyPlan" @close="modifyPlan = false">
+    <modal v-if="Plan.modifyPlan" @close="Plan.modifyPlan = false">
       <template #content>
         <material-input
           id="text"

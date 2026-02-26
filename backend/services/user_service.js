@@ -94,11 +94,12 @@ const service = {
   // 유저 정보 조회
   info: async function (id) {
     try {
-      const query = `SELECT * FROM users WHERE user_id = ?`;
-      const [rows] = await pool.query(query, [id]);
-      return rows[0];
+      const query = `select priority_req_num, priority_reason, priority from priority_req where priority_req_num =?`;
+      const result = await pool.query(query, [id]);
+      return result[0];
     } catch (err) {
-      return null;
+      console.log(error);
+      return;
     }
   },
 };

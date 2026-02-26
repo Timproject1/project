@@ -1,33 +1,33 @@
 <script setup>
 // import { useRouter } from "vue-router";
-import { ref } from "vue";
+// import { ref } from "vue";
 // const router = useRouter();
-const id = ref("");
-const password = ref("");
-const login = async function () {
-  const member = { id: id.value, password: password.value };
-  const result = await fetch(`http://localhost:3000/user/login`, {
-    method: "post",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(member),
-  }).then((res) => {
-    return res.json();
-  });
+// const id = ref("");
+// const password = ref("");
+// const login = async function () {
+//   const member = { id: id.value, password: password.value };
+// const result = await fetch(`http://localhost:3000/user/login`, {
+//   method: "post",
+//   headers: {
+//     "content-type": "application/json",
+//   },
+//   body: JSON.stringify(member),
+// }).then((res) => {
+//   return res.json();
+// });
 
-  console.log(result);
-  // if (result.retCode == "OK") {
-  //   memberStore.setMember({
-  //     id: result.info.user_id,
-  //     center: result.info.registernum,
-  //     grade: result.info.grade,
-  //   });
-  //   if (result.info.approve == "k1") {
-  //     router.push("/list/document");
-  //   }
-  // }
-};
+// console.log(result);
+// if (result.retCode == "OK") {
+//   memberStore.setMember({
+//     id: result.info.user_id,
+//     center: result.info.registernum,
+//     grade: result.info.grade,
+//   });
+//   if (result.info.approve == "k1") {
+//     router.push("/list/document");
+//   }
+// }
+// };
 </script>
 
 <template>
