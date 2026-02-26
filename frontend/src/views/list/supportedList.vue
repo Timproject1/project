@@ -23,9 +23,6 @@ const supported = ref([
     progress: "검토완료",
     sup_reg_date: "24.02.16",
     plan_manager: "강남구",
-    documents: "",
-    plans: "",
-    results: "",
   },
   {
     sup_num: 3,
@@ -34,9 +31,6 @@ const supported = ref([
     progress: "대기중",
     sup_reg_date: "23.03.05",
     plan_manager: "허길동",
-    documents: "",
-    plans: "",
-    results: "",
   },
   {
     sup_num: 4,
@@ -45,9 +39,6 @@ const supported = ref([
     progress: "검토중",
     sup_reg_date: "23.03.21",
     plan_manager: "박00",
-    documents: "",
-    plans: "",
-    results: "",
   },
   {
     sup_num: 5,
@@ -56,9 +47,6 @@ const supported = ref([
     progress: "검토완료",
     sup_reg_date: "22.03.05",
     plan_manager: "허길동",
-    documents: "",
-    plans: "",
-    results: "",
   },
   {
     sup_num: 6,
@@ -67,9 +55,6 @@ const supported = ref([
     progress: "대기중",
     sup_reg_date: "22.10.05",
     plan_manager: "김하나",
-    documents: "",
-    plans: "",
-    results: "",
   },
 ]);
 </script>
@@ -83,16 +68,16 @@ const supported = ref([
         <ul v-if="isOpen" class="menu-list">
           <li
             :class="{ active: currentTab === 'list' }"
-            @click="router.push('/list/list')"
+            @click="router.push('/list/supported')"
           >
-            - 지원자 목록
+            - 지원자 현황
           </li>
           <li
             class="sub-item"
             :class="{ active: currentTab === 'info' }"
             @click="router.push('/list/info')"
           >
-            - 지원자 정보
+            - 지원자 정보 관리
           </li>
         </ul>
       </div>
@@ -105,11 +90,12 @@ const supported = ref([
             <input type="text" v-model="searchName" />
           </div>
           <div class="form-group">
-            <label>성별</label>
+            <label>대기단계</label>
             <div class="gender-btns">
               <button class="active">전체</button>
-              <button>남성</button>
-              <button>여성</button>
+              <button>계획</button>
+              <button>중점</button>
+              <button>긴급</button>
             </div>
           </div>
           <div class="form-group">
@@ -126,7 +112,7 @@ const supported = ref([
     </aside>
     <div class="content">
       <div class="header-section">
-        <h2>지원자 목록</h2>
+        <h2>지원자 현황목록</h2>
       </div>
 
       <div class="table-wrapper">
@@ -154,9 +140,9 @@ const supported = ref([
               <td>{{ member.progress }}</td>
               <td>{{ member.sup_reg_date }}</td>
               <td>{{ member.plan_manager }}</td>
-              <td>{{ member.documents || "-" }}</td>
-              <td>{{ member.plans || "-" }}</td>
-              <td>{{ member.results || "-" }}</td>
+              <td><button>보기</button></td>
+              <td><button>보기</button></td>
+              <td><button>보기</button></td>
             </tr>
           </tbody>
         </table>
