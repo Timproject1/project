@@ -1,16 +1,14 @@
-
-
-
 const service = require("../services/user_service");
 const ctrl = {
-  signup : async (req, res) => {
-  try {
-    const result = await userService.registerUser(req.body);
-    return res.status(200).json({ success: true, message: "회원가입 성공" });
-  } catch (error) {
-    console.error("Signup Error:", error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
+  signup: async (req, res) => {
+    try {
+      const result = await userService.registerUser(req.body);
+      return res.status(200).json({ success: true, message: "회원가입 성공" });
+    } catch (error) {
+      console.error("Signup Error:", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
 };
 
 // 아이디 중복 확인 함수
