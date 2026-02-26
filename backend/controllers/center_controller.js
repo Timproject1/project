@@ -1,6 +1,6 @@
 const service = require("../services/center_service");
 const ctrl = {
-  // 기존 목록 불러오기
+  // 기존 목록
   getList: async function (req, res) {
     const filter = req.query.filter ? req.query.filter : "";
     try {
@@ -12,7 +12,7 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
-  // 신규 지원자 등록 (지원자 정보에서 지원자 추가 등록 부분)
+
   addSupported: async function (req, res) {
     try {
       const data = req.body;

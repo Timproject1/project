@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 // import { useUtilStore } from "../../store/util";
 // const utilStore = useUtilStore();
+
 const router = useRouter();
 const memberStore = useMemberStore();
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });

@@ -1,415 +1,295 @@
-<script setup>
-import { mapMutations } from "vuex";
-import { ref, computed, watch } from "vue";
+<!-- <script setup>
+import { ref, nextTick, computed, watch } from "vue";
+import MaterialInput from "@/components/MaterialInput.vue";
+import MaterialButton from "@/components/MaterialButton.vue";
+import MaterialRadio from "@/components/MaterialRadio.vue";
+
+// --- 폼 데이터 상태 ---
 const id = ref("");
 const password = ref("");
 const pwcheck = ref("");
+const name = ref("");
+const tel = ref("");
 const email = ref("");
 const grade = ref("a1");
+
+// --- 주소 & 기관 상태 ---
+const zipCode = ref("");
+const address = ref("");
+const detailAddress = ref("");
 const center = ref("");
-const idDuplicate = ref(false);
-var pwIsEqual = false;
-const pwcheck_fun = computed(() => {
-  if (pwcheck.value == password.value) {
-    pwIsEqual = true;
-    return "비밀번호가 일치 합니다";
-  } else {
-    pwIsEqual = false;
-    return "비밀번호가 다릅니다";
-  }
+const isAddressVisible = ref(false); // 주소창 표시
+const showCenterModal = ref(false); // 기관 모달 표시
+
+// --- 검증 상태 ---
+const idDuplicateChecked = ref(false);
+
+// 비밀번호 일치 확인
+const pwMatchMessage = computed(() => {
+  if (!pwcheck.value) return "";
+  return pwcheck.value === password.value
+    ? "비밀번호가 일치합니다"
+    : "비밀번호가 다릅니다";
 });
-const checkIdDuplicate = async function () {
-  const result = await fetch().then((res) => {
-    // `http://localhost:3000/user/check/${id.value}`,
-    return res.json();
-  });
-  console.log(result);
-  if (result.result.count == 0) {
-    alert("사용가능합니다");
-    idDuplicate.value = true;
-  } else {
-    alert("이미사용중입니다");
-    idDuplicate.value = false;
-  }
-};
-const signUp = async function () {
-  if (!idDuplicate.value) {
-    alert("아이디 중복체크 해주세요");
-    return;
-  }
-  if (!pwIsEqual) {
-    alert("비밀번호를 확인 해 주세요");
-    return;
-  }
-  console.log(id.value);
-  console.log(password.value);
-  console.log(email.value);
-  console.log(grade.value);
-};
-const showModal = ref(false); // 모달 상태 관리
 
-// 검색 버튼 클릭 시 실행
+// --- 1. 아이디 중복 확인 ---
+const checkIdDuplicate = async () => {
+  if (!id.value) return alert("아이디를 입력해주세요.");
+  try {
+    const res = await fetch(`http://localhost:3000/user/check/${id.value}`);
+    const result = await res.json();
+    if (result.result.count === 0) {
+      alert("사용 가능한 아이디입니다.");
+      idDuplicateChecked.value = true;
+    } else {
+      alert("이미 사용 중인 아이디입니다.");
+      idDuplicateChecked.value = false;
+    }
+  } catch (e) {
+    alert("서버와 통신할 수 없습니다.");
+  }
+};
+
+// --- 2. 주소 검색 (임베드 방식) ---
 const openAddressSearch = () => {
-  showModal.value = true;
+  isAddressVisible.value = !isAddressVisible.value;
+  if (isAddressVisible.value) {
+    nextTick(() => {
+      new window.daum.Postcode({
+        oncomplete: (data) => {
+          address.value = data.roadAddress || data.jibunAddress;
+          zipCode.value = data.zonecode;
+          isAddressVisible.value = false;
+        },
+        width: "100%",
+        height: "100%",
+      }).embed(document.getElementById("address-layer"));
+    });
+  }
 };
 
-// 모달 닫기
-const closeModal = () => {
-  showModal.value = false;
-};
-
-// 기관 선택 시 실행 (예시)
+// --- 3. 기관 선택 모달 ---
 const selectCenter = (name) => {
   center.value = name;
-  closeModal();
+  showCenterModal.value = false;
 };
 
+// --- 4. 회원가입 전송 ---
+const signUp = async () => {
+  if (!idDuplicateChecked.value) return alert("아이디 중복확인을 해주세요.");
+  if (password.value !== pwcheck.value)
+    return alert("비밀번호를 확인해주세요.");
+
+  const payload = {
+    userId: id.value,
+    userPw: password.value,
+    userName: name.value,
+    userTel: tel.value,
+    userEmail: email.value,
+    userGrade: grade.value,
+    zipCode: zipCode.value,
+    userAddress: address.value,
+    centerName: center.value,
+  };
+
+  try {
+    const res = await fetch("http://localhost:3000/user/signUp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await res.json();
+    if (result.retCode === "OK") {
+      alert("회원가입이 완료되었습니다!");
+    } else {
+      alert("가입 실패: " + result.message);
+    }
+  } catch (e) {
+    alert("서버 통신 에러가 발생했습니다.");
+  }
+};
+
+// 아이디 수정 시 중복확인 리셋
 watch(id, () => {
-  idDuplicate.value = false;
+  idDuplicateChecked.value = false;
 });
 </script>
+
 <template>
-  <div class="bg-white">
-    <div v-if="showModal" class="modal-backdrop">
-      <div class="modal-content card shadow-lg">
-        <div
-          class="card-header d-flex justify-content-between align-items-center"
-        >
-          <h5 class="mb-0">기관 검색</h5>
+  <div class="container mt-5 pb-5">
+    <div v-if="showCenterModal" class="custom-modal-backdrop">
+      <div class="card shadow-lg p-3 custom-modal-content">
+        <h6>기관 검색</h6>
+        <div class="list-group mt-3">
           <button
-            @click="closeModal"
-            class="btn-close text-dark"
-            style="border: none; background: none"
+            @click="selectCenter('강남장애인복지관')"
+            class="list-group-item list-group-item-action"
           >
-            <i class="fas fa-times"></i> x
+            강남장애인복지관
+          </button>
+          <button
+            @click="selectCenter('강남세움복지관')"
+            class="list-group-item list-group-item-action"
+          >
+            강남세움복지관
+          </button>
+          <button
+            @click="selectCenter('성모자애복지관')"
+            class="list-group-item list-group-item-action"
+          >
+            성모자애복지관
           </button>
         </div>
-        <div class="card-body">
-          <material-input label="기관명 입력" class="mb-3" />
-          <div class="list-group">
-            <button
-              @click="selectCenter('A 복지관')"
-              class="list-group-item list-group-item-action text-sm"
-            >
-              A 복지관 (서울시 강남구...)
-            </button>
-            <button
-              @click="selectCenter('B 요양원')"
-              class="list-group-item list-group-item-action text-sm"
-            >
-              B 요양원 (경기도 수원시...)
-            </button>
-          </div>
-        </div>
-        <div class="card-footer text-end">
-          <material-button color="secondary" size="sm" @click="closeModal"
-            >닫기</material-button
-          >
-        </div>
+        <material-button
+          class="mt-3"
+          color="secondary"
+          @click="showCenterModal = false"
+          >닫기</material-button
+        >
       </div>
     </div>
-    <div class="container top-0 position-sticky z-index-sticky">
-      <div class="row">
-        <div class="col-12">
-          <navbar
-            isBlur="blur my-3 py-2 mt-4 start-0 end-0 mx-4 shadow blur border-radius-lg"
-            btnBackground="bg-gradient-success"
-            :darkMode="true"
-          />
-        </div>
+
+    <div class="card p-4 shadow-sm">
+      <h4 class="text-center mb-4">회원가입</h4>
+
+      <div class="d-flex gap-2 mb-3 align-items-end">
+        <material-input
+          v-model="id"
+          label="아이디"
+          variant="outline"
+          class="flex-grow-1"
+        />
+        <material-button color="dark" size="sm" @click="checkIdDuplicate"
+          >중복확인</material-button
+        >
       </div>
+
+      <material-input
+        v-model="password"
+        type="password"
+        label="비밀번호"
+        variant="outline"
+        class="mb-3"
+      />
+      <material-input
+        v-model="pwcheck"
+        type="password"
+        label="비밀번호 확인"
+        variant="outline"
+      />
+      <p
+        class="text-xs mt-1 mb-3"
+        :class="password === pwcheck ? 'text-success' : 'text-danger'"
+      >
+        {{ pwMatchMessage }}
+      </p>
+
+      <material-input
+        v-model="name"
+        label="이름"
+        variant="outline"
+        class="mb-3"
+      />
+      <material-input
+        v-model="tel"
+        label="연락처"
+        variant="outline"
+        class="mb-3"
+      />
+      <material-input
+        v-model="email"
+        label="이메일"
+        variant="outline"
+        class="mb-3"
+      />
+
+      <div class="d-flex gap-2 mb-3 align-items-end">
+        <material-input
+          v-model="zipCode"
+          label="우편번호"
+          variant="outline"
+          readonly
+          class="flex-grow-1"
+        />
+        <material-button color="success" size="sm" @click="openAddressSearch"
+          >주소 검색</material-button
+        >
+      </div>
+      <div
+        v-show="isAddressVisible"
+        id="address-layer"
+        class="address-wrap"
+      ></div>
+      <material-input
+        v-model="address"
+        label="기본 주소"
+        variant="outline"
+        readonly
+        class="mb-3"
+      />
+      <material-input
+        v-model="detailAddress"
+        label="상세 주소"
+        variant="outline"
+        class="mb-3"
+      />
+
+      <div class="d-flex gap-2 mb-3 align-items-end">
+        <material-input
+          v-model="center"
+          label="소속 기관"
+          variant="outline"
+          readonly
+          class="flex-grow-1"
+        />
+        <material-button color="info" size="sm" @click="showCenterModal = true"
+          >기관 검색</material-button
+        >
+      </div>
+
+      <div class="mb-4">
+        <material-radio v-model="grade" value="a1">일반사용자</material-radio>
+        <material-radio v-model="grade" value="a2">기관담당자</material-radio>
+      </div>
+
+      <material-button
+        color="success"
+        variant="gradient"
+        fullWidth
+        size="lg"
+        @click="signUp"
+        >가입하기</material-button
+      >
     </div>
-    <main class="mt-0 main-content">
-      <section>
-        <div class="page-header min-vh-100">
-          <div class="container">
-            <div class="row justify-content-center">
-              <div class="card card-plain">
-                <div class="pb-0 card-header bg-transparent mb-4 text-center">
-                  <h4 class="font-weight-bolder">회원가입</h4>
-                  <p class="mb-0">정보를 입력하여 가입을 완료해주세요.</p>
-                </div>
-                <div class="card-body">
-                  <form role="form" @submit.prevent="handleRegister">
-                    <div class="mb-3">
-                      <material-input
-                        id="id"
-                        type="text"
-                        label="아이디"
-                        name="id"
-                        size="lg"
-                        v-model:value="id"
-                      />
-                      {{ id }}
-                      {{ idDuplicate }}
-                      <material-button
-                        variant="outline"
-                        color="dark"
-                        size="sm"
-                        class="mt-2"
-                        @click="checkIdDuplicate"
-                        >중복체크</material-button
-                      >
-                      <p v-if="idError" class="text-xs text-danger mt-1">
-                        *이미 사용 중인 아이디입니다.
-                      </p>
-                    </div>
-
-                    <div class="mb-3">
-                      <material-input
-                        id="password"
-                        type="password"
-                        label="비밀번호"
-                        name="password"
-                        size="lg"
-                        v-model:value="password"
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <material-input
-                        id="pwcheck"
-                        type="password"
-                        label="비밀번호 확인"
-                        name="passwordCheck"
-                        size="lg"
-                        v-model:value="pwcheck"
-                      />
-                      <p class="text-xs text-danger mt-1">
-                        {{ pwcheck_fun }}
-                      </p>
-                    </div>
-
-                    <div class="mb-3">
-                      <material-input
-                        id="email"
-                        type="email"
-                        label="이름"
-                        name="email"
-                        size="lg"
-                        v-model:value="name"
-                      />
-                    </div>
-                    <div class="mb-3">
-                      <material-input
-                        id="email"
-                        type="text"
-                        label="연락처"
-                        name="tel"
-                        size="lg"
-                        v-model:value="tel"
-                      />
-                    </div>
-                    <div class="mb-3">
-                      <material-input
-                        id="email"
-                        type="email"
-                        label="이메일"
-                        name="email"
-                        size="lg"
-                        v-model:value="email"
-                      />
-                    </div>
-
-                    <div class="mb-3">
-                      <material-input
-                        id="address"
-                        type="text"
-                        label="주소"
-                        name="address"
-                        size="lg"
-                        v-model:value="address"
-                        readonly
-                      />
-                    </div>
-                    <div class="mb-3">
-                      <material-input
-                        id="address"
-                        type="text"
-                        label="기관"
-                        name="address"
-                        size="lg"
-                        v-model:value="center"
-                        readonly
-                      />
-                      <material-button
-                        variant="outline"
-                        color="success"
-                        size="sm"
-                        class="mt-2"
-                        @click="openAddressSearch"
-                        >검색</material-button
-                      >
-                    </div>
-                    <div class="mb-3">
-                      <material-radio
-                        id="g1"
-                        name="test"
-                        value="a1"
-                        v-model="grade"
-                      >
-                        일반이용자
-                      </material-radio>
-
-                      <material-radio
-                        id="g2"
-                        name="test"
-                        value="a2"
-                        v-model="grade"
-                      >
-                        기관관리자
-                      </material-radio>
-                      {{ grade }}
-                    </div>
-                    <div class="text-center">
-                      <material-button
-                        class="mt-4"
-                        variant="gradient"
-                        color="success"
-                        fullWidth
-                        size="lg"
-                        type="button"
-                        @click="signUp"
-                        >가입하기</material-button
-                      >
-                    </div>
-                  </form>
-                </div>
-                <div class="px-1 pt-0 text-center card-footer px-lg-2">
-                  <p class="mx-auto mb-4 text-sm">
-                    이미 계정이 있으신가요?
-                    <router-link
-                      :to="{ name: 'SignIn' }"
-                      class="text-success text-gradient font-weight-bold"
-                      >로그인</router-link
-                    >
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
   </div>
 </template>
-<script>
-// 2. 컴포넌트 경로를 프로젝트 구조에 맞춰 정확히 지정
-import Navbar from "@/examples/PageLayout/Navbar.vue";
-import MaterialInput from "@/components/MaterialInput.vue";
-// import MaterialCheckbox from "@/components/MaterialCheckbox.vue";
-import MaterialButton from "@/components/MaterialButton.vue";
-// const body = document.getElementsByTagName("body")[0];
-import MaterialRadio from "@/components/MaterialRadio.vue";
-export default {
-  name: "SignUp",
-  components: {
-    navbar: Navbar, // 템플릿 태그 <navbar>와 매칭
-    MaterialInput,
-    MaterialButton,
-    MaterialRadio,
-  },
-  data() {
-    return {
-      form: {
-        user_id: "",
-        user_pw: "",
-        confirm_pw: "",
-        user_name: "",
-        phone: "",
-        email: "",
-        org_name: "",
-      },
-      errors: { idExists: false, emailExists: false },
-    };
-  },
-  computed: {
-    isPwMismatch() {
-      return (
-        this.form.user_pw !== this.form.confirm_pw &&
-        this.form.confirm_pw !== ""
-      );
-    },
-  },
-  methods: {
-    ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
-    checkId() {
-      alert("아이디 중복 확인");
-    },
-    openOrgSearch() {
-      window.open("/org-search", "orgSearch", "width=500,height=600");
-    },
-    handleRegister() {
-      alert("가입 완료!");
-    },
-  },
-  mounted() {
-    this.toggleEveryDisplay();
-    this.toggleHideConfig();
-  },
-};
-</script>
+
 <style scoped>
-.modal-backdrop {
+.address-wrap {
+  border: 1px solid #d2d6da;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+.custom-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1050;
 }
-
-.modal-content {
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  border-radius: 15px;
-  overflow: hidden;
+.custom-modal-content {
+  width: 90%;
+  max-width: 400px;
 }
-
-.list-group-item {
+.cursor-pointer {
   cursor: pointer;
-  transition: background 0.2s;
 }
-
-.list-group-item:hover {
-  background-color: #f8f9fa;
-}
-/* 시안의 레이아웃을 위한 스타일 */
-.custom-row {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-}
-.custom-label {
-  width: 120px;
-  min-width: 120px;
-  padding-top: 10px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #344767;
-  text-align: left;
-}
-.custom-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-.error-msg {
-  color: #f44335;
-  font-size: 0.7rem;
-  margin-top: 2px;
-  text-align: left;
-}
-.required-text {
-  color: #f44335;
-  font-size: 0.7rem;
-  padding-top: 12px;
-  margin-left: 10px;
-  white-space: nowrap;
-}
-</style>
+</style> -->
