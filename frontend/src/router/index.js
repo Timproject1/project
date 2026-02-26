@@ -46,7 +46,7 @@ const routes = [
       {
         path: "priority",
         components: {
-          right: () => import("../views/work/priority_manager.vue"),
+          right: () => import("../views/work/priority.vue"),
         },
       },
       {
@@ -100,6 +100,14 @@ const routes = [
       {
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
+      },
+      {
+        path: "look",
+        component: () => import("../views/list/manager_lookList.vue"),
+      },
+      {
+        path: "center",
+        component: () => import("../views/list/centerList.vue"),
       },
     ],
   },

@@ -33,14 +33,14 @@ Coded by www.creative-tim.com
       v-if="showNavbar"
     />
     <router-view />
-    <div class="container">
+    <!-- <div class="container">
       <div class="left">
         <router-view name="left" />
       </div>
       <div class="right">
         <router-view name="right" />
       </div>
-    </div>
+    </div> -->
 
     <app-footer v-show="showFooter" />
     <!-- <configurator
@@ -93,10 +93,10 @@ export default {
   },
 };
 
-// // fetch(`http://localhost:3000/`)
-// //   .then((res) => {
-// //     return res.json();
-// //   })
+// fetch(`http://localhost:3000/`)
+//   .then((res) => {
+//     return res.json();
+//   })
 //   .then((res) => {
 //     console.log(res);
 //   });

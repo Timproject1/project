@@ -1,7 +1,14 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { computed } from "vue";
 const router = useRouter();
+const route = useRoute();
+
+// 시스템 관리자 페이지의 버튼 변경
+const btnName = computed(() => {
+  return route.path.includes("center") ? "기관관리" : "지원자 관리";
+});
 
 const goplan = () => {
   router.push("/work/plan");
@@ -29,9 +36,9 @@ const gorepresentative = () => {
             >Home</material-button
           >
 
-          <material-button @click="gopriority" size="lg"
-            >지원자 관리</material-button
-          >
+          <material-button @click="gopriority" size="lg">{{
+            btnName
+          }}</material-button>
           <br />
           <material-button @click="gorecord" size="lg"
             >마이페이지</material-button
