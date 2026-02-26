@@ -22,7 +22,7 @@ const gorepresentative = () => {
   <div class="layout">
     <div class="container">
       <div class="left">
-        <RouterView name="left" />
+        <!-- <RouterView name="left" /> -->
 
         <div class="button">
           <material-button @click="gorepresentative" size="lg"

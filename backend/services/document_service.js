@@ -42,6 +42,51 @@ const service = {
       console.log(error);
     }
   },
-  writeDoc: async () => {},
+  writeDoc: async (form_ver, sup_num, user_id, response) => {
+    console.log(form_ver);
+    console.log(sup_num);
+    console.log(user_id);
+    console.log(response);
+
+    const con = await pool.getConnection();
+    try {
+      await con.beginTransaction();
+      //신청서 작성
+      let query = `insert into documents (doc_num,form_ver,sup_num,user_id) values
+      (concat("doc-",NEXT VALUE FOR create_doc_num_seq),?,?,?) RETURNING doc_num`;
+      let result = await con.query(query, [form_ver, sup_num, user_id]);
+      let wrtiedDoc = result[0].doc_num;
+      console.log(wrtiedDoc);
+      //응답 버전 기록
+      query =
+        'insert into doc_version(doc_ver,doc_num,modified_by,`comment`) values(?,?,?,"최초 설문 응답 제출") RETURNING doc_ver';
+      result = await con.query(query, [wrtiedDoc + "-1", wrtiedDoc, user_id]);
+      console.log(result);
+      let doc_ver = result[0].doc_ver;
+      for (const question_num in response) {
+        let column_name = "";
+        if (response[question_num].type == "자유응답형") {
+          column_name = "answer_text";
+        } else {
+          column_name = "select_answer";
+        }
+        query = `insert into responce (responce_num,doc_ver,question_num,${column_name})
+        values(concat("resp-",NEXT VALUE FOR create_responce_num_seq),?,?,?)`;
+        await con.query(query, [
+          doc_ver,
+          question_num,
+          response[question_num].response,
+        ]);
+      }
+      // await con.rollback();
+      await con.commit();
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      return error;
+    } finally {
+      con.release();
+    }
+  },
 };
 module.exports = service;
