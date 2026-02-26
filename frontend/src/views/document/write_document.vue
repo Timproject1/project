@@ -20,7 +20,7 @@ const getList = async () => {
 };
 //설문지 양식을 가져온다
 const getForm = async () => {
-  const result = await axios.get(`http://localhost:3000/document/getForm`);
+  const result = await axios.get(`http://localhost:3000/document/usageForm`);
   // console.log(result);
   formData.value = result.data.form;
   formVer = result.data.ver;
