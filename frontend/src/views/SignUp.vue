@@ -19,13 +19,27 @@ const centerName = ref("");
 
 const isAddressVisible = ref(false);
 
-// 아이디 중복 확인
-const checkIdDuplication = () => {
+//아이디 중복 확인
+const checkIdDuplication = async () => {
   if (!userId.value) {
     alert("아이디를 입력해주세요.");
     return;
   }
-  alert(`${userId.value}는 사용 가능한 아이디입니다.`);
+
+  try {
+    const response = await axios.post("http://localhost:3000/user/check-id", {
+      userId: userId.value,
+    });
+
+    if (response.data.isDuplicate) {
+      alert("이미 사용 중인 아이디입니다.");
+    } else {
+      alert("사용 가능한 아이디입니다.");
+    }
+  } catch (error) {
+    console.error("중복 확인 에러:", error);
+    alert("서버 연결에 실패했습니다.");
+  }
 };
 
 // 주소 검색 (카카오 API)
@@ -59,15 +73,15 @@ const handleSignup = async () => {
 
   try {
     const response = await axios.post("http://localhost:3000/user/signup", {
-      userGrade: userGrade.value,
+      grade: userGrade.value,
       userId: userId.value,
       userPw: userPw.value,
-      userNames: userName.value,
+      userName: userName.value,
       userTel: userTel.value,
       userEmail: userEmail.value,
       zipCode: zipCode.value,
-      addr: userAddress.value,
-      addrDetail: detailAddress.value,
+      userAddress: userAddress.value,
+      detailAddress: detailAddress.value,
       centerName: centerName.value,
     });
 
@@ -76,7 +90,8 @@ const handleSignup = async () => {
     }
   } catch (error) {
     console.error("가입 에러:", error);
-    alert("서버 연결 실패. 백엔드 서버가 켜져 있는지 확인하세요.");
+    const errorMsg = error.response?.data?.message || "서버 연결 실패";
+    alert("가입 실패: " + errorMsg);
   }
 };
 </script>
@@ -290,7 +305,6 @@ const handleSignup = async () => {
 </template>
 
 <style scoped>
-/* CSS 부분은 원본과 동일하므로 생략 (그대로 사용하세요) */
 .signup-container {
   width: 100%;
   display: flex;
