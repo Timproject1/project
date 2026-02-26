@@ -1,21 +1,22 @@
 <script setup>
-import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import axios from "axios";
 
 import { useRoute } from "vue-router";
+
 const route = useRoute();
 
 const memberStore = useMemberStore();
 
 let prioritydb = ref({});
 
+//get으로 데이터 당겨오기
 const priorityData = async (id) => {
   let result = await axios
-    .get(`user/priority/${id}`)
+    .get(`http://localhost:3000/user/priority/${id}`)
     .catch((err) => console.log(err));
-  prioritydb.value = result.value;
+  prioritydb.value = result.data;
 };
 onBeforeMount(() => {
   let searchId = route.query.no;
@@ -42,12 +43,55 @@ const nonedisplay = () => {
     box.value.style.display = "none";
   }
 };
+//승인요청
+const appPri = async () => {
+  let appcontent = {
+    priority_req_num: prioritydb.value.priority_req_num,
+    doc_num: prioritydb.value.doc_num,
+    priority: prioritydb.value.priority,
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/user/priority_manager",
+      appcontent,
+    );
+    console.log(res.data);
+    result.value = res.data;
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
+
+const returnReason = ref("");
+
+//반려
+const returnPri = async () => {
+  let returncontent = {
+    priority_req_num: prioritydb.value.priority_req_num,
+    priority_return_reason: returnReason.value,
+    priority_approved: "d3",
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/user/returnPriority_manager",
+      returncontent,
+    );
+    console.log(res.data);
+    result.value = res.data;
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
 </script>
 <template>
   <div id="rea_container">
     <div id="rea">
       <h3>{{ memberStore.id }}님의 대기단계</h3>
-      <div class="wrapper" v-if="prioritydb.priority == 'c3'">
+      <div class="wrapper" v-if="prioritydb.value?.priority === 'c3'">
         <div
           class="circle"
           :style="{ backgroundColor: items[0].color, color: '#fff' }"
@@ -56,7 +100,7 @@ const nonedisplay = () => {
           {{ items[0].label }}
         </div>
       </div>
-      <div class="wrapper" v-else-if="prioritydb.priority == 'c4'">
+      <div class="wrapper" v-else-if="prioritydb.value?.priority === 'c4'">
         <div
           class="circle"
           :style="{ backgroundColor: items[1].color, color: '#fff' }"
@@ -77,15 +121,19 @@ const nonedisplay = () => {
       <br />
       <div id="reasonbox">
         <p>{{ prioritydb.priority_reason }}</p>
+        <!-- 반려 사유 작성 모달창 -->
         <div class="return" ref="box">
           <h5>반려 사유</h5>
           <textarea
             name="return"
             id="return"
             placeholder="반려사유작성"
+            v-model="returnReason"
           ></textarea>
           <br />
-          <material-button type="button" class="app">반려</material-button>
+          <material-button type="button" class="app" @click="returnPri()"
+            >반려</material-button
+          >
           <material-button
             type="button"
             class="app"
@@ -96,8 +144,15 @@ const nonedisplay = () => {
         </div>
       </div>
       <br />
+      <div v-if="prioritydb.value?.priority_approved === 'd3'">
+        <material-button type="button" class="app" disabled
+          >반려</material-button
+        >
+      </div>
       <div id="btnmargin">
-        <material-button type="button" class="app">승인</material-button>
+        <material-button type="button" class="app" @click="appPri()"
+          >승인</material-button
+        >
         <material-button
           type="button"
           class="app"
@@ -190,3 +245,9 @@ p {
   background-color: white;
 }
 </style>
+<script>
+import MaterialButton from "@/components/MaterialButton.vue";
+export default {
+  components: { MaterialButton },
+};
+</script>

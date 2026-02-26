@@ -13,6 +13,17 @@ const service = {
       return [];
     }
   },
+  getSupportedList: async function () {
+    try {
+      const query = `select * from supported_test order by sup_num DESC`;
+      // 결과 배열의 데이터만 꺼내서 rows라는 변수에 담기 위해 사용, query를 DB에 전달해서 실행
+      const [rows] = await pool.query(query);
+      return rows;
+    } catch (err) {
+      console.log("지원자 목록 중 DB에러:", err);
+      throw err;
+    }
+  },
   addSupported: async function (data) {
     console.log("서비스 데이터 확인:", data);
     try {
@@ -29,7 +40,7 @@ const service = {
 
       // 1. 쿼리문 (컬럼 총 9개)
       const query = `insert into supported_test (sup_num, user_id, sup_name, sup_address, sup_email, sup_tel, sup_approved, sup_gender, sup_birthday)
-                      values(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      values(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const values = [
         newSupNum,
         data.user_id,

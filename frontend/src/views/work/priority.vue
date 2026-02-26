@@ -34,13 +34,13 @@ const appSign = async () => {
     return;
   }
   let appcontent = {
-    priority_req_num: "prireq-4",
     doc_num: "doc-1",
     priority_reason: reason.value,
     priority: selected.value,
     priority_app_manager: "ca1",
     priority_approved: "d1",
   };
+  count.value = 1;
   const result = ref(null);
 
   try {
