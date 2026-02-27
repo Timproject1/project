@@ -4,14 +4,15 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
-import { useRoute } from "vue-router";
+// import { useRoute } from "vue-router";
 // export default { components: { MaterialInput } };
-const route = useRoute();
+// const route = useRoute();
 //상담기록 출력
 const records = ref([]);
+
 const listrecord = async () => {
   let result = await axios
-    .get(`http://localhost:3000/user/recordlist`)
+    .get(`http://localhost:3000/document/recordlist`)
     .catch((err) => console.log(err));
   records.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -20,14 +21,13 @@ const listrecord = async () => {
     modifyrecord: false,
     showRevision: false,
   }));
-  console.log(result.data);
 };
 
 const revision = ref([]);
 //수정 내역 출력
 const revisions = async (id) => {
   let result = await axios
-    .get(`http://localhost:3000/user/modifyRecordlist/${id.counsel_num}`)
+    .get(`http://localhost:3000/document/modifyRecordlist/${id.counsel_num}`)
     .catch((err) => console.log(err));
   revision.value = Array.isArray(result.data.result) ? result.data.result : [];
   id.showRevision = true;
@@ -35,12 +35,12 @@ const revisions = async (id) => {
 
 onBeforeMount(() => {
   listrecord();
-  let searchId = route.query.no;
-  revisions(searchId);
+  // let searchId = route.query.no;
+  // revisions(searchId);
 });
 
-const timedate = () => {
-  const today = new Date();
+const timedate = (id) => {
+  const today = new Date(id);
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, "0");
   const dd = String(today.getDate()).padStart(2, "0");
@@ -72,7 +72,32 @@ const addrecord = async () => {
 
   const result = ref(null);
   try {
-    const res = await axios.post("http://localhost:3000/user/record", add);
+    const res = await axios.post("http://localhost:3000/document/record", add);
+    console.log(res.data);
+    result.value = res.data;
+    addRecordName.value = "";
+    addRecordContent.value = "";
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+  newrecord.value = false;
+};
+//임시저장
+const draft = async () => {
+  let savedate = {
+    counsel_num: "coun-9999999",
+    doc_num: "doc-1",
+    counsel_title: addRecordName.value,
+    counsel_content: addRecordContent.value,
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/saverecord",
+      savedate,
+    );
     console.log(res.data);
     result.value = res.data;
     addRecordName.value = "";
@@ -81,23 +106,43 @@ const addrecord = async () => {
     console.error(err);
     result.value = "서버 에러 발생";
   }
-  newrecord.value = false;
 };
 
-const draft = async () => {
-  let savedate = {
-    counsel_num: "coun-9999999",
-    doc_num: records.value.doc_num,
-    counsel_title: addRecordName.value,
-    counsel_content: addRecordContent.value,
+//임시저장 불러오기
+const sevedate = async () => {
+  let result = await axios
+    .post(`http://localhost:3000/document/bringrecord`)
+    .catch((err) => console.log(err));
+
+  const data = result.data;
+  newrecord.value = true;
+  addRecordName.value = data.result[0].counsel_title;
+  addRecordContent.value = data.result[0].counsel_content;
+  console.log(data.result);
+};
+
+const closeModal = () => {
+  newrecord.value = false;
+  addRecordName.value = "";
+  addRecordContent.value = "";
+};
+//수정완료
+const Update = async (id) => {
+  let updatedate = {
+    counsel_title: id.counsel_title,
+    counsel_content: id.counsel_content,
+    counsel_num: id.counsel_num,
   };
+  console.log(id);
   const result = ref(null);
   try {
-    const res = await axios.post("http://localhost:3000/user/record", savedate);
+    const res = await axios.post(
+      "http://localhost:3000/document/saverecord",
+      updatedate,
+    );
     console.log(res.data);
     result.value = res.data;
-    addRecordName.value = "";
-    addRecordContent.value = "";
+    records.value.modifyrecord = false;
   } catch (err) {
     console.error(err);
     result.value = "서버 에러 발생";
@@ -106,14 +151,21 @@ const draft = async () => {
 </script>
 <template>
   <h4>상담기록</h4>
-  <material-button type="button">임시저장 내용</material-button>
+  <material-button type="button" @click="sevedate()"
+    >임시저장 내용</material-button
+  >
   <material-button type="button" @click="newrecord = true"
     >상담기록 추가</material-button
   >
   <!-- 상담기록 추가 모달 -->
-  <Modal v-if="newrecord" @close="newrecord = false">
+  <Modal v-if="newrecord" @close="closeModal()">
     <template #content>
-      <material-input type="date" placeholder="내용입력" v-model="today" />
+      <material-input
+        id="date"
+        type="date"
+        placeholder="내용입력"
+        v-model="today"
+      />
       <material-button type="button" size="sm" @click="draft()"
         >임시저장</material-button
       >
@@ -167,7 +219,9 @@ const draft = async () => {
             <p>{{ file }}</p>
           </div>
         </div> -->
-        <material-button type="button">수정 완료</material-button>
+        <material-button type="button" @click="Update()"
+          >수정 완료</material-button
+        >
       </template>
       <template #actions="{ close }">
         <material-button type="button" @click="close">취소</material-button>
