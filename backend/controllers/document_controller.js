@@ -212,6 +212,17 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  getDoc: async (req, res) => {
+    const num = req.params.num;
+    // console.log(num);
+    try {
+      const result = await service.getDoc(num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
   planList: async (req, res) => {
     const list = req.params.id;
     try {
@@ -273,6 +284,23 @@ const ctrl = {
       const result = await service.restartPlan(restartplan);
       console.log(result);
       res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  getResp: async (req, res) => {
+    const num = req.params.num;
+    console.log(num);
+    try {
+      const result = await service.getResp(num);
+      const retVal = {};
+      for (const row of result) {
+        retVal[row.question_num] = row.select_answer
+          ? row.select_answer
+          : row.answer_text;
+      }
+      res.json({ retCode: "OK", response: retVal });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG" });

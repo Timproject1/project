@@ -33,17 +33,7 @@ const service = {
       return error;
     }
   },
-  usageForm: async () => {
-    try {
-      const query1 = `select bcategory,scategory,question,response,number,value,question_num,exam_num,form_ver from getForm
-      where form_ver in (select form_ver from form_version where \`usage\`='h1')`;
-      const form = await pool.query(query1);
-      return form;
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
-  },
+
   writeDoc: async (form_ver, sup_num, user_id, response) => {
     // console.log(form_ver);
     // console.log(sup_num);

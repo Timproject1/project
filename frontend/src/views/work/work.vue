@@ -45,7 +45,7 @@ const getDoc = async () => {
 const getForm = async () => {
   // console.log(doc.value);
   const result = await axios.get(
-    `http://localhost:3000/document/getForm/${doc.value.form_ver}`,
+    `http://localhost:3000/form/getForm/${doc.value.form_ver}`,
   );
   // console.log(result);
   formData.value = result.data.form;

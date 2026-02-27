@@ -61,11 +61,6 @@ const service = {
       throw error;
     }
   },
-};
-module.exports = service;
-
-// 담당자에게 배정된 지원자 목록 보는 화면
-const supportedLook = {
   getSupportedList: async function (managerId) {
     try {
       // 지원신청서(documents) 테이블 + 지원자 목록(suppororted)과 sup_num과 join 하기
@@ -91,4 +86,4 @@ const supportedLook = {
     }
   },
 };
-module.exports = supportedLook;
+module.exports = service;

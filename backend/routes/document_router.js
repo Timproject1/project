@@ -2,11 +2,11 @@ const router = require("express").Router();
 const ctrl = require("../controllers/document_controller");
 
 router.get("/list", ctrl.getList);
-// router.get("/getDoc/:num", ctrl.getDoc);
-// router.get("/usageForm", ctrl.usageForm);
+router.get("/getDoc/:num", ctrl.getDoc);
+
 router.post("/write", ctrl.writeDoc);
 router.get("/getForm/:num", ctrl.getForm);
-// router.get("/getResp/:num", ctrl.getResp);
+router.get("/getResp/:num", ctrl.getResp);
 router.post("/priority", ctrl.prioritySetting); //우선순위 신청
 router.get("/priority/:id", ctrl.priorityApp); //우선순위 신청 데이터 당겨오기
 router.post("/priority_manager", ctrl.appPriority); //우선순위 승인
