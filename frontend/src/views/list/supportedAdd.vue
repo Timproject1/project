@@ -7,7 +7,6 @@ const isOpen = ref(false);
 const currentTab = ref("add");
 
 // 지원자 등록
-// 이름, 생년월일, 성별선택(남,녀) 휴대폰 번호, 주소, 장애유형, 첨부파일 필요
 const newSupported = ref({
   sup_name: "",
   sup_birthday: "",
@@ -113,91 +112,3 @@ const addForm = () => {
     <button class="close-btn" @click="addForm">저장</button>
   </main>
 </template>
-<style scoped>
-.layout-wrapper {
-  display: flex; /* 사이드바와 메인을 가로로 배치 */
-  gap: 20px;
-  padding: 20px;
-}
-
-/* 사이드바 스타일 (기존 스타일 유지) */
-.sidebar-container {
-  width: 250px;
-}
-.management-box {
-  border: 1px solid #ddd;
-  background: #fffde7;
-} /* 노란색 계열 */
-.box-header {
-  padding: 15px;
-  cursor: pointer;
-  font-weight: bold;
-  background: #f8ffd3;
-}
-.menu-list {
-  list-style: none;
-  padding: 0;
-}
-.menu-list li {
-  padding: 10px 20px;
-  cursor: pointer;
-}
-.menu-list li.active {
-  background: #fff;
-  font-weight: bold;
-  color: #fbc02d;
-}
-
-/* 메인 등록 폼 스타일 */
-.main-content {
-  flex: 1;
-}
-.form-card {
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-.form-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.form-row label {
-  width: 120px;
-  font-weight: bold;
-}
-.form-row input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.radio-group {
-  display: flex;
-  gap: 20px;
-}
-
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 30px;
-}
-.save-btn {
-  padding: 12px 30px;
-  background: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.cancel-btn {
-  padding: 12px 30px;
-  background: #9e9e9e;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-</style>

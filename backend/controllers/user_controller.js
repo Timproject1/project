@@ -42,3 +42,78 @@ module.exports = {
   login,
   findId,
 };
+  },
+//   appPriority: async (req, res) => {
+//     console.log(req.body);
+//     const priority = req.body;
+//     try {
+//       const result = await service.appPriority(priority);
+//       console.log(result);
+//       res.json({ retCode: "OK" });
+//     } catch (error) {
+//       console.log(error);
+//       res.json({ retCode: "NG" });
+//     }
+//   },
+//   returnPriority: async (req, res) => {
+//     console.log(req.body);
+//     const returnPri = req.body;
+//     try {
+//       const result = await service.returnPriority(returnPri);
+//       console.log(result);
+//       res.json({ retCode: "OK" });
+//     } catch (error) {
+//       console.log(error);
+//       res.json({ retCode: "NG" });
+//     }
+//   },
+//   addrecord: async (req, res) => {
+//     console.log(req.body);
+//     const add = req.body;
+//     try {
+//       const result = await service.addrecord(add);
+//       console.log(result);
+//       res.json({ retCode: "OK" });
+//     } catch (error) {
+//       console.log(error);
+//       res.json({ retCode: "NG" });
+//     }
+//   },
+//   recordList: async (req, res) => {
+//     const list = req.params.id;
+//     try {
+//       const result = await service.recordList(list);
+//       console.log(result);
+//       res.json({ result });
+//     } catch (error) {
+//       console.log(error);
+//       res.json({ retCode: "NG" });
+//     }
+//   },
+//   modifyRecordList: async (req, res) => {
+//     console.log(req.params.id);
+//     const list = req.params.id;
+//     try {
+//       const result = await service.modifyRecordList(list);
+//       console.log(result);
+//       res.json({ result });
+//     } catch (error) {
+//       console.log(error);
+//       res.json({ retCode: "NG" });
+//     }
+//   },
+//   saveRecord: async (req, res) => {
+//     console.log(req.body);
+//     const save = req.body;
+//     try {
+//       const result = await service.saveRecord(save);
+//       console.log(result);
+//       res.json({ retCode: "OK" });
+//     } catch (error) {
+//       console.log(error);
+//       res.json({ retCode: "NG" });
+//     }
+//   },
+// };
+
+// module.exports = ctrl;

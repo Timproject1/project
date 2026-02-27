@@ -20,19 +20,32 @@ const getList = async () => {
 };
 //설문지 양식을 가져온다
 const getForm = async () => {
-  const result = await axios.get(`http://localhost:3000/document/getForm`);
-  console.log(result);
+  const result = await axios.get(`http://localhost:3000/document/usageForm`);
+  // console.log(result);
   formData.value = result.data.form;
   formVer = result.data.ver;
-  console.log(formVer);
+  // console.log(formData.value);
+  formData.value.forEach((bcategory) => {
+    bcategory.scategory.forEach((scategory) => {
+      scategory.questions.forEach((question) => {
+        // console.log(question);
+        userAnswers.value[question.question_num] = {
+          type: question.response,
+          response: "",
+        };
+      });
+    });
+  });
 };
 const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
+//제출
 const submitForm = async () => {
   console.log(userAnswers.value);
   const surveyData = {
     sup_num: sup_num.value,
+    user_id: memberStore.id,
     formVer, // 처음에 서버에서 받았던 그 버전!
     response: userAnswers.value,
   };
@@ -41,10 +54,18 @@ const submitForm = async () => {
     surveyData,
   );
   console.log(result);
+  if (result.data.retCode == "OK") {
+    alert("작성완료");
+  } else {
+    alert("작성실패");
+  }
 };
 //값 초기화
 const cancel = () => {
-  userAnswers.value = {};
+  // console.log(userAnswers.value);
+  for (const key in userAnswers.value) {
+    userAnswers.value[key].response = "";
+  }
 };
 getList();
 getForm();
@@ -99,58 +120,59 @@ getForm();
             </div>
 
             <hr class="dark horizontal" />
-
-            <section
-              v-for="big in formData"
-              :key="big.bcategory"
-              class="big-section"
-            >
-              <h1 class="big-title">{{ big.bcategory }}</h1>
-
-              <div
-                v-for="small in big.scategory"
-                :key="small.scategory"
-                class="small-group"
+            <div v-if="Object.keys(userAnswers).length">
+              <section
+                v-for="big in formData"
+                :key="big.bcategory"
+                class="big-section"
               >
-                <h2 class="small-title">▣ {{ small.scategory }}</h2>
+                <h1 class="big-title">{{ big.bcategory }}</h1>
 
                 <div
-                  v-for="q in small.questions"
-                  :key="q.question_num"
-                  class="question-card"
+                  v-for="small in big.scategory"
+                  :key="small.scategory"
+                  class="small-group"
                 >
-                  <p class="question-text">
-                    <span class="q-num"></span>
-                    {{ q.question }}
-                  </p>
+                  <h2 class="small-title">▣ {{ small.scategory }}</h2>
 
-                  <div class="answer-area">
-                    <div v-if="q.options.length > 0" class="radio-group">
-                      <label
-                        v-for="opt in q.options"
-                        :key="opt.number"
-                        class="radio-item"
-                      >
-                        <input
-                          type="radio"
-                          :name="q.question_num"
-                          :value="opt.number"
-                          v-model="userAnswers[q.question_num]"
-                        />
-                        {{ opt.value }}
-                      </label>
-                    </div>
+                  <div
+                    v-for="q in small.questions"
+                    :key="q.question_num"
+                    class="question-card"
+                  >
+                    <p class="question-text">
+                      <span class="q-num"></span>
+                      {{ q.question }}
+                    </p>
 
-                    <div v-else class="text-group">
-                      <textarea
-                        v-model="userAnswers[q.question_num]"
-                        placeholder="답변을 입력해주세요."
-                      ></textarea>
+                    <div class="answer-area">
+                      <div v-if="q.options.length > 0" class="radio-group">
+                        <label
+                          v-for="opt in q.options"
+                          :key="opt.exam_num"
+                          class="radio-item"
+                        >
+                          <input
+                            type="radio"
+                            :name="q.question_num"
+                            :value="opt.exam_num"
+                            v-model="userAnswers[q.question_num].response"
+                          />
+                          {{ opt.value }}
+                        </label>
+                      </div>
+
+                      <div v-else class="text-group">
+                        <textarea
+                          v-model="userAnswers[q.question_num].response"
+                          placeholder="답변을 입력해주세요."
+                        ></textarea>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            </div>
             <div class="d-flex justify-content-center gap-2 mt-4">
               <material-button
                 class="btn bg-gradient-secondary"
