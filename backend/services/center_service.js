@@ -27,7 +27,7 @@ const service = {
         newSupNum = `SUP-${numberOnly + 1}`;
       }
 
-      // 1. 쿼리문 (컬럼 총 9개)
+      // 쿼리문 컬럼 9개
       const query = `insert into supported_test (sup_num, user_id, sup_name, sup_address, sup_email, sup_tel, sup_approved, sup_gender, sup_birthday)
                       values(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const values = [
