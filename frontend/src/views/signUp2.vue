@@ -1,4 +1,4 @@
-<!-- <script setup>
+<script setup>
 import { ref, nextTick, computed, watch } from "vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import MaterialButton from "@/components/MaterialButton.vue";
@@ -292,4 +292,4 @@ watch(id, () => {
 .cursor-pointer {
   cursor: pointer;
 }
-</style> -->
+</style>

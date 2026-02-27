@@ -34,7 +34,6 @@ app.get("/test", (req, res) => {
   res.send("test server is running!");
 });
 
-// 서버 시작은 맨 마지막에!
 app.listen(3000, () => {
   console.log("Server is running at http://localhost:3000");
 });
