@@ -47,7 +47,7 @@ const getForm = async () => {
   const result = await axios.get(
     `http://localhost:3000/document/getForm/${doc.value.form_ver}`,
   );
-  console.log(result);
+  // console.log(result);
   formData.value = result.data.form;
 
   formData.value.forEach((bcategory) => {
@@ -55,7 +55,7 @@ const getForm = async () => {
     bcategory.scategory.forEach((scategory) => {
       // console.log(scategory);
       scategory.questions.forEach((question) => {
-        console.log(question);
+        // console.log(question);
         userAnswers.value[question.question_num] = {
           type: question.response,
           response: "",
@@ -70,7 +70,7 @@ const getResp = async () => {
     `http://localhost:3000/document/getResp/${doc.value.doc_num}`,
   );
 
-  console.log(result.data.response);
+  // console.log(result.data.response);
   for (const key in result.data.response) {
     if (!Object.hasOwn(result.data.response, key)) continue;
 

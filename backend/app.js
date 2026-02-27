@@ -19,8 +19,9 @@ app.use(cors());
 app.use("/center", center_route); //센터 라우트
 app.use("/user", user_route); //유저 라우트
 app.use("/document", doc_route);
-app.use("/support", sup_route);
+// app.use("/support", sup_route);
 app.use("/form", form_route);
+app.use(["/support", "/supported"], sup_route);
 app.get("/", async (req, res) => {
   try {
     const query = "show tables";
@@ -36,7 +37,6 @@ app.get("/test", (req, res) => {
   res.send("test server is running!");
 });
 
-// 서버 시작은 맨 마지막에!
 app.listen(3000, () => {
   console.log("Server is running at http://localhost:3000");
 });

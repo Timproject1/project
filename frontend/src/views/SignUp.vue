@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { ref, nextTick } from "vue";
 import axios from "axios";
 import MaterialInput from "@/components/MaterialInput.vue";
@@ -423,5 +423,355 @@ const handleSignup = async () => {
 }
 .mt-3 {
   margin-top: 15px;
+}
+</style> -->
+
+<script setup>
+import { ref, reactive, computed } from "vue";
+import axios from "axios";
+import MaterialInput from "@/components/MaterialInput.vue";
+
+// 데이터 상태 관리
+const form = reactive({
+  user_id: "",
+  user_password: "",
+  user_name: "",
+  user_tel: "",
+  user_email: "",
+  registernum: "",
+  grade: "a1", // 가입 유형 초기값 (a1: 일반사용자)
+  actived: "Y",
+});
+
+const userPwCheck = ref("");
+const institutionName = ref("");
+const emailDuplicate = ref(false);
+
+// 비밀번호 일치 확인
+const isPasswordMismatch = computed(() => {
+  return (
+    form.user_password !== "" &&
+    userPwCheck.value !== "" &&
+    form.user_password !== userPwCheck.value
+  );
+});
+
+// 아이디 중복 확인
+const checkIdDuplication = async () => {
+  if (!form.user_id) {
+    alert("아이디를 입력해주세요.");
+    return;
+  }
+  try {
+    const response = await axios.post("http://localhost:3000/user/check-id", {
+      user_id: form.user_id,
+    });
+    if (response.data.isDuplicate) {
+      alert("이미 사용 중인 아이디입니다.");
+    } else {
+      alert("사용 가능한 아이디입니다.");
+    }
+  } catch (error) {
+    console.error("중복 확인 에러:", error);
+    alert("서버 연결 실패! 백엔드가 실행 중인지 확인하세요.");
+  }
+};
+
+// 4. 기관 검색
+const searchInstitution = () => {
+  institutionName.value = "발달장애인복지관";
+  form.registernum = "1018112345";
+  alert("기관이 선택되었습니다.");
+};
+
+// 5. 회원가입 제출
+const handleSignup = async () => {
+  if (
+    !form.user_id ||
+    !form.user_password ||
+    !form.user_name ||
+    !form.registernum
+  ) {
+    alert("필수 항목(*)을 모두 입력하고 기관 검색을 완료해주세요.");
+    return;
+  }
+  if (isPasswordMismatch.value) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/user/signup",
+      form,
+    );
+    if (response.data.success) {
+      alert("회원가입이 완료되었습니다!");
+    }
+  } catch (error) {
+    console.error("가입 에러:", error);
+    alert("가입 실패: " + (error.response?.data?.message || "서버 오류"));
+  }
+};
+</script>
+
+<template>
+  <div class="signup-container">
+    <div class="signup-wrap">
+      <h2 class="signup-title">회원가입</h2>
+
+      <div class="form-row">
+        <label class="row-label">가입 유형</label>
+        <div class="row-content">
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" v-model="form.grade" value="a2" /> 기관담당자
+            </label>
+            <label class="radio-label">
+              <input type="radio" v-model="form.grade" value="a1" /> 일반사용자
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="user_id">아이디</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              v-model="form.user_id"
+              id="user_id"
+              variant="outline"
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+          <button
+            type="button"
+            class="green-btn shadow-btn"
+            @click="checkIdDuplication"
+          >
+            중복 확인
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="user_password">비밀번호</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              v-model="form.user_password"
+              id="user_password"
+              type="password"
+              variant="outline"
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="user_password_check">비밀번호 확인</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              v-model="userPwCheck"
+              id="user_password_check"
+              type="password"
+              variant="outline"
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+          <p v-if="isPasswordMismatch" class="error-msg-abs">
+            * 비밀번호가 일치하지 않습니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="user_name">이름</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              v-model="form.user_name"
+              id="user_name"
+              variant="outline"
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="user_tel">연락처</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              v-model="form.user_tel"
+              id="user_tel"
+              variant="outline"
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="user_email">이메일</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              type="email"
+              v-model="form.user_email"
+              id="user_email"
+              variant="outline"
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+          <p v-if="emailDuplicate" class="error-msg-abs">
+            * 이미 가입된 이메일입니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="row-label" for="institution_name">기관명</label>
+        <div class="row-content">
+          <div class="input-flex">
+            <material-input
+              v-model="institutionName"
+              id="institution_name"
+              placeholder="기관 검색 버튼을 눌러주세요"
+              variant="outline"
+              readonly
+              class="flex-grow-1"
+            />
+            <span class="required">(필수)</span>
+          </div>
+          <button
+            type="button"
+            class="green-btn shadow-btn"
+            @click="searchInstitution"
+          >
+            기관 검색
+          </button>
+        </div>
+      </div>
+
+      <div class="btn-area">
+        <button
+          type="button"
+          class="green-btn signup-btn shadow-btn"
+          @click="handleSignup"
+        >
+          가입하기
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.signup-container {
+  display: flex;
+  justify-content: center;
+  padding: 50px 20px;
+}
+.signup-wrap {
+  width: 100%;
+  max-width: 800px;
+  border: 2px solid #00a000;
+  padding: 40px;
+  border-radius: 12px;
+}
+.signup-title {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #00a000;
+}
+.form-row {
+  display: flex;
+  position: relative;
+  margin-bottom: 30px;
+  align-items: center;
+}
+.row-label {
+  width: 150px;
+  font-weight: bold;
+  color: #333;
+}
+.row-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.radio-group {
+  display: flex;
+  gap: 30px;
+}
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+input[type="radio"] {
+  accent-color: #00a000;
+  width: 18px;
+  height: 18px;
+}
+.input-flex {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  gap: 10px;
+}
+.required {
+  color: #ff5722;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  width: 60px;
+  text-align: center;
+}
+.green-btn {
+  background-color: #00a000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: 0.2s;
+}
+.green-btn:hover {
+  background-color: #008800;
+}
+.error-msg-abs {
+  color: #f44335;
+  font-size: 12px;
+  position: absolute;
+  bottom: -22px;
+  left: 150px;
+}
+.btn-area {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+.signup-btn {
+  padding: 15px 60px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+.shadow-btn {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>
