@@ -3,6 +3,7 @@ import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, reactive } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
+// import axios from "axios";
 
 const results = reactive([
   {
@@ -75,9 +76,6 @@ const revision = reactive([
     revisionResult: false,
   },
 ]);
-
-const returnResult = ref(false);
-const returnResultContent = ref("어림도없지");
 </script>
 <template>
   <h4>지원결과서</h4>
@@ -194,39 +192,5 @@ const returnResultContent = ref("어림도없지");
         </table>
       </template>
     </Modal>
-    <p v-if="result.app == '승인 완료'">
-      <material-button type="button" color="warning" disabled
-        >승인 완료</material-button
-      >
-    </p>
-    <p v-else-if="result.app == '승인 대기 중'">
-      <material-button type="button" color="warning"
-        >승인 대기 중</material-button
-      ><material-button type="button" color="danger"
-        >승인 요청 취소</material-button
-      >
-    </p>
-    <p v-else-if="result.app == '반려'">
-      <material-button
-        type="button"
-        color="warning"
-        @click="returnResult = true"
-        >반려</material-button
-      >
-      <Modal v-if="returnResult" @close="returnResult = false">
-        <template #content>
-          <h4>반려 사유</h4>
-          <p>{{ returnResultContent }}</p>
-        </template>
-        <template #actions="{ close }">
-          <material-button type="button" @click="close">닫기</material-button>
-        </template>
-      </Modal>
-    </p>
-    <p v-else>
-      <material-button type="button" color="warning"
-        >승인 재요청</material-button
-      >
-    </p>
   </div>
 </template>
