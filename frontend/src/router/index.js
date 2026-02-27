@@ -1,16 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
-// import Dashboard from "../views/Dashboard.vue";
-// import Tables from "../views/Tables.vue";
-// import Billing from "../views/Billing.vue";
-// import RTL from "../views/Rtl.vue";
-// import Notifications from "../views/Notifications.vue";
-// import Profile from "../views/Profile.vue";
 import SignIn from "../views/SignIn.vue";
-// import SignUp from "../views/SignUp.vue";
-import list from "../views/list/list.vue";
 import SignUp from "../views/SignUp.vue";
+import list from "../views/list/list.vue";
 import work from "../views/work/work.vue";
+import Home from "../views/Home.vue";
+import FindId from "../views/FindId.vue";
+import findpw from "../views/findpw.vue";
+
 const routes = [
+  {
+    path: "/",
+    redirect: "/sign-in",
+  },
+  {
+    path: "/home",
+    name: "Home",
+    component: Home,
+  },
+  {
+    path: "/find-id",
+    name: "FindId",
+    component: FindId,
+  },
+  {
+    path: "/find-pw",
+    name: "FindPw",
+    component: findpw,
+  },
   {
     path: "/work",
     name: "work",
@@ -18,39 +34,29 @@ const routes = [
     children: [
       {
         path: "plan",
-        components: {
-          right: () => import("../views/work/plan.vue"),
-        },
+        components: { right: () => import("../views/work/plan.vue") },
       },
       {
         path: "priority",
         components: {
-          right: () => import("../views/work/priority.vue"),
+          right: () => import("../views/work/priority_manager.vue"),
         },
       },
       {
         path: "record",
-        components: {
-          right: () => import("../views/work/record.vue"),
-        },
+        components: { right: () => import("../views/work/record.vue") },
       },
       {
         path: "result",
-        components: {
-          right: () => import("../views/work/result.vue"),
-        },
+        components: { right: () => import("../views/work/result.vue") },
       },
       {
         path: "representative",
-        components: {
-          right: () => import("../views/work/representative.vue"),
-        },
+        components: { right: () => import("../views/work/representative.vue") },
       },
       {
         path: "login",
-        components: {
-          right: () => import("../views/login/login.vue"),
-        },
+        components: { right: () => import("../views/login/login.vue") },
       },
     ],
   },
@@ -60,10 +66,6 @@ const routes = [
     component: list,
     redirect: "/list/supported",
     children: [
-      {
-        path: "list",
-        redirect: "/list/supported",
-      },
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
@@ -91,53 +93,6 @@ const routes = [
     ],
   },
   {
-    path: "/document",
-    name: "Document",
-    component: list,
-    children: [
-      {
-        path: "write",
-        component: () => import("../views/document/write_document.vue"),
-      },
-    ],
-  },
-
-  // {
-  //   path: "/",
-  //   name: "/",
-  //   redirect: "/dashboard",
-  // },
-  // {
-  //   path: "/dashboard",
-  //   name: "Dashboard",
-  //   component: Dashboard,
-  // },
-  // {
-  //   path: "/tables",
-  //   name: "Tables",
-  //   component: Tables,
-  // },
-  // {
-  //   path: "/billing",
-  //   name: "Billing",
-  //   component: Billing,
-  // },
-  // {
-  //   path: "/rtl-page",
-  //   name: "RTL",
-  //   component: RTL,
-  // },
-  // {
-  //   path: "/notifications",
-  //   name: "Notifications",
-  //   component: Notifications,
-  // },
-  // {
-  //   path: "/profile",
-  //   name: "Profile",
-  //   component: Profile,
-  // },
-  {
     path: "/sign-in",
     name: "SignIn",
     component: SignIn,
@@ -147,6 +102,13 @@ const routes = [
     name: "SignUp",
     component: SignUp,
   },
+  /*
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("../views/Profile.vue"),
+  },
+  */
 ];
 
 const router = createRouter({

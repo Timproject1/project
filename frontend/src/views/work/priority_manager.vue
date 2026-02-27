@@ -14,7 +14,7 @@ let prioritydb = ref({});
 //get으로 데이터 당겨오기
 const priorityData = async (id) => {
   let result = await axios
-    .get(`http://localhost:3000/user/priority/${id}`)
+    .get(`http://localhost:3000/document/priority/${id}`)
     .catch((err) => console.log(err));
   prioritydb.value = result.data;
 };
@@ -53,7 +53,7 @@ const appPri = async () => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/user/priority_manager",
+      "http://localhost:3000/document/priority_manager",
       appcontent,
     );
     console.log(res.data);
@@ -76,7 +76,7 @@ const returnPri = async () => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/user/returnPriority_manager",
+      "http://localhost:3000/document/returnPriority_manager",
       returncontent,
     );
     console.log(res.data);

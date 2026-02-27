@@ -1,174 +1,78 @@
 <template>
   <div class="container-fluid py-4">
     <div class="row">
-      <div class="col-md-8 mx-auto">
-        <div class="card mt-4">
-          <div class="card-header p-3">
-            <h5 class="mb-0">Alerts</h5>
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div
+              class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3"
+            >
+              <h3 class="text-white text-capitalize ps-3 text-center">
+                홈페이지 창
+              </h3>
+            </div>
           </div>
-          <div class="card-body p-3 pb-0">
-            <material-alert class="font-weight-light" color="primary" dismissible>
-              <span class="text-sm"
-                >A simple primary alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert class="font-weight-light" color="secondary" dismissible>
-              <span class="text-sm"
-                >A simple secondary alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert class="font-weight-light" color="success" dismissible>
-              <span class="text-sm"
-                >A simple success alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert class="font-weight-light" color="danger" dismissible>
-              <span class="text-sm"
-                >A simple danger alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert class="font-weight-light" color="warning" dismissible>
-              <span class="text-sm"
-                >A simple warning alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert class="font-weight-light" color="info" dismissible>
-              <span class="text-sm"
-                >A simple info alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert class="font-weight-light" color="light" dismissible>
-              <span class="text-sm"
-                >A simple light alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-            <material-alert color="dark" dismissible>
-              <span class="text-sm"
-                >A simple dark alert with
-                <a href="javascript:;" class="alert-link text-white"
-                  >an example link</a
-                >. Give it a click if you like.</span
-              >
-            </material-alert>
-          </div>
-        </div>
-        <div class="card mt-4">
-          <div class="card-header p-3">
-            <h5 class="mb-0">Notifications</h5>
-            <p class="text-sm mb-0">
-              Notifications on this page use Toasts from Bootstrap. Read more
-              details
-              <a
-                href="https://getbootstrap.com/docs/5.0/components/toasts/"
-                target="
-          "
-                >here</a
-              >.
-            </p>
-          </div>
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="col-lg-3 col-sm-6 col-12">
-                <button
-                  class="btn bg-gradient-success w-100 mb-0 toast-btn"
-                  type="button"
-                  data-target="successToast"
-                  @click="snackbar = 'success'"
-                >
-                  Success
-                </button>
-              </div>
-              <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
-                <button
-                  class="btn bg-gradient-info w-100 mb-0 toast-btn"
-                  type="button"
-                  data-target="infoToast"
-                  @click="snackbar = 'info'"
-                >
-                  Info
-                </button>
-              </div>
-              <div class="col-lg-3 col-sm-6 col-12 mt-lg-0 mt-2">
-                <button
-                  class="btn bg-gradient-warning w-100 mb-0 toast-btn"
-                  type="button"
-                  data-target="warningToast"
-                  @click="snackbar = 'warning'"
-                >
-                  Warning
-                </button>
-              </div>
-              <div class="col-lg-3 col-sm-6 col-12 mt-lg-0 mt-2">
-                <button
-                  class="btn bg-gradient-danger w-100 mb-0 toast-btn"
-                  type="button"
-                  data-target="dangerToast"
-                  @click="snackbar = 'danger'"
-                >
-                  Danger
-                </button>
-              </div>
+          <div class="card-body px-0 pb-2">
+            <div class="p-5 text-center">
+              <h1 class="display-1 font-weight-bold text-success mb-4">
+                홈페이지 창
+              </h1>
+              <hr class="horizontal dark" />
+              <h4 class="mt-4" v-if="userName">
+                <span class="text-success">{{ userName }}</span
+                >님, 환영합니다!
+              </h4>
+              <p class="text-secondary">
+                이곳은 우리 팀의 메인 프로그램 화면입니다.<br />
+                이제 이 아래에 팀 프로젝트의 주요 기능들을 채워 넣으면 됩니다.
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6 mx-auto">
+        <div class="card">
+          <div class="card-header p-3">
+            <h6 class="mb-0">시스템 알림 테스트</h6>
+          </div>
+          <div class="card-body p-3 text-center">
+            <button
+              class="btn bg-gradient-info mb-0 me-2"
+              @click="snackbar = 'info'"
+            >
+              접속 정보 확인
+            </button>
+            <button
+              class="btn bg-gradient-success mb-0"
+              @click="snackbar = 'success'"
+            >
+              가입 정보 확인
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="position-fixed bottom-1 end-1 z-index-2">
       <material-snackbar
         v-if="snackbar === 'success'"
-        title="Material Dashboard"
-        date="11 mins ago"
-        description="Hello, world! This is a notification message."
+        title="시스템 알림"
+        date="방금 전"
+        description="성공적으로 로그인되었습니다."
         :icon="{ component: 'done', color: 'white' }"
         color="success"
         :close-handler="closeSnackbar"
       />
       <material-snackbar
         v-if="snackbar === 'info'"
-        title="Material Dashboard"
-        date="11 mins ago"
-        description="Hello, world! This is a notification message."
+        title="접속 알림"
+        date="방금 전"
+        :description="`${userName}님의 접속을 확인했습니다.`"
         :icon="{ component: 'notifications', color: 'white' }"
         color="info"
-        :close-handler="closeSnackbar"
-      />
-      <material-snackbar
-        v-if="snackbar === 'warning'"
-        title="Material Dashboard"
-        date="11 mins ago"
-        description="Hello, world! This is a notification message."
-        :icon="{ component: 'travel_explore', color: 'white' }"
-        color="warning"
-        :close-handler="closeSnackbar"
-      />
-      <material-snackbar
-        v-if="snackbar === 'danger'"
-        title="Material Dashboard"
-        date="11 mins ago"
-        description="Hello, world! This is a notification message."
-        :icon="{ component: 'campaign', color: 'white' }"
-        color="danger"
         :close-handler="closeSnackbar"
       />
     </div>
@@ -176,19 +80,22 @@
 </template>
 
 <script>
-import MaterialAlert from "@/components/MaterialAlert.vue";
 import MaterialSnackbar from "@/components/MaterialSnackbar.vue";
 
 export default {
-  name: "Notifications",
+  name: "Home",
   components: {
-    MaterialAlert,
     MaterialSnackbar,
   },
   data() {
     return {
       snackbar: null,
+      userName: "",
     };
+  },
+  mounted() {
+    // 로그인 시 저장했던 이름을 가져옴
+    this.userName = localStorage.getItem("userName") || "사용자";
   },
   methods: {
     closeSnackbar() {
@@ -197,3 +104,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.display-1 {
+  font-size: 5rem;
+  letter-spacing: -2px;
+}
+.card {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+</style>
