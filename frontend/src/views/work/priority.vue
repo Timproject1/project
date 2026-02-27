@@ -45,7 +45,7 @@ const appSign = async () => {
 
   try {
     const res = await axios.post(
-      "http://localhost:3000/user/priority",
+      "http://localhost:3000/document/priority",
       appcontent,
     );
     console.log(res.data);
