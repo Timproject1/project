@@ -2,10 +2,10 @@
 import { useMemberStore } from "@/store/member";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 const router = useRouter();
 const memberStore = useMemberStore();
-import axios from "axios";
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
 const formatDate = (dateString) => {

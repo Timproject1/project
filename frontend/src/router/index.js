@@ -71,6 +71,10 @@ const routes = [
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
+      {
+        path: "form",
+        component: () => import("../views/form/formList.vue"),
+      },
     ],
   },
   {
@@ -81,6 +85,17 @@ const routes = [
       {
         path: "write",
         component: () => import("../views/document/write_document.vue"),
+      },
+    ],
+  },
+  {
+    path: "/form",
+    name: "Form",
+    component: list,
+    children: [
+      {
+        path: "write",
+        component: () => import("../views/form/formWrite.vue"),
       },
     ],
   },
