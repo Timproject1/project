@@ -24,14 +24,17 @@ const handleLogin = async () => {
 
   try {
     const response = await axios.post("http://localhost:3000/user/login", {
-      userId: userId.value,
-      userPw: password.value,
+      user_id: userId.value,
+      user_password: password.value,
     });
 
     if (response.data && response.data.success) {
       loginError.value = false;
       alert(`환영합니다, ${response.data.user.user_name}님!`);
+
       localStorage.setItem("userName", response.data.user.user_name);
+      localStorage.setItem("userGrade", response.data.user.grade);
+
       router.push({ name: "Home" });
     } else {
       loginError.value = true;
@@ -40,7 +43,14 @@ const handleLogin = async () => {
   } catch (error) {
     console.error("로그인 에러:", error);
     loginError.value = true;
-    alert("서버 연결에 실패했습니다.");
+
+    if (error.response && error.response.status === 404) {
+      alert(
+        "서버의 로그인 경로(404)를 찾을 수 없습니다. 백엔드 라우터를 확인하세요.",
+      );
+    } else {
+      alert("서버 연결에 실패했습니다. 백엔드가 켜져있는지 확인하세요.");
+    }
   }
 };
 
@@ -80,11 +90,11 @@ onBeforeUnmount(() => {
           </div>
           <form role="form" @submit.prevent="handleLogin">
             <div class="row-input mb-4">
-              <label class="row-label">아이디</label>
+              <label class="row-label" for="id">아이디</label>
               <material-input id="id" v-model="userId" class="row-field" />
             </div>
             <div class="row-input mb-5">
-              <label class="row-label">비밀번호</label>
+              <label class="row-label" for="password">비밀번호</label>
               <material-input
                 id="password"
                 type="password"
@@ -110,6 +120,7 @@ onBeforeUnmount(() => {
                 color="success"
                 fullWidth
                 size="lg"
+                type="button"
                 >회 원 가 입</material-button
               >
             </router-link>
