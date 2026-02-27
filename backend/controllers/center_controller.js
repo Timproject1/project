@@ -13,11 +13,11 @@ const ctrl = {
     }
   },
 
-  addSupported: async function (req, res) {
+  addCenter: async function (req, res) {
     try {
       const data = req.body;
       console.log("등록요청 데이터", data);
-      const result = await service.addSupported(data);
+      const result = await service.addCenter(data);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);

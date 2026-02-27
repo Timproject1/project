@@ -83,6 +83,10 @@ const routes = [
         component: () => import("../views/list/documentLIST.vue"),
       },
       {
+        path: "form",
+        component: () => import("../views/form/formList.vue"),
+      },
+      {
         path: "look",
         component: () => import("../views/list/manager_lookList.vue"),
       },
@@ -92,6 +96,64 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/document",
+    name: "Document",
+    component: list,
+    children: [
+      {
+        path: "write",
+        component: () => import("../views/document/write_document.vue"),
+      },
+    ],
+  },
+  {
+    path: "/form",
+    name: "Form",
+    component: list,
+    children: [
+      {
+        path: "write",
+        component: () => import("../views/form/formWrite.vue"),
+      },
+    ],
+  },
+
+  // {
+  //   path: "/",
+  //   name: "/",
+  //   redirect: "/dashboard",
+  // },
+  // {
+  //   path: "/dashboard",
+  //   name: "Dashboard",
+  //   component: Dashboard,
+  // },
+  // {
+  //   path: "/tables",
+  //   name: "Tables",
+  //   component: Tables,
+  // },
+  // {
+  //   path: "/billing",
+  //   name: "Billing",
+  //   component: Billing,
+  // },
+  // {
+  //   path: "/rtl-page",
+  //   name: "RTL",
+  //   component: RTL,
+  // },
+  // {
+  //   path: "/notifications",
+  //   name: "Notifications",
+  //   component: Notifications,
+  // },
+  // {
+  //   path: "/profile",
+  //   name: "Profile",
+  //   component: Profile,
+  // },
   {
     path: "/sign-in",
     name: "SignIn",
