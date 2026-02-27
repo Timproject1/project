@@ -3,12 +3,14 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 const router = useRouter();
-const isOpen = ref(false);
+const isOpen = ref(true);
 const currentTab = ref("list");
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
 const supported = ref([]);
+const searchName = ref("");
+const manager = ref("");
 const getSupportedList = async () => {
   try {
     const response = await axios.get("http://localhost:3000/center/list");
@@ -20,6 +22,14 @@ const getSupportedList = async () => {
   } catch (err) {
     console.log("데이터 가져오기 오류:", err);
   }
+};
+const getlabel = (status) => {
+  const labels = {
+    d1: "대기",
+    d2: "승인",
+    d3: "반려",
+  };
+  return labels[status] || "대기중";
 };
 onMounted(() => {
   getSupportedList();
@@ -71,7 +81,7 @@ onMounted(() => {
           </div>
           <div class="form-group">
             <label>담당자</label>
-            <input type="text" v-model="counsel_manager" />
+            <input type="text" v-model="manager" />
           </div>
           <button class="search-btn" @click="resetSearch">검색</button>
         </div>
@@ -104,7 +114,7 @@ onMounted(() => {
               <td>{{ member.sup_name }}</td>
               <td>{{ member.priority || "데이터 없음" }}</td>
               <td>{{ member.sup_reg_date }}</td>
-              <td>{{ member.progress || "대기중" }}</td>
+              <td>{{ getlabel(member.sup_approved) }}</td>
               <td>{{ member.sup_reg_date }}</td>
               <td>{{ member.plan_manager || "홍길동" }}</td>
               <td><button>보기</button></td>
@@ -124,3 +134,12 @@ onMounted(() => {
     </div>
   </div>
 </template>
+<style scoped>
+th,
+td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  white-space: nowrap;
+}
+</style>

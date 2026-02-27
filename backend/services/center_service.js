@@ -4,60 +4,37 @@ const service = {
   getList: async function name(filter) {
     console.log("서비스 시작함:", filter);
     try {
-      const query = `select * from supported_test`;
+      const query = `select * from center`;
       const result = await pool.query(query);
-      console.log("DB 연결 성공:", result);
+      console.log("기관목록 조회성공:", result);
       return result;
     } catch (error) {
-      console.log("조회 에러:", error);
+      console.log("기관목록 조회에러:", error);
       return [];
     }
   },
-  getSupportedList: async function () {
+  addCenter: async function (data) {
+    console.log("기관 데이터 확인:", data);
+
     try {
-      const query = `select * from supported_test order by sup_num DESC`;
-      // 결과 배열의 데이터만 꺼내서 rows라는 변수에 담기 위해 사용, query를 DB에 전달해서 실행
-      const [rows] = await pool.query(query);
-      return rows;
-    } catch (err) {
-      console.log("지원자 목록 중 DB에러:", err);
-      throw err;
-    }
-  },
-  addSupported: async function (data) {
-    console.log("서비스 데이터 확인:", data);
-    try {
-      const maxNumQuery = `SELECT sup_num FROM supported_test ORDER BY sup_num DESC LIMIT 1`;
-      const maxResult = await pool.query(maxNumQuery);
+      const query = `insert into center (registernum, center_name, repname, center_email, center_addr, runed, center_tel, reg_date)
+      values(?,?,?,?,?,?,?,NOW()) `;
 
-      let newSupNum = "SUP-1";
-
-      if (maxResult.length > 0 && maxResult[0].sup_num) {
-        const lastNum = maxResult[0].sup_num;
-        const numberOnly = parseInt(lastNum.split("-")[1]);
-        newSupNum = `SUP-${numberOnly + 1}`;
-      }
-
-      // 1. 쿼리문 (컬럼 총 9개)
-      const query = `insert into supported_test (sup_num, user_id, sup_name, sup_address, sup_email, sup_tel, sup_approved, sup_gender, sup_birthday)
-      values(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const values = [
-        newSupNum,
-        data.user_id,
-        data.sup_name,
-        data.sup_address,
-        data.sup_email,
-        data.sup_tel,
-        data.sup_approved,
-        data.sup_gender,
-        data.sup_birthday,
+        data.registernum,
+        data.center_name,
+        data.repname,
+        data.center_email,
+        data.center_addr,
+        data.runed,
+        data.center_tel,
       ];
       const result = await pool.query(query, values);
-      console.log("DB저장 성공!", result);
+      console.log("DB 연결 완료", result);
       return result;
-    } catch (error) {
-      console.log("DB 저장안됨 에러 로그:", error);
-      throw error;
+    } catch (err) {
+      console.log("DB 연결 안됨:", err);
+      throw err;
     }
   },
 };
