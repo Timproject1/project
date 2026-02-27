@@ -1,16 +1,37 @@
 import { createRouter, createWebHistory } from "vue-router";
-// import Dashboard from "../views/Dashboard.vue";
-// import Tables from "../views/Tables.vue";
-// import Billing from "../views/Billing.vue";
-// import RTL from "../views/Rtl.vue";
-// import Notifications from "../views/Notifications.vue";
-// import Profile from "../views/Profile.vue";
+// 기존 임포트 유지
 import SignIn from "../views/SignIn.vue";
-// import SignUp from "../views/SignUp.vue";
-import list from "../views/list/list.vue";
 import SignUp from "../views/SignUp.vue";
+import list from "../views/list/list.vue";
 import work from "../views/work/work.vue";
+import Home from "../views/Home.vue";
+
+// 파일 구조에 맞게 임포트 추가
+import FindId from "../views/FindId.vue";
+import findpw from "../views/findpw.vue";
+
 const routes = [
+  {
+    path: "/",
+    redirect: "/sign-in",
+  },
+  {
+    path: "/home",
+    name: "Home",
+    component: Home,
+  },
+  // 아이디 찾기 경로 추가
+  {
+    path: "/find-id",
+    name: "FindId",
+    component: FindId,
+  },
+  // 비밀번호 찾기(재설정)
+  {
+    path: "/find-pw",
+    name: "FindPw",
+    component: findpw,
+  },
   {
     path: "/work",
     name: "work",
@@ -25,7 +46,7 @@ const routes = [
       {
         path: "priority",
         components: {
-          right: () => import("../views/work/priority_manager.vue"),
+          right: () => import("../views/work/priority.vue"),
         },
       },
       {
@@ -58,7 +79,12 @@ const routes = [
     path: "/list",
     name: "List",
     component: list,
+    redirect: "/list/supported",
     children: [
+      {
+        path: "list",
+        redirect: "/list/supported",
+      },
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
@@ -68,12 +94,24 @@ const routes = [
         component: () => import("../views/list/SupportedInfo.vue"),
       },
       {
+        path: "add",
+        component: () => import("../views/list/supportedAdd.vue"),
+      },
+      {
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
       {
         path: "form",
         component: () => import("../views/form/formList.vue"),
+      },
+      {
+        path: "look",
+        component: () => import("../views/list/manager_lookList.vue"),
+      },
+      {
+        path: "center",
+        component: () => import("../views/list/centerList.vue"),
       },
     ],
   },

@@ -1,65 +1,83 @@
 <script setup>
-import { ref } from "vue";
-//import { useRouter } from "vue-router";
-//const router = useRouter();
+// DB 연결 완료 2월 25일
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+const router = useRouter();
 const isOpen = ref(false);
 const currentTab = ref("list");
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
+// 지원자 명 검색
+const searchName = ref("");
+// 담당자 검색
+const counsel_manager = ref("");
+
+// 검색버튼 클릭 시 실행
+const resetSearch = () => {
+  searchName.value = "";
+  counsel_manager.value = "";
+};
 
 // 장애 유형을 보는 모달창
-const Modal = ref(false);
+const detailModal = ref(false);
 const selectMember = ref(null);
 
-// 모달 여는 함수
-const openModal = (member) => {
+// 지원자 추가
+const addModal = ref(false);
+
+// 장애 유형 보기 버튼 제어
+const openDetailModal = (member) => {
   selectMember.value = member;
-  Modal.value = true;
+  detailModal.value = true;
 };
-// 모달창 닫기
-const closeModal = () => {
-  console.log("닫기 버튼 클릭됨");
-  Modal.value = false;
+// 담당자 배정 요청
+const requestManager = (sup_name) => {
+  alert(
+    `${sup_name}님의 담당자 배정요청이 완료 되었습니다 요청 완료 시 안내 메일 발송`,
+  );
+  console.log(`${sup_name}님 배정 요청 처리됨`);
+};
+// 장애 유형 버튼 닫기
+const closeDetailModal = () => {
+  detailModal.value = false;
   selectMember.value = null;
 };
+// 지원자 추가 버튼 제어
+const openAddModal = () => {
+  addModal.value = true;
+};
+const closeAddModal = () => {
+  addModal.value = false;
+};
+// 지원자 정보 수정 (나중에 추가해야 함)
+// const modifyModal = ref(false)
+
+// 지원자 정보 수정 모달창 관리
 
 // 지원자 목록 데이터 부분
-// DB연동을 아직 안해서 작성함 지원자 목록과 지원자 정보 부분의 DB연결 후 아래의 내용은 삭제하기
-const supported = ref([
-  {
-    sup_num: 1,
-    sup_name: "홍길동",
-    sup_gender: "남성",
-    sup_birthday: "2000.12.03",
-    sup_tel: "010-1234-5678",
-    sup_address: "대구광역시 00구 00동",
+const supported = ref([]);
 
-    manager: "김하나",
-    sup_reg_date: "25.12.04",
-  },
-  {
-    sup_num: 2,
-    sup_name: "김철수",
-    sup_gender: "남성",
-    sup_birthday: "1999.06.20",
-    sup_tel: "010-4567-8910",
-    sup_address: "대전광역시 00구 00동",
+// 데이터 가져오기
+// 함수 선언
+const getList = async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/center/list");
 
-    sup_reg_date: "25.12.16",
-  },
-  {
-    sup_num: 3,
-    sup_name: "오영희",
-    sup_gender: "여성",
-    sup_birthday: "1989.03.04",
-    sup_tel: "010-1234-7894",
-    sup_address: "부산광역시 00구 00동",
-
-    manager: "허길동",
-    sup_reg_date: "25.10.05",
-  },
-]);
+    if (response.data.retCode === "OK") {
+      // 실제 데이터 배열을 변수에 할당
+      supported.value = response.data.result;
+      console.log("데이터 가져오기 성공:", supported.value);
+    }
+  } catch (err) {
+    console.error("오류! 서버가 꺼져 있거나 주소가 틀렸습니다:", err);
+  }
+};
+// 함수 호출
+onMounted(() => {
+  getList();
+});
 </script>
 <template>
   <div class="layout-wrapper">
@@ -71,16 +89,16 @@ const supported = ref([
         <ul v-if="isOpen" class="menu-list">
           <li
             :class="{ active: currentTab === 'list' }"
-            @click="currentTab = 'list'"
+            @click="router.push('/list/supported')"
           >
-            - 지원자 목록
+            - 지원자 현황
           </li>
           <li
             class="sub-item"
             :class="{ active: currentTab === 'info' }"
-            @click="currentTab = 'info'"
+            @click="router.push('/list/info')"
           >
-            - 지원자 정보
+            - 지원자 정보관리
           </li>
         </ul>
       </div>
@@ -114,7 +132,7 @@ const supported = ref([
     </aside>
     <div class="content">
       <div class="header-section">
-        <h2>지원자 목록</h2>
+        <h2>지원자 정보목록</h2>
         <button class="add-btn" @click="openAddModal">지원자 추가</button>
       </div>
       <div class="table-wrapper">
@@ -130,23 +148,42 @@ const supported = ref([
               <th>장애유형</th>
               <th>담당자명</th>
               <th>지원자 등록일</th>
+              <th>지원자 정보</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="member in supported" :key="member.sup_num">
               <td>{{ member.sup_num }}</td>
               <td>{{ member.sup_name }}</td>
-              <td>{{ member.sup_gender }}</td>
+              <td>
+                {{
+                  member.sup_gender === "f1"
+                    ? "남성"
+                    : member.sup_gender === "f2"
+                    ? "여성"
+                    : "미정"
+                }}
+              </td>
               <td>{{ member.sup_birthday }}</td>
               <td>{{ member.sup_tel }}</td>
               <td>{{ member.sup_address }}</td>
               <td>
-                <button class="view-btn" @click="openModal(member)">
+                <button class="view-btn" @click="openDetailModal(member)">
                   보기
                 </button>
               </td>
-              <td>{{ member.manager }}</td>
-              <td>{{ member.sup_reg_date }}</td>
+              <td>
+                <span v-if="member.manager">{{ member.manager }}</span>
+                <button
+                  v-else
+                  class="assign-btn"
+                  @click="requestManager(member.sup_name)"
+                >
+                  배정요청
+                </button>
+              </td>
+              <td>{{ member.sup_reg_date.split("T")[0] }}</td>
+              <td><button>수정하기</button></td>
             </tr>
           </tbody>
         </table>
@@ -162,239 +199,115 @@ const supported = ref([
   </div>
   <!-- 모달창 부분 -->
   <!-- 지원자의 장애 유형 보는 모달 창 -->
-  <div v-if="Modal" class="modal-overlay">
+  <div v-if="detailModal" class="modal-overlay">
     <div class="modal-content">
       <h3>장애 유형</h3>
-      <p><span>지원자명</span></p>
+      <p>
+        <span>지원자명</span><strong>{{ selectMember?.sup_name }}</strong>
+      </p>
       <p><span>등록한 장애유형</span></p>
-      <button class="close-btn" @click="closeModal">닫기</button>
+      <table>
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>장애유형</th>
+            <th>장애정도</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in selectMember?.disabilities" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.type }}</td>
+            <td>{{ item.level }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="close-btn" @click="closeDetailModal">닫기</button>
     </div>
   </div>
   <!-- 지원자 추가 모달창 -->
-  <div v-if="Modal" class="modal-overlay">
+  <div v-if="addModal" class="modal-overlay">
     <div class="modal-content">
       <h3>지원자 추가</h3>
-      <div>
+      <div class="form-row">
         <p><span>지원자명</span><input type="text" v-model="sup_name" /></p>
       </div>
-      <div>
-        <p>
-          <span>생년월일</span><input type="number" v-model="sup_birthday" />
-        </p>
+      <div class="form-row">
+        <p><span>생년월일</span><input type="text" v-model="sup_birthday" /></p>
       </div>
-      <div>
-        <input
-          type="checkbox"
-          v-model="sup_gender"
-          true-value="남성"
-          false-value="여성"
-        />성별
+      <div class="modal-body">
+        <div class="form-row">
+          <label>성별</label>
+          <div class="radio-group">
+            <label
+              ><input type="radio" v-model="sup_gender" value="남성" />
+              남성</label
+            >
+            <label
+              ><input type="radio" v-model="sup_gender" value="여성" />
+              여성</label
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>휴대폰 번호</label>
+          <input type="text" v-model="sup_tel" />
+        </div>
+
+        <div class="form-row">
+          <label>주소</label>
+          <input type="text" v-model="sup_address" placeholder="주소 입력" />
+        </div>
+
+        <div class="form-row">
+          <label>장애유형</label>
+          <input
+            type="text"
+            v-model="disability_category"
+            placeholder="장애유형 입력"
+          />
+        </div>
+
+        <div class="form-row">
+          <label>첨부파일</label>
+          <input
+            type="text"
+            v-model="sup_file"
+            placeholder="파일은 pdf,jpg파일만 등록 가능"
+          />
+        </div>
       </div>
+      <button class="close-btn" @click="closeAddModal">저장</button>
     </div>
   </div>
+  <!-- 지원자 정보 수정 모달창 -->
+  <div v-if="detailModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>지원자 정보수정</h3>
+      <div>
+        <p><span>이름</span><input type="text" v-model="sup_name" /></p>
+        <p><span>생년월일</span><input type="text" v-model="sup_birthday" /></p>
+        <p><span>휴대폰 번호</span><input type="text" v-model="sup_tel" /></p>
+        <p><span>주소</span><input type="text" v-model="sup_address" /></p>
+        <p>
+          <span>장애유형 추가</span
+          ><input
+            type="text"
+            v-model="disability_category"
+            placeholder="장애유형을 추가"
+          />
+        </p>
+        <p>
+          <span>첨부파일</span
+          ><input
+            type="text"
+            v-model="sup_file"
+            placeholder="파일은 pdf,jpg파일만 등록 가능"
+          />
+        </p>
+      </div>
+    </div>
+    <button class="close-btn" @click="closeAddModal">저장</button>
+  </div>
 </template>
-<style>
-/* 메인 부분 */
-.content {
-  flex: 0 1 auto;
-  width: 100%;
-  max-width: 1050px;
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-}
-.header-section {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  justify-content: space-between;
-}
-.table-wrapper {
-  border: 1px solid #000000;
-  border-radius: 4px;
-}
-table {
-  width: 100px;
-  table-layout: fixed;
-  border-collapse: collapse;
-  table-layout: auto;
-  text-align: left;
-  min-width: 1000px;
-}
-th {
-  background-color: #76abe0;
-  color: #333;
-  font-weight: 500;
-  padding: 8px 4px;
-  border-bottom: 2px solid #000000;
-  border-left: 1px solid #000000;
-  text-align: center;
-}
-td {
-  padding: 8px 4px;
-  border-bottom: 1px solid #000000;
-  color: #444;
-  border-left: 1px solid #030303;
-  text-align: center;
-}
-.pagination {
-  margin-top: auto;
-  padding-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  align-items: center;
-}
-/* 사이드 부분 (검색창, 지원자 관리) */
-.sidebar-container {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  gap: 15px;
-  flex-shrink: 0;
-}
-.search-form input {
-  width: 100%;
-  box-sizing: border-box;
-}
-.management-box {
-  background-color: #fdfdb1;
-  border: 1px solid #080808;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-.box-header {
-  font-weight: bold;
-  font-size: 1.1rem;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-.menu-list {
-  list-style: none;
-  padding-left: 5px;
-}
-.menu-list li {
-  cursor: pointer;
-  margin-bottom: 5px;
-}
-.sub-item {
-  padding-left: 10px;
-}
-
-/* 2. 지원자 검색 (파란색) */
-.search-box {
-  background-color: #cfe2f3;
-  border: 1px solid #999;
-  padding: 15px;
-}
-.search-title {
-  font-size: 1rem;
-  margin-bottom: 15px;
-}
-.form-group {
-  margin-bottom: 10px;
-}
-.form-group label {
-  display: block;
-  font-size: 0.85rem;
-  margin-bottom: 4px;
-  font-weight: bold;
-}
-.form-group input {
-  width: 100%;
-  padding: 4px;
-  border: 1px solid #999;
-}
-
-.gender-btns {
-  display: flex;
-  gap: 2px;
-}
-.gender-btns button {
-  flex: 1;
-  padding: 2px;
-  font-size: 0.75rem;
-  background: #fff;
-  border: 1px solid #999;
-}
-.gender-btns button.active {
-  background: #54b066;
-}
-
-.search-btn {
-  width: 100%;
-  margin-top: 10px;
-  background-color: #b6d7a8;
-  padding: 5px;
-  border: 1px solid #999;
-}
-.layout-wrapper {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.sidebar-container {
-  width: 220px;
-  flex-shrink: 0;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* 모달 박스 */
-.modal-content {
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* 보기 버튼 스타일 */
-.view-btn {
-  background-color: #76abe0;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.close-btn {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background-color: #eee;
-  border: none;
-  cursor: pointer;
-}
-/* 지원자 추가하기 버튼 */
-.add-btn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.add-btn:hover {
-  background-color: #45a049;
-}
-</style>
