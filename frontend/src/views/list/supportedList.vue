@@ -2,18 +2,22 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 const isOpen = ref(true);
 const currentTab = ref("list");
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
+
 const supported = ref([]);
 const searchName = ref("");
 const manager = ref("");
+
+// 지원자 목록 가져오기
 const getSupportedList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/center/list");
+    const response = await axios.get("http://localhost:3000/supported/list");
 
     if (response.data.retCode === "OK") {
       supported.value = response.data.result;
@@ -28,6 +32,8 @@ const getlabel = (status) => {
     d1: "대기",
     d2: "승인",
     d3: "반려",
+    승인: "승인완료",
+    대기: "대기중",
   };
   return labels[status] || "대기중";
 };
@@ -91,7 +97,6 @@ onMounted(() => {
       <div class="header-section">
         <h2>지원자 현황목록</h2>
       </div>
-
       <div class="table-wrapper">
         <table>
           <thead>
@@ -112,11 +117,21 @@ onMounted(() => {
             <tr v-for="member in supported" :key="member.sup_num">
               <td>{{ member.sup_num }}</td>
               <td>{{ member.sup_name }}</td>
-              <td>{{ member.priority || "데이터 없음" }}</td>
-              <td>{{ member.sup_reg_date }}</td>
-              <td>{{ getlabel(member.sup_approved) }}</td>
-              <td>{{ member.sup_reg_date }}</td>
-              <td>{{ member.plan_manager || "홍길동" }}</td>
+              <td>{{ member.priority }}</td>
+              <td>
+                {{
+                  member.sup_reg_date ? member.sup_reg_date.split("T")[0] : ""
+                }}
+              </td>
+
+              <td>{{ getlabel(member.approve) }}</td>
+
+              <td>
+                {{
+                  member.sup_reg_date ? member.sup_reg_date.split("T")[0] : ""
+                }}
+              </td>
+              <td>{{ member.plan_manager }}</td>
               <td><button>보기</button></td>
               <td><button>보기</button></td>
               <td><button>보기</button></td>

@@ -75,10 +75,6 @@ const routes = [
         component: () => import("../views/list/SupportedInfo.vue"),
       },
       {
-        path: "add",
-        component: () => import("../views/list/supportedAdd.vue"),
-      },
-      {
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
@@ -93,6 +89,10 @@ const routes = [
       {
         path: "center",
         component: () => import("../views/list/centerList.vue"),
+      },
+      {
+        path: "allotment",
+        component: () => import("../views/list/allotmentList.vue"),
       },
     ],
   },
