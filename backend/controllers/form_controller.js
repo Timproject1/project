@@ -79,7 +79,10 @@ const ctrl = {
       console.log("con");
       console.log(form);
       const result = await service.writeForm(form);
-      res.send("ok");
+      if(result.form_ver){
+        res.json({retCode:"OK",form_ver:result.form_ver});
+        // res.send("ok");
+      }
     } catch (error) {
       console.log(error);
       res.json(error);

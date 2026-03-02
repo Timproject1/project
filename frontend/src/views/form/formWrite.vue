@@ -4,7 +4,6 @@ import { ref } from "vue";
 // import axios from "axios";
 // const memberStore = useMemberStore(); //pinia에서 로그인 정보 스토어
 import MaterialButton from "@/components/MaterialButton.vue";
-
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
 
@@ -21,7 +20,7 @@ const addQuestion = (subCategory) => {
   subCategory.questions.push({
     question: "",
     type: "i1",
-    option: [],
+    options: [],
   });
 };
 

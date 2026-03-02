@@ -83,8 +83,9 @@ const ctrl = {
       const form_ver = req.body.formVer;
       const sup_num = req.body.sup_num;
       const response = req.body.response;
+      const user_id = req.body.user_id;
       console.log(req.body);
-      const result = await service.writeDoc(form_ver, sup_num, response);
+      const result = await service.writeDoc(form_ver, sup_num, user_id,response);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
