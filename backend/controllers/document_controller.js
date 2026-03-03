@@ -278,5 +278,71 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  resultList: async (req, res) => {
+    const list = req.params.id;
+    try {
+      const result = await service.resultList(list);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  addResult: async (req, res) => {
+    const add = req.body;
+    try {
+      const result = await service.addResult(add);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  updateresult: async (req, res) => {
+    const update = req.body;
+    console.log(req.body);
+    try {
+      const result = await service.updateresult(update);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  saveResult: async (req, res) => {
+    const save = req.body;
+    try {
+      const result = await service.saveResult(save);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  saveResultBring: async (req, res) => {
+    const bring = req.body;
+    try {
+      const result = await service.saveResultBring(bring);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  deleteRecord: async (req, res) => {
+    const del = req.body;
+    try {
+      const result = await service.deleteRecord(del);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
 };
 module.exports = ctrl;

@@ -40,13 +40,13 @@ onBeforeMount(() => {
 });
 
 const timedate = (id) => {
-  const today = new Date(id);
+  const today = id ? new Date(id) : new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, "0");
   const dd = String(today.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 };
-const today = ref(timedate());
+const today = ref(timedate(new Date()));
 
 const newrecord = ref(false);
 
@@ -137,12 +137,32 @@ const Update = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/saverecord",
+      "http://localhost:3000/document/Updaterecord",
       updatedate,
     );
     console.log(res.data);
     result.value = res.data;
     records.value.modifyrecord = false;
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
+//삭제
+const delRecord = async (id) => {
+  let del = {
+    counsel_num: id.counsel_num,
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/deleterecord",
+      del,
+    );
+    console.log(res.data);
+    result.value = res.data;
+    records.value.showrecordDelete = false;
+    location.reload();
   } catch (err) {
     console.error(err);
     result.value = "서버 에러 발생";
@@ -184,7 +204,17 @@ const Update = async (id) => {
       <material-button type="button" @click="addrecord()">등록</material-button>
     </template>
     <template #actions="{ close }">
-      <material-button type="button" @click="close">취소</material-button>
+      <material-button
+        type="button"
+        @click="
+          () => {
+            addRecordName = '';
+            addRecordContent = '';
+            close();
+          }
+        "
+        >취소</material-button
+      >
     </template>
   </Modal>
   <!-- 상담기록 내역 -->
@@ -234,7 +264,9 @@ const Update = async (id) => {
     >
       <template #content>
         <p>해당 상담내용을 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger">예</material-button>
+        <material-button type="button" color="danger" @click="delRecord(record)"
+          >예</material-button
+        >
       </template>
       <template #actions="{ close }">
         <material-button type="button" @click="close">아니오</material-button>
