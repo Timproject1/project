@@ -2,23 +2,22 @@ const express = require("express");
 const router = express.Router();
 const userService = require("../services/user_service");
 
-// 1. 아이디 중복 확인
+// 아이디 중복 확인
 router.post("/check-id", async (req, res) => {
   try {
     const { user_id } = req.body;
     const result = await userService.check(user_id);
-    const count = result ? result.count : 0;
+    const count = result ? result.count || result["COUNT(*)"] || 0 : 0;
     return res.json({ isDuplicate: count > 0 });
   } catch (err) {
     console.error("중복확인 라우터 에러:", err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({ success: false, message: "서버 에러" });
   }
 });
 
-// 2. 회원가입 실행
+//  회원가입 실행
 router.post("/signup", async (req, res) => {
   try {
-    console.log("프론트 데이터:", req.body);
     const result = await userService.signUp(req.body);
     return res.json({ success: true, message: "가입 성공" });
   } catch (err) {
@@ -27,20 +26,36 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// 로그인
 router.post("/login", async (req, res) => {
   try {
     const { user_id, user_password } = req.body;
     const user = await userService.login(user_id, user_password);
-
     if (user) {
       return res.json({ success: true, user });
     } else {
       return res
         .status(401)
-        .json({ success: false, message: "아이디나 비밀번호가 틀립니다." });
+        .json({ success: false, message: "정보가 틀립니다." });
     }
   } catch (err) {
     console.error("로그인 라우터 에러:", err);
+    return res.status(500).json({ success: false, message: "서버 에러" });
+  }
+});
+
+router.post("/find-id", async (req, res) => {
+  try {
+    const { userName, userEmail } = req.body;
+    const userId = await userService.findId(userName, userEmail);
+
+    if (userId) {
+      return res.json({ success: true, userId: userId });
+    } else {
+      return res.json({ success: false, message: "일치하는 정보가 없습니다." });
+    }
+  } catch (err) {
+    console.error("아이디 찾기 라우터 에러:", err);
     return res.status(500).json({ success: false, message: "서버 에러" });
   }
 });
