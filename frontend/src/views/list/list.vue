@@ -2,11 +2,11 @@
 /* eslint-disable */
 // import MaterialButton from "@/components/MaterialButton.vue";
 import { useRouter, useRoute } from "vue-router";
-import { computed } from "vue";
+
 const router = useRouter();
 const route = useRoute();
 
-// // 시스템 관리자 페이지의 버튼 변경
+// 시스템 관리자 페이지의 버튼 변경
 // const btnName = computed(() => {
 //   return route.path.includes("center") ? "기관관리" : "지원자 관리";
 // });
@@ -29,10 +29,10 @@ const route = useRoute();
 <template>
   <div class="layout">
     <div class="container">
-      <div class="left">
+      <!-- <div class="left">
         <RouterView name="left" />
 
-        <!-- <div class="button">
+        <div class="button">
           <material-button @click="gorepresentative" size="lg"
             >Home</material-button
           >
@@ -46,8 +46,8 @@ const route = useRoute();
           >
 
           <material-button @click="goplan" size="lg">로그아웃</material-button>
-        </div> -->
-      </div>
+        </div>
+      </div> -->
 
       <div class="right">
         <RouterView />
