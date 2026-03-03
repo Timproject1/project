@@ -1,4 +1,4 @@
-const mysql = require("mysql2/promise");
+const mysql = require("mariadb");
 require("dotenv").config();
 
 // 1. DB 연결 설정
