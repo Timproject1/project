@@ -1,5 +1,4 @@
 const pool = require("../db/mapper");
-const { options } = require("../routes/support_router");
 
 const service = {
   getList: async (id) => {

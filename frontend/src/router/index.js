@@ -54,10 +54,6 @@ const routes = [
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
       },
-      {
-        path: "login",
-        components: { right: () => import("../views/login/login.vue") },
-      },
     ],
   },
   {

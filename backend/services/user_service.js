@@ -54,6 +54,18 @@ const service = {
       throw error;
     }
   },
+
+  getManager: async function (id) {
+    try {
+      const query = `select * from member where grade in ("a2","a3") 
+      and registernum =(select registernum from member where user_id=?) and approve="k1"`;
+      const result = await pool.query(query, [id]);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
 };
 
 module.exports = service;

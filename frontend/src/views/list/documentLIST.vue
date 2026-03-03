@@ -1,11 +1,13 @@
 <script setup>
 import { useMemberStore } from "@/store/member";
-import { ref } from "vue";
+import { useDocStore } from "../../store/doc";
+import { ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
 const memberStore = useMemberStore();
+const docStore = useDocStore();
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
 const formatDate = (dateString) => {
@@ -39,7 +41,15 @@ const getResult = (doc_num) => {
 const moveRegister = () => {
   router.push("/document/write");
 };
-getList();
+const selectDoc = (doc_num) => {
+  console.log("test");
+  console.log(doc_num);
+  docStore.doc_num = doc_num;
+  router.push("/work");
+};
+onBeforeMount(async () => {
+  await getList();
+});
 </script>
 <template>
   <div class="container-fluid py-4">
@@ -167,7 +177,11 @@ getList();
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(doc, index) in list" :key="doc.doc_num">
+                  <tr
+                    v-for="(doc, index) in list"
+                    :key="doc.doc_num"
+                    @click="selectDoc(doc.doc_num)"
+                  >
                     <td class="text-center text-sm">
                       {{ list.length - index }}
                     </td>

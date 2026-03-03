@@ -312,14 +312,16 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
-  maneger: async (req, res) => {
+  handleManager: async (req, res) => {
     try {
-      const managerId = req.params.managerId;
+      const managerId = req.params.manager_id;
       const doc_num = req.params.doc_num;
-      const result = await service.maneger(doc_num, managerId);
+      console.log(doc_num, managerId);
+      const result = await service.handleManager(doc_num, managerId);
       res.json({ retCode: "OK" });
     } catch (error) {
-      res.json({ retCode: "NG" });
+      console.log(error);
+      res.json({ retCode: "NG", error });
     }
   },
 };
