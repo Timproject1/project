@@ -6,27 +6,27 @@ import axios from "axios";
 import { useDocStore } from "@/store/doc";
 const docStore = useDocStore();
 
-// const router = useRouter();
+const router = useRouter();
 
-// const goplan = () => {
-//   router.push("/work/plan");
-// };
+const goplan = () => {
+  router.push("/work/plan");
+};
 
-// const gopriority = () => {
-//   router.push("/work/priority");
-// };
+const gopriority = () => {
+  router.push("/work/priority");
+};
 
-// const gorecord = () => {
-//   router.push("/work/record");
-// };
+const gorecord = () => {
+  router.push("/work/record");
+};
 
-// const goresult = () => {
-//   router.push("/work/result");
-// };
+const goresult = () => {
+  router.push("/work/result");
+};
 
-// const gorepresentative = () => {
-//   router.push("/work/representative");
-// };
+const gorepresentative = () => {
+  router.push("/work/representative");
+};
 
 const doc = ref({});
 const formData = ref([]);
@@ -77,10 +77,9 @@ const getResp = async () => {
     userAnswers.value[key].response = result.data.response[key];
   }
 };
-// import { useRouter } from "vue-router";
-// const router = useRouter();
+import { useRouter } from "vue-router";
 // const gotodoc = async (docno) => {
-// router.push({ path: "info", query: { no: docno } });
+//   router.push({ path: "info", query: { no: docno } });
 // };
 
 onBeforeMount(async () => {
@@ -96,24 +95,16 @@ onBeforeMount(async () => {
       <div class="left">
         <!-- <RouterView name="left" /> -->
         <div class="top-actions">
-          <button @click="currentView = 'assignee'" class="btn-blue">
+          <button @click="gorepresentative()" class="btn-blue">
             담당자 변경
           </button>
-          <button @click="currentView = 'priority'" class="btn-blue">
-            우선순위 선택
-          </button>
+          <button @click="gopriority()" class="btn-blue">우선순위 선택</button>
         </div>
 
         <div class="tab-menu">
-          <button @click="currentView = 'consult'" class="btn-tab">
-            상담기록
-          </button>
-          <button @click="currentView = 'plan'" class="btn-tab">
-            지원 계획서
-          </button>
-          <button @click="currentView = 'result'" class="btn-tab">
-            지원 결과서
-          </button>
+          <button @click="gorecord()" class="btn-tab">상담기록</button>
+          <button @click="goplan()" class="btn-tab">지원 계획서</button>
+          <button @click="goresult()" class="btn-tab">지원 결과서</button>
         </div>
 
         <div class="application-card">
@@ -128,6 +119,7 @@ onBeforeMount(async () => {
             <div class="info-item">성별:</div>
             <div class="info-item">대기 단계: {{ doc.progress }}</div>
             <div class="info-item">생년월일:</div>
+            <div class="info-item">담당자:</div>
           </div>
           <div class="date-stamp">2026-02-01 작성</div>
 

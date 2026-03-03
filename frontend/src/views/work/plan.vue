@@ -169,7 +169,17 @@ const revision = reactive([
       >
     </template>
     <template #actions="{ close }">
-      <material-button type="button" @click="close">취소</material-button>
+      <material-button
+        type="button"
+        @click="
+          () => {
+            addPlanName = '';
+            addPlanContent = '';
+            close();
+          }
+        "
+        >취소</material-button
+      >
     </template>
   </Modal>
   <!-- 지원기획서 출력 -->

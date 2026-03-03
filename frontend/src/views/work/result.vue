@@ -1,58 +1,153 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
-import { ref, reactive } from "vue";
+import { ref, reactive, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
-// import axios from "axios";
+import axios from "axios";
 
-const results = reactive([
-  {
-    count: 1,
-    date: "2026-02-24",
-    resultName: "결과제목",
-    resultContent: "내용",
-    file: ["파일1.png", "파일2.jpg"],
-    showResultDelete: false,
-    app: "승인 완료",
+//지원결과서 출력
+const results = ref([]);
+const listresult = async () => {
+  let result = await axios
+    .get(`http://localhost:3000/document/resultlist`)
+    .catch((err) => console.log(err));
+  results.value = (result.data.result || []).map((r) => ({
+    ...r,
+    file: r.file || [],
+    showrecordDelete: false,
     modifyResult: false,
-  },
-  {
-    count: 2,
-    date: "2026-02-24",
-    resultName: "결과제목",
-    resultContent: "내용",
-    file: ["파일3.png"],
-    showResultDelete: false,
-    app: "승인 대기 중",
-    modifyResult: false,
-  },
-  {
-    count: 3,
-    date: "2026-02-24",
-    resultName: "결과제목",
-    resultContent: "내용",
-    file: ["파일4.png"],
-    showResultDelete: false,
-    app: "승인 재요청",
-    modifyResult: false,
-  },
-  {
-    count: 3,
-    date: "2026-02-24",
-    resultName: "결과제목",
-    resultContent: "내용",
-    file: ["파일4.png"],
-    showResultDelete: false,
-    app: "반려",
-    modifyResult: false,
-  },
-]);
+    showRevision: false,
+  }));
+  console.log(results.value);
+};
 
-const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth() + 1).padStart(2, "0");
-const dd = String(today.getDate()).padStart(2, "0");
-const day = ref(`${yyyy}-${mm}-${dd}`);
+onBeforeMount(() => {
+  listresult();
+});
+
+//지원결과서 추가
+const addresultsName = ref("");
+const addresultsContent = ref("");
+const addresults = async () => {
+  console.log(addresultsName.value, addresultsContent.value);
+  if (!addresultsName.value) {
+    alert("제목을 입력해주세요");
+    return;
+  } else if (!addresultsContent.value) {
+    alert("내용을 입력해주세요");
+    return;
+  }
+
+  let add = {
+    doc_num: "doc-1",
+    result_manager: "ca1",
+    result_title: addresultsName.value,
+    result_contnet: addresultsContent.value,
+  };
+
+  const result = ref(null);
+  try {
+    const res = await axios.post("http://localhost:3000/document/result", add);
+    console.log(res.data);
+    result.value = res.data;
+    addresultsName.value = "";
+    addresultsContent.value = "";
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+  newresult.value = false;
+};
+
+//지원결과서 수정
+const original = ref([]);
+const openresmodal = (res) => {
+  original.value = { ...res };
+  res.modifyResult = true;
+};
+const resreason = ref("");
+const Update = async (id) => {
+  const columns = [];
+
+  for (let key of Object.keys(id)) {
+    // 수정 가능한 필드만 체크
+    if (["result_title", "result_contnet"].includes(key)) {
+      console.log(key);
+      if (id[key] !== original.value[key]) {
+        columns.push(key);
+      }
+    }
+  }
+
+  let updatedate = {
+    result_title: id.result_title,
+    result_contnet: id.result_contnet,
+    result_num: id.result_num,
+    result_modified_by: "ca1",
+    result_modified_comment: resreason.value,
+    result_modified_title: columns.join(","),
+    result_modified_content: id.result_contnet,
+  };
+  console.log(id);
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/updateresult",
+      updatedate,
+    );
+    console.log(res.data);
+    result.value = res.data;
+    id.modifyResult = false;
+    // location.reload();
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
+//임시저장
+const draft = async () => {
+  let savedate = {
+    result_num: "result-9999999",
+    doc_num: "doc-1",
+    result_title: addresultsName.value,
+    result_content: addresultsContent.value,
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/saveresult",
+      savedate,
+    );
+    console.log(res.data);
+    result.value = res.data;
+    addresultsName.value = "";
+    addresultsContent.value = "";
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
+//임시저장 불러오기
+const sevedate = async () => {
+  let result = await axios
+    .post(`http://localhost:3000/document/bringresult`)
+    .catch((err) => console.log(err));
+
+  const data = result.data;
+  newresult.value = true;
+  addresultsName.value = data.result[0].result_title;
+  addresultsContent.value = data.result[0].result_content;
+  console.log(data.result[0]);
+};
+
+const timedate = (id) => {
+  const today = id ? new Date(id) : new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
 
 const newresult = ref(false);
 
@@ -79,29 +174,53 @@ const revision = reactive([
 </script>
 <template>
   <h4>지원결과서</h4>
-  <material-button type="button">임시저장 내용</material-button>
+  <material-button type="button" @click="sevedate()"
+    >임시저장 내용</material-button
+  >
   <material-button type="button" @click="newresult = true"
     >지원결과서 추가</material-button
   >
   <!-- 지원결과서 추가 모달 -->
   <Modal v-if="newresult" @close="newresult = false">
     <template #content>
-      <p>{{ day }}</p>
-      <material-button type="button" size="sm">임시저장</material-button>
-      <material-input id="text" placeholder="결과제목" />
-      <material-input id="text" placeholder="내용입력" />
+      <p>{{ timedate() }}</p>
+      <material-button type="button" size="sm" @click="draft()"
+        >임시저장</material-button
+      >
+      <material-input
+        id="text"
+        placeholder="결과제목"
+        v-model="addresultsName"
+      />
+      <material-input
+        id="text"
+        placeholder="내용입력"
+        v-model="addresultsContent"
+      />
       <material-button type="button">첨부파일 등록</material-button>
       <p>파일이름</p>
-      <material-button type="button">등록</material-button>
+      <material-button type="button" @click="addresults()"
+        >등록</material-button
+      >
     </template>
     <template #actions="{ close }">
-      <material-button type="button" @click="close">취소</material-button>
+      <material-button
+        type="button"
+        @click="
+          () => {
+            addresultsName = '';
+            addresultsContent = '';
+            close();
+          }
+        "
+        >취소</material-button
+      >
     </template>
   </Modal>
-  <!-- 지원기획서 출력 -->
-  <div v-for="result in results" :key="result.count">
-    <p>{{ result.date }} 지원계획 {{ result.count }}</p>
-    <material-button type="button" size="sm" @click="result.modifyResult = true"
+  <!-- 지원결과서 출력 -->
+  <div v-for="result in results" :key="result.result_num">
+    <p>{{ timedate(result.result_date) }} 지원계획 {{ result.row_num }}</p>
+    <material-button type="button" size="sm" @click="openresmodal(result)"
       >수정</material-button
     >
     <material-button
@@ -116,19 +235,21 @@ const revision = reactive([
         <material-input
           id="text"
           placeholder="제목입력"
-          :value="`${result.resultName}`"
+          v-model="result.result_title"
         />
         <material-input
           id="text"
           placeholder="내용입력"
-          :value="`${result.resultContent}`"
+          v-model="result.result_contnet"
         />
-        <material-input id="text" placeholder="수정사유" />
-        <material-button type="button">첨부파일 등록</material-button>
+        <material-input id="text" placeholder="수정사유" v-model="resreason" />
+        <!-- <material-button type="button">첨부파일 등록</material-button>
         <div v-for="file in result.file" :key="file">
           <p>{{ file }}</p>
-        </div>
-        <material-button type="button">수정 완료</material-button>
+        </div> -->
+        <material-button type="button" @click="Update(result)"
+          >수정 완료</material-button
+        >
       </template>
       <template #actions="{ close }">
         <material-button type="button" @click="close">취소</material-button>
@@ -149,16 +270,16 @@ const revision = reactive([
     </Modal>
     <div>
       <!-- 목표 및 내용 출력 -->
-      <h4>{{ result.resultName }}</h4>
+      <h4>{{ result.result_title }}</h4>
       <br />
-      <p>{{ result.resultContent }}</p>
+      <p>{{ result.result_contnet }}</p>
       <br />
     </div>
     <!-- 첨부파일 -->
-    <div v-for="file in result.file" :key="file">
+    <!-- <div v-for="file in result.file" :key="file">
       <p>첨부파일</p>
       <p>{{ file }}</p>
-    </div>
+    </div> -->
     <!-- 수정내역 -->
     <material-button
       type="button"
