@@ -219,7 +219,7 @@ const service = {
   },
   recordList: async () => {
     try {
-      const query = `select  ROW_NUMBER() OVER(ORDER BY counsel_num ASC) AS row_num,counsel_num,doc_num,counsel_date,counsel_title,counsel_content,counsel_manager from counsels order by row_num DESC`;
+      const query = `select  ROW_NUMBER() OVER(ORDER BY counsel_num ASC) AS row_num,counsel_num,doc_num,counsel_date,counsel_title,counsel_content,counsel_manager from counsels ORDER BY CAST(SUBSTRING(counsel_num, 6) AS UNSIGNED) DESC;`;
       const result = await pool.query(query);
       return result;
     } catch (err) {
@@ -383,6 +383,112 @@ const service = {
     try {
       const query = `update plans set plan_approved="d1" where plan_num=?`;
       const result = await pool.query(query, [id.plan_num]);
+      return result[0];
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  resultList: async (id) => {
+    try {
+      const query = `select ROW_NUMBER() OVER(ORDER BY result_num ASC) AS row_num, result_num, doc_num, result_manager, result_title, result_contnet, result_date
+                      from results order by row_num DESC`;
+      const result = await pool.query(query);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  addResult: async (id) => {
+    try {
+      const query = `insert into results (result_num,doc_num,result_manager,result_title,result_contnet)
+                    values (concat("result-",NEXT VALUE FOR create_result_num_seq),?,?,?,?);`;
+      const result = await pool.query(query, [
+        id.doc_num,
+        id.result_manager,
+        id.result_title,
+        id.result_contnet,
+      ]);
+      return result[0];
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  updateresult: async (id) => {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      await conn.query(
+        `update results set result_title=?,result_contnet=? where result_num=?`,
+        [id.result_title, id.result_contnet, id.result_num],
+      );
+
+      await conn.query(
+        `insert into result_modifi (result_modifi_num, result_num, result_modified_by, result_modified_comment, result_modified_title, result_modified_content)
+                        values (concat("resresult-",NEXT VALUE FOR create_res_file_num_seq),?,?,?,?,?)`,
+        [
+          id.result_num,
+          id.result_modified_by,
+          id.result_modified_comment,
+          id.result_modified_title,
+          id.result_modified_content,
+        ],
+      );
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      console.log(err);
+      return;
+    } finally {
+      conn.release();
+    }
+  },
+  saveResult: async (id) => {
+    try {
+      const query = `insert into result_draft (result_num,doc_num,result_title,result_content,result_dissavedate)
+                    values(?,?,?,?,DATE_ADD(CURDATE(), INTERVAL 30 DAY));`;
+      const result = await pool.query(query, [
+        id.result_num,
+        id.doc_num,
+        id.result_title,
+        id.result_content,
+      ]);
+      return result[0];
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  saveResultBring: async () => {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      const [rows] = await conn.query(
+        `select result_num, result_title,result_content from result_draft`,
+      );
+
+      await conn.query(`delete from result_draft where result_num=?`, [
+        "result-9999999",
+      ]);
+
+      await conn.commit();
+      return [rows];
+    } catch (err) {
+      await conn.rollback();
+      console.log(err);
+      return;
+    } finally {
+      conn.release();
+    }
+  },
+  deleteRecord: async (id) => {
+    try {
+      const query = `delete from counsels where counsel_num = ?`;
+      const result = await pool.query(query, [id.counsel_num]);
       return result[0];
     } catch (err) {
       console.log(err);

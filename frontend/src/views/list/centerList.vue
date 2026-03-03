@@ -47,7 +47,7 @@ const addCenter = async () => {
   }
   try {
     const response = await axios.post(
-      "http://localhost:3000/center/addCenter",
+      "http://localhost:3000/center/list",
       newCenter.value,
     );
     if (response.data.retCode === "OK") {

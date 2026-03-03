@@ -24,9 +24,6 @@ const resetSearch = () => {
 const detailModal = ref(false);
 const selectMember = ref(null);
 
-// 지원자 추가
-const addModal = ref(false);
-
 // 장애 유형 보기 버튼 제어
 const openDetailModal = (member) => {
   selectMember.value = member;
@@ -44,17 +41,6 @@ const closeDetailModal = () => {
   detailModal.value = false;
   selectMember.value = null;
 };
-// 지원자 추가 버튼 제어
-const openAddModal = () => {
-  addModal.value = true;
-};
-const closeAddModal = () => {
-  addModal.value = false;
-};
-// 지원자 정보 수정 (나중에 추가해야 함)
-// const modifyModal = ref(false)
-
-// 지원자 정보 수정 모달창 관리
 
 // 지원자 목록 데이터 부분
 const supported = ref([]);
@@ -63,21 +49,77 @@ const supported = ref([]);
 // 함수 선언
 const getList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/center/list");
+    const response = await axios.get("http://localhost:3000/supported/list");
+    console.log("서버 원본 응답:", response.data);
 
     if (response.data.retCode === "OK") {
-      // 실제 데이터 배열을 변수에 할당
-      supported.value = response.data.result;
-      console.log("데이터 가져오기 성공:", supported.value);
+      const result = response.data.result;
+
+      // 어떤 형태(객체/배열)로 오든 무조건 배열 []로 변환하여 할당
+      if (Array.isArray(result)) {
+        supported.value = result;
+      } else if (result && typeof result === "object") {
+        supported.value = [result]; // 객체 하나면 배열에 담기
+      } else {
+        supported.value = []; // 데이터가 없으면 빈 배열
+      }
+
+      console.log("Vue 변수에 담긴 최종 데이터:", supported.value);
     }
   } catch (err) {
-    console.error("오류! 서버가 꺼져 있거나 주소가 틀렸습니다:", err);
+    console.error("데이터 로드 실패:", err);
   }
 };
-// 함수 호출
-onMounted(() => {
-  getList();
+
+// 지원자 추가등록 모달 제어
+const addModal = ref(false); // 등록 모달 열림
+
+// 지원자 등록 시 입력 하는 부분
+const newSupported = ref({
+  sup_name: "",
+  sup_birthday: "",
+  sup_gender: "",
+  sup_tel: "",
+  sup_address: "",
+  disability_category: "",
+  sup_file: "",
 });
+// 등록 모달창 여는 함수
+const openAddModal = () => {
+  addModal.value = true;
+};
+// 지원자 등록 모달창 닫을 때 초기화
+const closeModal = () => {
+  addModal.value = false;
+
+  newSupported.value = {
+    sup_name: "",
+    sup_birthday: "",
+    sup_gender: "",
+    sup_tel: "",
+    sup_address: "",
+    disability_category: "",
+    sup_file: "",
+  };
+};
+
+// 지원자 데이터를 서버에 저장
+const addSupported = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/support/add",
+      newSupported.value,
+    );
+    if (response.data.retCode === "OK") {
+      alert("등록 완료");
+      closeModal();
+      onMounted();
+      await getList();
+    }
+  } catch (err) {
+    console.log("등록 오류:", err);
+  }
+};
 </script>
 <template>
   <div class="layout-wrapper">
@@ -133,7 +175,7 @@ onMounted(() => {
     <div class="content">
       <div class="header-section">
         <h2>지원자 정보목록</h2>
-        <button class="add-btn" @click="openAddModal">지원자 추가</button>
+        <button @click="openAddModal">지원자 추가</button>
       </div>
       <div class="table-wrapper">
         <table>
@@ -156,15 +198,18 @@ onMounted(() => {
               <td>{{ member.sup_num }}</td>
               <td>{{ member.sup_name }}</td>
               <td>
-                {{
-                  member.sup_gender === "f1"
-                    ? "남성"
-                    : member.sup_gender === "f2"
-                    ? "여성"
-                    : "미정"
-                }}
+                <span v-if="member.gender === 'm1' || member.gender === '남성'"
+                  >남성</span
+                >
+                <span
+                  v-else-if="member.gender === 'f1' || member.gender === '여성'"
+                  >여성</span
+                >
+                <span v-else>미정</span>
               </td>
-              <td>{{ member.sup_birthday }}</td>
+              <td>
+                {{ member.birthday ? member.birthday.split("T")[0] : "미정" }}
+              </td>
               <td>{{ member.sup_tel }}</td>
               <td>{{ member.sup_address }}</td>
               <td>
@@ -173,7 +218,7 @@ onMounted(() => {
                 </button>
               </td>
               <td>
-                <span v-if="member.manager">{{ member.manager }}</span>
+                <span v-if="member.user_id">{{ member.user_id }}</span>
                 <button
                   v-else
                   class="assign-btn"
@@ -182,7 +227,13 @@ onMounted(() => {
                   배정요청
                 </button>
               </td>
-              <td>{{ member.sup_reg_date.split("T")[0] }}</td>
+              <td>
+                {{
+                  member.sup_reg_date
+                    ? member.sup_reg_date.split("T")[0]
+                    : "날짜 없음"
+                }}
+              </td>
               <td><button>수정하기</button></td>
             </tr>
           </tbody>
@@ -225,71 +276,27 @@ onMounted(() => {
       <button class="close-btn" @click="closeDetailModal">닫기</button>
     </div>
   </div>
-  <!-- 지원자 추가 모달창 -->
-  <div v-if="addModal" class="modal-overlay">
-    <div class="modal-content">
-      <h3>지원자 추가</h3>
-      <div class="form-row">
-        <p><span>지원자명</span><input type="text" v-model="sup_name" /></p>
-      </div>
-      <div class="form-row">
-        <p><span>생년월일</span><input type="text" v-model="sup_birthday" /></p>
-      </div>
-      <div class="modal-body">
-        <div class="form-row">
-          <label>성별</label>
-          <div class="radio-group">
-            <label
-              ><input type="radio" v-model="sup_gender" value="남성" />
-              남성</label
-            >
-            <label
-              ><input type="radio" v-model="sup_gender" value="여성" />
-              여성</label
-            >
-          </div>
-        </div>
 
-        <div class="form-row">
-          <label>휴대폰 번호</label>
-          <input type="text" v-model="sup_tel" />
-        </div>
-
-        <div class="form-row">
-          <label>주소</label>
-          <input type="text" v-model="sup_address" placeholder="주소 입력" />
-        </div>
-
-        <div class="form-row">
-          <label>장애유형</label>
-          <input
-            type="text"
-            v-model="disability_category"
-            placeholder="장애유형 입력"
-          />
-        </div>
-
-        <div class="form-row">
-          <label>첨부파일</label>
-          <input
-            type="text"
-            v-model="sup_file"
-            placeholder="파일은 pdf,jpg파일만 등록 가능"
-          />
-        </div>
-      </div>
-      <button class="close-btn" @click="closeAddModal">저장</button>
-    </div>
-  </div>
   <!-- 지원자 정보 수정 모달창 -->
-  <div v-if="detailModal" class="modal-overlay">
+  <div v-if="false" class="modal-overlay">
     <div class="modal-content">
       <h3>지원자 정보수정</h3>
       <div>
-        <p><span>이름</span><input type="text" v-model="sup_name" /></p>
-        <p><span>생년월일</span><input type="text" v-model="sup_birthday" /></p>
-        <p><span>휴대폰 번호</span><input type="text" v-model="sup_tel" /></p>
-        <p><span>주소</span><input type="text" v-model="sup_address" /></p>
+        <p>
+          <span>이름</span><input type="text" v-model="selectMember.sup_name" />
+        </p>
+        <p>
+          <span>생년월일</span
+          ><input type="text" v-model="selectMember.sup_birthday" />
+        </p>
+        <p>
+          <span>휴대폰 번호</span
+          ><input type="text" v-model="selectMember.sup_tel" />
+        </p>
+        <p>
+          <span>주소</span
+          ><input type="text" v-model="selectMember.sup_address" />
+        </p>
         <p>
           <span>장애유형 추가</span
           ><input
@@ -310,4 +317,91 @@ onMounted(() => {
     </div>
     <button class="close-btn" @click="closeAddModal">저장</button>
   </div>
+  <div v-if="addModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>지원자 등록</h2>
+      <hr />
+      <div class="form-row">
+        <label>지원자명</label>
+        <input type="text" v-model="newSupported.sup_name" />
+      </div>
+
+      <div>
+        <div class="form-row">
+          <label>생년월일</label>
+          <input type="text" v-model="newSupported.sup_birthday" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>성별</label>
+        <div class="radio-group">
+          <label
+            ><input
+              type="radio"
+              v-model="newSupported.sup_gender"
+              value="남성"
+            />
+            남성</label
+          >
+          <label
+            ><input
+              type="radio"
+              v-model="newSupported.sup_gender"
+              value="여성"
+            />
+            여성</label
+          >
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>휴대폰 번호</label>
+        <input type="text" v-model="newSupported.sup_tel" />
+      </div>
+
+      <div class="form-row">
+        <label>주소</label>
+        <input type="text" v-model="newSupported.sup_address" />
+      </div>
+
+      <div class="form-row">
+        <label>장애유형</label>
+        <input type="text" v-model="newSupported.disability_category" />
+      </div>
+
+      <div class="form-row">
+        <label>첨부파일</label>
+        <input
+          type="text"
+          v-model="newSupported.sup_file"
+          placeholder="파일은 pdf,jpg파일만 등록 가능"
+        />
+      </div>
+      <div class="modal-buttons">
+        <button @click="addSupported">저장</button>
+        <button @click="closeModal">닫기</button>
+      </div>
+    </div>
+  </div>
 </template>
+<style scoped>
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* 내용이 많으면 가로 스크롤 생성 */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px; /* 테이블이 너무 찌그러지지 않게 최소 너비 설정 */
+}
+
+th,
+td {
+  padding: 12px 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+  white-space: nowrap; /* 글자 줄바꿈 방지 */
+}
+</style>
