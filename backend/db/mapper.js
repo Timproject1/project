@@ -1,4 +1,4 @@
-const mysql = require("mysql2/promise");
+const mysql = require("mariadb");
 require("dotenv").config();
 
 // 1. DB 연결 설정
@@ -18,28 +18,5 @@ const dbConfig = {
 };
 
 const pool = mysql.createPool(dbConfig);
-
-(async () => {
-  try {
-    const conn = await pool.getConnection();
-    console.log("-----------------------------------------");
-    console.log("MySQL DB 연결 성공 (Host: " + dbConfig.host + ")");
-    console.log("-----------------------------------------");
-    conn.release();
-  } catch (err) {
-    console.error("-----------------------------------------");
-    console.error("MySQL DB 연결 실패");
-    console.error("사유:", err.message);
-    console.error("TIP: .env 파일의 정보나 DB 서버 상태를 확인하세요.");
-    console.log("-----------------------------------------");
-  }
-})();
-
-pool.on("error", (err) => {
-  console.error("DB 풀에서 예기치 못한 에러 발생:", err);
-  if (err.code === "PROTOCOL_CONNECTION_LOST") {
-    console.error("DB 연결이 유실되었습니다.");
-  }
-});
 
 module.exports = pool;
