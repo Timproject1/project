@@ -45,11 +45,9 @@ const handleLogin = async () => {
     loginError.value = true;
 
     if (error.response && error.response.status === 404) {
-      alert(
-        "서버의 로그인 경로(404)를 찾을 수 없습니다. 백엔드 라우터를 확인하세요.",
-      );
+      alert("서버의 로그인 경로를 찾을 수 없습니다.");
     } else {
-      alert("서버 연결에 실패했습니다. 백엔드가 켜져있는지 확인하세요.");
+      alert("서버 연결에 실패했습니다.");
     }
   }
 };

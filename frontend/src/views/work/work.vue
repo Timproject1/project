@@ -39,42 +39,44 @@ const getDoc = async () => {
     `http://localhost:3000/document/getDoc/${docStore.doc_num}`,
   ).catch((err) => console.error(err));
   doc.value = result.data.result[0];
-  // console.log(doc.value);
+  console.log(doc.value);
+  docStore.setInfo({ doc_num: doc.value.doc_num, writer: doc.value.writer_id });
 };
+
 //신청서 양식받아오기
 const getForm = async () => {
   // console.log(doc.value);
   const result = await axios.get(
-    `http://localhost:3000/document/getForm/${doc.value.form_ver}`,
+    `http://localhost:3000/form/getForm/${doc.value.form_ver}`,
   );
   // console.log(result);
   formData.value = result.data.form;
 
-  formData.value.forEach((bcategory) => {
-    // console.group(bcategory);
-    bcategory.scategory.forEach((scategory) => {
-      // console.log(scategory);
-      scategory.questions.forEach((question) => {
-        // console.log(question);
-        userAnswers.value[question.question_num] = {
-          type: question.response,
-          response: "",
-        };
-      });
-    });
-  });
+  // formData.value.forEach((bcategory) => {
+  //   // console.group(bcategory);
+  //   bcategory.scategory.forEach((scategory) => {
+  //     // console.log(scategory);
+  //     scategory.questions.forEach((question) => {
+  //       // console.log(question);
+  //       userAnswers.value[question.question_num] = {
+  //         type: question.response,
+  //         response: "",
+  //       };
+  //     });
+  //   });
+  // });
 };
 //신청서 응답 받아오기
 const getResp = async () => {
   const result = await axios.get(
     `http://localhost:3000/document/getResp/${doc.value.doc_num}`,
   );
-
+  console.log(result.data.response);
   // console.log(result.data.response);
   for (const key in result.data.response) {
     if (!Object.hasOwn(result.data.response, key)) continue;
 
-    userAnswers.value[key].response = result.data.response[key];
+    userAnswers.value[key] = result.data.response[key];
   }
 };
 import { useRouter } from "vue-router";
@@ -161,8 +163,8 @@ onBeforeMount(async () => {
                             type="radio"
                             :name="q.question_num"
                             :value="opt.exam_num"
-                            v-model="userAnswers[q.question_num].response"
-                            :readonly="true"
+                            v-model="userAnswers[q.question_num]"
+                            :disabled="true"
                           />
                           {{ opt.value }}
                         </label>
@@ -170,7 +172,7 @@ onBeforeMount(async () => {
 
                       <div v-else class="text-group">
                         <textarea
-                          v-model="userAnswers[q.question_num].response"
+                          v-model="userAnswers[q.question_num]"
                           placeholder="답변을 입력해주세요."
                           :readonly="true"
                         ></textarea>

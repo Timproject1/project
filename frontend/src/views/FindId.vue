@@ -7,17 +7,20 @@ import MaterialButton from "@/components/MaterialButton.vue";
 
 const router = useRouter();
 
+// 입력 데이터 및 결과 상태 저장
 const userName = ref("");
 const userEmail = ref("");
 const foundId = ref("");
 const isSearchDone = ref(false);
 
+// 백엔드 API와 통신하여 아이디 찾기
 const handleFindId = async () => {
   if (!userName.value || !userEmail.value) {
     alert("이름과 이메일을 입력해주세요.");
     return;
   }
   try {
+    // axios를 사용하여 DB에 사용자 정보 전송
     const res = await axios.post("http://localhost:3000/user/find-id", {
       userName: userName.value,
       userEmail: userEmail.value,
@@ -28,7 +31,7 @@ const handleFindId = async () => {
     } else {
       foundId.value = "none";
     }
-    isSearchDone.value = true;
+    isSearchDone.value = true; // 결과 화면으로 전환
   } catch (err) {
     console.error("아이디 찾기 에러:", err);
     alert("서버 통신 중 오류가 발생했습니다.");
@@ -146,7 +149,7 @@ const handleFindId = async () => {
 </template>
 
 <style scoped>
-/* 배경 설정 */
+/* 배경 디자인 */
 .find-id-bg {
   background-image: linear-gradient(195deg, #f0f2f5 0%, #e0e0e0 100%);
 }
@@ -167,10 +170,9 @@ const handleFindId = async () => {
     0 7px 10px -5px rgba(76, 175, 80, 0.4);
 }
 
-/* ★ 한국어 제목 스타일: 크기 키움 */
 .main-title {
-  font-size: 1.85rem !important; /* 글자 크기 확대 */
-  letter-spacing: -0.05rem; /* 자간 조절로 가독성 향상 */
+  font-size: 1.85rem !important;
+  letter-spacing: -0.05rem;
 }
 
 .form-label-custom {

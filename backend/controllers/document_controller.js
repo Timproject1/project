@@ -83,8 +83,14 @@ const ctrl = {
       const form_ver = req.body.formVer;
       const sup_num = req.body.sup_num;
       const response = req.body.response;
+      const user_id = req.body.user_id;
       console.log(req.body);
-      const result = await service.writeDoc(form_ver, sup_num, response);
+      const result = await service.writeDoc(
+        form_ver,
+        sup_num,
+        user_id,
+        response,
+      );
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -212,6 +218,17 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  getDoc: async (req, res) => {
+    const num = req.params.num;
+    // console.log(num);
+    try {
+      const result = await service.getDoc(num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
   planList: async (req, res) => {
     const list = req.params.id;
     try {
@@ -278,6 +295,23 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  getResp: async (req, res) => {
+    const num = req.params.num;
+    console.log(num);
+    try {
+      const result = await service.getResp(num);
+      const retVal = {};
+      for (const row of result) {
+        retVal[row.question_num] = row.select_answer
+          ? row.select_answer
+          : row.answer_text;
+      }
+      res.json({ retCode: "OK", response: retVal });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
   resultList: async (req, res) => {
     const list = req.params.id;
     try {
@@ -287,6 +321,18 @@ const ctrl = {
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG" });
+    }
+  },
+  handleManager: async (req, res) => {
+    try {
+      const managerId = req.params.manager_id;
+      const doc_num = req.params.doc_num;
+      console.log(doc_num, managerId);
+      const result = await service.handleManager(doc_num, managerId);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
     }
   },
   addResult: async (req, res) => {
