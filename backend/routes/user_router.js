@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userService = require("../services/user_service");
+const con = require("../controllers/user_controller");
 
 // 아이디 중복 확인
 router.post("/check-id", async (req, res) => {
@@ -44,6 +45,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/getManager/:id", con.getManager);
 router.post("/find-id", async (req, res) => {
   try {
     const { userName, userEmail } = req.body;

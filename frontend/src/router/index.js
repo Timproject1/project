@@ -55,10 +55,6 @@ const routes = [
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
       },
-      {
-        path: "login",
-        components: { right: () => import("../views/login/login.vue") },
-      },
     ],
   },
   {
@@ -116,6 +112,10 @@ const routes = [
       {
         path: "write",
         component: () => import("../views/form/formWrite.vue"),
+      },
+      {
+        path: "view/:num",
+        component: () => import("../views/form/formView.vue"),
       },
     ],
   },

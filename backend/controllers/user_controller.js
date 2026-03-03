@@ -35,10 +35,21 @@ const findId = async (req, res) => {
 
 const signup = async (req, res) => {};
 const login = async (req, res) => {};
-
+const getManager = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const result = await service.getManager(id);
+    res.json({ retCode: "OK", result });
+  } catch (error) {
+    console.log(error);
+    res.json({ retCode: "NG", error });
+  }
+};
 module.exports = {
   signup,
   checkId,
   login,
   findId,
+  getManager,
 };

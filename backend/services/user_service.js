@@ -63,6 +63,16 @@ const service = {
     }
   },
 
+  getManager: async function (id) {
+    try {
+      const query = `select * from member where grade in ("a2","a3") 
+      and registernum =(select registernum from member where user_id=?) and approve="k1"`;
+      const result = await pool.query(query, [id]);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  },
   // 아이디 찾기
   findId: async function (name, email) {
     try {

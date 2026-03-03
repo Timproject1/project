@@ -1,10 +1,14 @@
-const { getResp } = require("../controllers/document_controller");
+const {
+  getResp,
+  handleManager,
+} = require("../controllers/document_controller");
 const pool = require("../db/mapper");
 
 const service = {
+  //목록받아오기
   getList: async (info, searchFilters) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress from getDocumentList`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id from getDocumentList`;
       const conditions = [];
       const values = [];
       if (info.grade == "a1") {
@@ -33,17 +37,7 @@ const service = {
       return error;
     }
   },
-  usageForm: async () => {
-    try {
-      const query1 = `select bcategory,scategory,question,response,number,value,question_num,exam_num,form_ver from getForm
-      where form_ver in (select form_ver from form_version where \`usage\`='h1')`;
-      const form = await pool.query(query1);
-      return form;
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
-  },
+  //작성
   writeDoc: async (form_ver, sup_num, user_id, response) => {
     // console.log(form_ver);
     // console.log(sup_num);
@@ -93,9 +87,10 @@ const service = {
       con.release();
     }
   },
+  //정보 받아오기
   getDoc: async (num) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,form_ver from getDocumentList where doc_num=?`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,form_ver,writer_id from getDocumentList where doc_num=?`;
       const result = await pool.query(query, [num]);
       // console.log(result);
       return result;
@@ -104,6 +99,7 @@ const service = {
       return error;
     }
   },
+  //양식받아오기
   getForm: async (num) => {
     try {
       let query = `select bcategory,scategory,question,response,number,value,question_num,exam_num,form_ver from getForm where form_ver=?`;
@@ -115,6 +111,7 @@ const service = {
       return error;
     }
   },
+  //응답받아오기
   getResp: async (num) => {
     try {
       const query = `select responce_num,doc_ver,question_num,select_answer,answer_text from responce 
@@ -127,6 +124,17 @@ const service = {
       return error;
     }
   },
+  handleManager: async (doc_num, manager_id) => {
+    try {
+      const query = `update documents set manager = ? , priority=if(priority="c1","c2",priority) where doc_num=?`;
+      const result = await pool.query(query, [manager_id, doc_num]);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  //우선순위 셋팅
   prioritySetting: async (id) => {
     try {
       const query = `insert into priority_req ( priority_req_num, doc_num, priority_reason, priority, priority_app_manager, priority_approved) values (concat("prireq-",NEXT VALUE FOR create_pri_req_num_seq),?,?,?,?,?) `;
@@ -143,6 +151,7 @@ const service = {
       return;
     }
   },
+  //우선순위 승인
   priorityApp: async (id) => {
     try {
       const query = `SELECT p.priority_req_num, p.doc_num, p.priority_reason, p.priority, p.priority_approved,d.sup_num

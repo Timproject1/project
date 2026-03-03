@@ -59,6 +59,31 @@ const service = {
       throw error;
     }
   },
+  getSupportedList: async function (managerId) {
+    try {
+      // 지원신청서(documents) 테이블 + 지원자 목록(suppororted)과 sup_num과 join 하기
+      let query = `select S.sup_num, S.sup_name, S.sup_reg_date, S.sup_approved,
+          D.doc_num, D.write_date, D.progress, D.priority, D.manager
+          from supported S
+          left join documents D ON S.sup_num = D.sup_num`;
+
+      const params = []; // DB에 전달 할 값들을 순서대로 저장하는 곳
+
+      if (managerId) {
+        query += ` where D.manager = ?`;
+        params.push(managerId);
+      }
+      // 작성일 기준 역순으로 내림차순 정렬
+      query += ` order by D.write_date DESC`;
+
+      const result = await pool.query(query, params);
+      return result;
+    } catch (err) {
+      console.error("지원자 목록 join 실패:", err);
+      throw err;
+    }
+  },
 };
+
 
 module.exports = service;
