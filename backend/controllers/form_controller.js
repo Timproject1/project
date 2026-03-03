@@ -1,4 +1,5 @@
 const service = require("../services/form_service");
+//db에서 받아온 정보를 계층형으로 정리
 const reducing = (array) => {
   return array.reduce((acc, row) => {
     // 1. 대분류(Big Category) 처리
@@ -47,6 +48,7 @@ const reducing = (array) => {
     return acc;
   }, []);
 };
+
 const ctrl = {
   getList: async (req, res) => {
     try {
@@ -79,13 +81,13 @@ const ctrl = {
       console.log("con");
       console.log(form);
       const result = await service.writeForm(form);
-      if(result.form_ver){
-        res.json({retCode:"OK",form_ver:result.form_ver});
+      if (result.form_ver) {
+        res.json({ retCode: "OK", form_ver: result.form_ver });
         // res.send("ok");
       }
     } catch (error) {
       console.log(error);
-      res.json(error);
+      res.json({ retCode: "NG", error });
     }
   },
   usageForm: async (req, res) => {
@@ -95,6 +97,25 @@ const ctrl = {
       const retVal = reducing(result);
 
       res.json({ retCode: "OK", ver: result[0].form_ver, form: retVal });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
+  getInfo: async (req, res) => {
+    try {
+      console.log(req.params.num);
+      const num = req.params.num;
+      const result = await service.getInfo(num);
+      res.json({ retCode: "OK", info: result });
+    } catch (error) {}
+  },
+  changeUsage: async (req, res) => {
+    try {
+      console.log(req.params.ver);
+      const ver = req.params.ver;
+      const result = await service.changeUsage(ver);
+      res.json({ retCode: "OK" });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG", error });

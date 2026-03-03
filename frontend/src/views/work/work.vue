@@ -50,19 +50,19 @@ const getForm = async () => {
   // console.log(result);
   formData.value = result.data.form;
 
-  formData.value.forEach((bcategory) => {
-    // console.group(bcategory);
-    bcategory.scategory.forEach((scategory) => {
-      // console.log(scategory);
-      scategory.questions.forEach((question) => {
-        // console.log(question);
-        userAnswers.value[question.question_num] = {
-          type: question.response,
-          response: "",
-        };
-      });
-    });
-  });
+  // formData.value.forEach((bcategory) => {
+  //   // console.group(bcategory);
+  //   bcategory.scategory.forEach((scategory) => {
+  //     // console.log(scategory);
+  //     scategory.questions.forEach((question) => {
+  //       // console.log(question);
+  //       userAnswers.value[question.question_num] = {
+  //         type: question.response,
+  //         response: "",
+  //       };
+  //     });
+  //   });
+  // });
 };
 //신청서 응답 받아오기
 const getResp = async () => {
@@ -170,7 +170,7 @@ onBeforeMount(async () => {
                             :name="q.question_num"
                             :value="opt.exam_num"
                             v-model="userAnswers[q.question_num].response"
-                            :readonly="true"
+                            :disabled="true"
                           />
                           {{ opt.value }}
                         </label>

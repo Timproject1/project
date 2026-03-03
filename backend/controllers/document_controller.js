@@ -85,7 +85,12 @@ const ctrl = {
       const response = req.body.response;
       const user_id = req.body.user_id;
       console.log(req.body);
-      const result = await service.writeDoc(form_ver, sup_num, user_id,response);
+      const result = await service.writeDoc(
+        form_ver,
+        sup_num,
+        user_id,
+        response,
+      );
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -304,6 +309,16 @@ const ctrl = {
       res.json({ retCode: "OK", response: retVal });
     } catch (error) {
       console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  maneger: async (req, res) => {
+    try {
+      const managerId = req.params.managerId;
+      const doc_num = req.params.doc_num;
+      const result = await service.maneger(doc_num, managerId);
+      res.json({ retCode: "OK" });
+    } catch (error) {
       res.json({ retCode: "NG" });
     }
   },

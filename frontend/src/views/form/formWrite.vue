@@ -19,7 +19,7 @@ const formData = ref([]); //설문지 양식
 const addQuestion = (subCategory) => {
   subCategory.questions.push({
     question: "",
-    type: "i1",
+    type: "l1",
     options: [],
   });
 };
@@ -60,9 +60,9 @@ const delBigcategory = (idx) => {
 
 const handleTypeChange = (q) => {
   let count = 0;
-  if (q.type == "i2") {
+  if (q.type == "l2") {
     count = 2;
-  } else if (q.type == "i3") {
+  } else if (q.type == "l3") {
     count = 5;
   }
 
@@ -179,9 +179,9 @@ const submitForm = async () => {
                       <div class="type-select-area">
                         <label>응답 타입: </label>
                         <select v-model="q.type" @change="handleTypeChange(q)">
-                          <option value="i1">자유 응답형</option>
-                          <option value="i2">2지선다형</option>
-                          <option value="i3">5지선다형</option></select
+                          <option value="l1">자유 응답형</option>
+                          <option value="l2">2지선다형</option>
+                          <option value="l3">5지선다형</option></select
                         ><button
                           type="button"
                           :disabled="small.questions.length <= 1"
@@ -195,7 +195,7 @@ const submitForm = async () => {
                         placeholder="질문을 입력하세요"
                       />
 
-                      <div v-if="q.type != 'i1'" class="options-container">
+                      <div v-if="q.type != 'l1'" class="options-container">
                         <div
                           v-for="(opt, oIdx) in q.options"
                           :key="oIdx"

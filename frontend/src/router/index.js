@@ -116,6 +116,10 @@ const routes = [
         path: "write",
         component: () => import("../views/form/formWrite.vue"),
       },
+      {
+        path: "view/:num",
+        component: () => import("../views/form/formView.vue"),
+      },
     ],
   },
 

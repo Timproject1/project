@@ -5,4 +5,6 @@ router.get("/list", ctrl.getList);
 router.post("/write", ctrl.writeForm);
 router.get("/usageForm", ctrl.usageForm);
 router.get("/getForm/:num", ctrl.getForm);
+router.get("/getInfo/:num", ctrl.getInfo);
+router.patch("/usage/:ver", ctrl.changeUsage);
 module.exports = router;
