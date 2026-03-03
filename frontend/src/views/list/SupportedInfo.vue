@@ -55,11 +55,10 @@ const getList = async () => {
     if (response.data.retCode === "OK") {
       const result = response.data.result;
 
-      // 어떤 형태(객체/배열)로 오든 무조건 배열 []로 변환하여 할당
       if (Array.isArray(result)) {
         supported.value = result;
       } else if (result && typeof result === "object") {
-        supported.value = [result]; // 객체 하나면 배열에 담기
+        supported.value = result; // 객체 하나면 배열에 담기
       } else {
         supported.value = []; // 데이터가 없으면 빈 배열
       }
@@ -70,7 +69,9 @@ const getList = async () => {
     console.error("데이터 로드 실패:", err);
   }
 };
-
+onMounted(() => {
+  getList();
+});
 // 지원자 추가등록 모달 제어
 const addModal = ref(false); // 등록 모달 열림
 
@@ -113,8 +114,6 @@ const addSupported = async () => {
     if (response.data.retCode === "OK") {
       alert("등록 완료");
       closeModal();
-      onMounted();
-      await getList();
     }
   } catch (err) {
     console.log("등록 오류:", err);

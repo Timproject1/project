@@ -22,7 +22,7 @@ const ctrl = {
 
       // [수정된 1번 단계]: 번호 추출 방식을 더 직관적이고 안전하게 변경
       // MAX 함수를 사용하여 가장 큰 숫자를 직접 가져옵니다.
-      const [rows] = await pool.query(
+      const rows = await pool.query(
         `SELECT MAX(CAST(REPLACE(sup_num, 'sup-', '') AS UNSIGNED)) as maxNum FROM supported`,
       );
 
@@ -70,7 +70,7 @@ const ctrl = {
   getManagers: async (req, res) => {
     try {
       const query = `select user_id, user_name, user_tel from member where grade = 'a2'`;
-      const [managers] = await pool.query(query);
+      const managers = await pool.query(query);
       res.json(managers);
     } catch (error) {
       res.status(500).json({ error: error.message });

@@ -14,7 +14,7 @@ const service = {
 
       query += ` ORDER BY sup_num DESC`;
 
-      const [rows] = await pool.query(query, params);
+      const rows = await pool.query(query, params);
       return rows;
     } catch (err) {
       console.error("지원자 목록 조회 실패:", err);
@@ -25,7 +25,7 @@ const service = {
   addSupported: async function (data) {
     try {
       // 1. 번호 생성
-      const [maxResult] = await pool.query(
+      const maxResult = await pool.query(
         `SELECT sup_num FROM supported ORDER BY sup_num DESC LIMIT 1`,
       );
 
@@ -52,7 +52,7 @@ const service = {
         data.sup_birthday,
       ];
 
-      const [result] = await pool.query(query, values);
+      const result = await pool.query(query, values);
       return result;
     } catch (error) {
       console.error("DB 저장 에러:", error);
