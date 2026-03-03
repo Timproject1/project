@@ -6,6 +6,7 @@ import work from "../views/work/work.vue";
 import Home from "../views/Home.vue";
 import FindId from "../views/FindId.vue";
 import findpw from "../views/findpw.vue";
+import Mypage from "../views/mypage/mypage.vue";
 
 const routes = [
   {
@@ -54,10 +55,6 @@ const routes = [
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
       },
-      {
-        path: "login",
-        components: { right: () => import("../views/login/login.vue") },
-      },
     ],
   },
   {
@@ -75,10 +72,6 @@ const routes = [
         component: () => import("../views/list/SupportedInfo.vue"),
       },
       {
-        path: "add",
-        component: () => import("../views/list/supportedAdd.vue"),
-      },
-      {
         path: "document",
         component: () => import("../views/list/documentLIST.vue"),
       },
@@ -93,6 +86,10 @@ const routes = [
       {
         path: "center",
         component: () => import("../views/list/centerList.vue"),
+      },
+      {
+        path: "allotment",
+        component: () => import("../views/list/allotmentList.vue"),
       },
     ],
   },
@@ -115,6 +112,10 @@ const routes = [
       {
         path: "write",
         component: () => import("../views/form/formWrite.vue"),
+      },
+      {
+        path: "view/:num",
+        component: () => import("../views/form/formView.vue"),
       },
     ],
   },
@@ -163,6 +164,16 @@ const routes = [
     path: "/sign-up",
     name: "SignUp",
     component: SignUp,
+  },
+  {
+    path: "/mypage",
+    component: Mypage,
+    children: [
+      {
+        path: "/supported",
+        component: () => import("../views/mypage/supportedPage.vue"),
+      },
+    ],
   },
   /*
   {

@@ -5,7 +5,7 @@ const ctrl = {
     const filter = req.query.filter ? req.query.filter : "";
     try {
       const result = await service.getList(filter);
-      console.log(result);
+      // console.log(result);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);

@@ -8,6 +8,7 @@ const center_route = require("./routes/center_router.js");
 const doc_route = require("./routes/document_router.js");
 const sup_route = require("./routes/support_router.js");
 const form_route = require("./routes/form_router.js");
+const mypage_route = require("./routes/mypage_router.js");
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
@@ -19,10 +20,15 @@ app.use(cors());
 app.use("/center", center_route); //센터 라우트
 app.use("/user", user_route); //유저 라우트
 app.use("/document", doc_route);
-// app.use("/support", sup_route);
+app.use("/support", sup_route);
 app.use("/form", form_route);
 app.use(["/support", "/supported"], sup_route);
+app.use("/mypage", mypage_route);
 app.get("/", async (req, res) => {
+  console.log(process.env.DB_HOST);
+  console.log(process.env.DB_USER);
+  console.log(process.env.DB_PASSWORD);
+
   try {
     const query = "show tables";
     const result = await pool.query(query);
