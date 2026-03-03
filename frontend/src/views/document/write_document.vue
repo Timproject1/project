@@ -15,7 +15,7 @@ const getList = async () => {
       id: memberStore.id,
     },
   });
-  // console.log(result.data.result);
+  console.log(result.data.result);
   sups.value = result.data.result;
 };
 //설문지 양식을 가져온다
