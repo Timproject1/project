@@ -9,7 +9,7 @@ const ctrl = {
       console.log("로그인 한 담당자 ID:", managerId);
 
       // 담당자 id join 호출
-      const result = await service.getSupportedList(managerId);
+      const result = await service.getList(managerId);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -65,6 +65,15 @@ const ctrl = {
       res
         .status(500)
         .json({ retCode: "NG", message: err.sqlMessage || err.message });
+    }
+  },
+  getManagers: async (req, res) => {
+    try {
+      const query = `select user_id, user_name, user_tel from member where grade = 'a2'`;
+      const [managers] = await pool.query(query);
+      res.json(managers);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   },
 };

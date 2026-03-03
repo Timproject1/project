@@ -1,10 +1,30 @@
 const pool = require("../db/mapper");
 
 const service = {
-  // 지원자 등록 (테이블명을 조회하는 곳과 일치시킴)
+  // 지원자 목록 가져오기
+  getList: async function (managerId) {
+    try {
+      let query = `SELECT * FROM supported`;
+      const params = [];
+
+      if (managerId) {
+        query += ` WHERE manager = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
+        params.push(managerId);
+      }
+
+      query += ` ORDER BY sup_num DESC`;
+
+      const [rows] = await pool.query(query, params);
+      return rows;
+    } catch (err) {
+      console.error("지원자 목록 조회 실패:", err);
+      throw err;
+    }
+  },
+  // 지원자 등록
   addSupported: async function (data) {
     try {
-      // 1. 번호 생성 (기존 로직 유지하되 테이블명 통일)
+      // 1. 번호 생성
       const [maxResult] = await pool.query(
         `SELECT sup_num FROM supported ORDER BY sup_num DESC LIMIT 1`,
       );
@@ -16,7 +36,7 @@ const service = {
         newSupNum = `SUP-${numberOnly + 1}`;
       }
 
-      // 2. INSERT (supported_test 테이블 사용)
+      // 2. INSERT
       const query = `INSERT INTO supported 
       (sup_num, user_id, sup_name, sup_address, sup_email, sup_tel, sup_reg_date, sup_approved, birthday, gender) 
       VALUES (?, ?, ?, ?, ?, ?, now(), ?, ?, ?)`;
@@ -37,29 +57,6 @@ const service = {
     } catch (error) {
       console.error("DB 저장 에러:", error);
       throw error;
-    }
-  },
-
-  // 지원자 목록 가져오기 (테이블명 통일 및 결과 반환 수정)
-  getSupportedList: async function (managerId) {
-    try {
-      // 뷰(getSupportList)가 아니라 실제 저장되는 테이블(supported_test)을 조회해야 합니다.
-      // 만약 뷰를 꼭 써야 한다면 뷰 정의 자체에 supported_test가 포함되어야 합니다.
-      let query = `SELECT * FROM supported`;
-      const params = [];
-
-      if (managerId) {
-        query += ` WHERE manager = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
-        params.push(managerId);
-      }
-
-      query += ` ORDER BY sup_num DESC`; // 최신순 정렬
-
-      const [rows] = await pool.query(query, params);
-      return rows; // [rows]로 받아서 rows만 반환해야 프론트에서 데이터가 바로 보입니다.
-    } catch (err) {
-      console.error("지원자 목록 조회 실패:", err);
-      throw err;
     }
   },
 };
