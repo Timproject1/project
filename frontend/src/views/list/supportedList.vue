@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -18,7 +18,7 @@ const manager = ref("");
 const getSupportedList = async () => {
   try {
     const response = await axios.get("http://localhost:3000/supported/list");
-
+    console.log(response.data);
     if (response.data.retCode === "OK") {
       supported.value = response.data.result;
       console.log("데이터 가져오기 성공", supported.value);
@@ -37,8 +37,8 @@ const getlabel = (status) => {
   };
   return labels[status] || "대기중";
 };
-onMounted(() => {
-  getSupportedList();
+onBeforeMounted(async() => {
+  await getSupportedList();
 });
 </script>
 <template>

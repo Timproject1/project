@@ -8,13 +8,13 @@ const service = {
       const params = [];
 
       if (managerId) {
-        query += ` WHERE manager = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
+        query += ` WHERE user_id = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
         params.push(managerId);
       }
 
       query += ` ORDER BY sup_num DESC`;
 
-      const [rows] = await pool.query(query, params);
+      const rows = await pool.query(query, params);
       return rows;
     } catch (err) {
       console.error("지원자 목록 조회 실패:", err);
