@@ -1,40 +1,44 @@
 <script setup>
-import { ref } from "vue";
-import axios from "axios";
-import { useRouter } from "vue-router";
-import MaterialInput from "@/components/MaterialInput.vue";
-import MaterialButton from "@/components/MaterialButton.vue";
+import { ref } from "vue"; // Vue의 반응형 데이터(ref) 기능을 가져옵니다.
+import axios from "axios"; // 서버와 HTTP 통신을 하기 위한 axios 라이브러리를 가져옵니다.
+import { useRouter } from "vue-router"; // 페이지 이동(라우팅)을 제어하기 위한 도구를 가져옵니다.
+import MaterialInput from "@/components/MaterialInput.vue"; // 디자인된 입력창 컴포넌트를 가져옵니다.
+import MaterialButton from "@/components/MaterialButton.vue"; // 디자인된 버튼 컴포넌트를 가져옵니다.
 
-const router = useRouter();
+const router = useRouter(); // 라우터 인스턴스를 생성하여 페이지 이동 함수를 사용할 준비를 합니다.
 
 // 입력 데이터 및 결과 상태 저장
-const userName = ref("");
-const userEmail = ref("");
-const foundId = ref("");
-const isSearchDone = ref(false);
+const userName = ref(""); // 사용자가 입력한 이름을 저장하는 반응형 변수입니다.
+const userEmail = ref(""); // 사용자가 입력한 이메일을 저장하는 반응형 변수입니다.
+const foundId = ref(""); // 서버로부터 찾은 아이디 결과를 저장하는 변수입니다.
+const isSearchDone = ref(false); // 찾기 완료 여부에 따라 화면을 전환하기 위한 상태값입니다.
 
-// 백엔드 API와 통신하여 아이디 찾기
+// 백엔드 API와 통신하여 아이디 찾기 실행 함수
 const handleFindId = async () => {
   if (!userName.value || !userEmail.value) {
-    alert("이름과 이메일을 입력해주세요.");
-    return;
+    // 이름이나 이메일이 입력되지 않았는지 확인합니다.
+    alert("이름과 이메일을 입력해주세요."); // 필수 입력 알림창을 띄웁니다.
+    return; // 값이 없으면 함수 실행을 중단합니다.
   }
   try {
-    // axios를 사용하여 DB에 사용자 정보 전송
+    // axios를 사용하여 백엔드 서버의 find-id 경로로 데이터를 전송합니다.
     const res = await axios.post("http://localhost:3000/user/find-id", {
-      userName: userName.value,
-      userEmail: userEmail.value,
+      userName: userName.value, // 입력받은 이름을 보냅니다.
+      userEmail: userEmail.value, // 입력받은 이메일을 보냅니다.
     });
 
     if (res.data.success) {
-      foundId.value = res.data.userId;
+      // 서버가 아이디를 성공적으로 찾았다고 응답한 경우입니다.
+      foundId.value = res.data.userId; // 찾은 아이디를 결과 변수에 담습니다.
     } else {
-      foundId.value = "none";
+      // 서버에서 일치하는 정보를 찾지 못한 경우입니다.
+      foundId.value = "none"; // 결과가 없음을 나타내는 값을 담습니다.
     }
-    isSearchDone.value = true; // 결과 화면으로 전환
+    isSearchDone.value = true; // 결과 화면을 보여주기 위해 상태를 true로 변경합니다.
   } catch (err) {
-    console.error("아이디 찾기 에러:", err);
-    alert("서버 통신 중 오류가 발생했습니다.");
+    // 서버 통신 중 에러가 발생했을 때 처리합니다.
+    console.error("아이디 찾기 에러:", err); // 콘솔에 에러 내용을 출력합니다.
+    alert("서버 통신 중 오류가 발생했습니다."); // 사용자에게 오류 메시지를 보여줍니다.
   }
 };
 </script>
