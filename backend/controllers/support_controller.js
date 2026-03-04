@@ -80,7 +80,6 @@ const ctrl = {
     try {
       const id = req.params.id;
       console.log("로그인 ID:", id);
-
       // 담당자 id join 호출
       const result = await service.allowList(id);
       res.json({ retCode: "OK", result });

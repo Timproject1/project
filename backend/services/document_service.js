@@ -495,5 +495,71 @@ const service = {
       return;
     }
   },
+  priReqList: async (center_num) => {
+    try {
+      const query = `SELECT 
+          pr.priority_req_num,
+          d.doc_num,
+          -- 지원자 정보 (supported)
+          s.sup_name AS sup_name,
+          -- 보호자 정보 (member - 일반 사용자)
+          m.user_name AS writer_name,
+          -- 담당자 정보 (member - 관리자)
+          mgr.user_name AS manager_name,
+          d.write_date,
+          d.progress
+      FROM 
+          priority_req pr
+      JOIN 
+          documents d ON pr.doc_num = d.doc_num
+      JOIN 
+          supported s ON d.sup_num = s.sup_num
+      JOIN 
+          member m ON d.user_id = m.user_id
+      LEFT JOIN 
+          member mgr ON d.manager = mgr.user_id  -- 담당자가 지정되지 않았을 수도 있으므로 LEFT JOIN 권장
+      where pr.priority_approved = "d1"
+      and m.registernum =?`;
+      const result = await pool.query(query, [center_num]);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  planReqList: async (center_num) => {
+    try {
+      const query = `SELECT 
+          pr.plan_req_num,
+          d.doc_num,
+          -- 지원자 정보 (supported)
+          s.sup_name AS sup_name,
+          -- 보호자 정보 (member - 일반 사용자)
+          m.user_name AS writer_name,
+          -- 담당자 정보 (member - 관리자)
+          mgr.user_name AS manager_name,
+          d.write_date,
+          d.progress
+      FROM 
+          plan_req pr
+      JOIN 
+          plans p ON pr.plan_num = p.plan_num
+      JOIN 
+          documents d ON p.doc_num = d.doc_num
+      JOIN 
+          supported s ON d.sup_num = s.sup_num
+      JOIN 
+          member m ON d.user_id = m.user_id
+      LEFT JOIN 
+          member mgr ON d.manager = mgr.user_id
+      WHERE 
+          m.registernum =? `;
+      const result = await pool.query(query, [center_num]);
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
 };
 module.exports = service;

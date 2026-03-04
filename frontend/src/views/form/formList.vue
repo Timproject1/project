@@ -30,10 +30,11 @@ const displayedPages = computed(() => {
   }
   return pages;
 });
-const changePage = (page) => {
+const changePage = async (page) => {
   if (page < 1 || page > totalPages.value) return;
   currentPage.value = page;
-  getList(); // 페이지 바뀔 때마다 다시 호출
+  await getCount();
+  await getList(); // 페이지 바뀔 때마다 다시 호출
 };
 const getList = async () => {
   const result = await axios.get("http://localhost:3000/form/list", {

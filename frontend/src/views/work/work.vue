@@ -5,7 +5,8 @@ import { ref, onBeforeMount } from "vue";
 import axios from "axios";
 import { useDocStore } from "@/store/doc";
 const docStore = useDocStore();
-
+console.log("----------------------");
+console.log(docStore.doc_num);
 const router = useRouter();
 
 const goplan = () => {
