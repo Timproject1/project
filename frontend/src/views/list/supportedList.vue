@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onBeforeMounted } from "vue";
+// 전체 완료 (DB연결 포함) css만 수정하면 됨 - 3월 3일
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -18,24 +19,45 @@ const manager = ref("");
 const getSupportedList = async () => {
   try {
     const response = await axios.get("http://localhost:3000/supported/list");
-    console.log(response.data);
+    // 임시 데이터 생성
+    // map: 배열 안 데이터들을 하나씩 꺼내서 담아주는 도구
+    // priorityValue: 우선순위 값 (화면에 직접 글자로 보여줄 내용을 담는 변수)
+    // priorityClass: 우선순위 클래스 (css 스타일 적용할 때 사용)
     if (response.data.retCode === "OK") {
-      supported.value = response.data.result;
+      supported.value = response.data.result.map((item, index) => {
+        let priorityValue = "계획";
+        let priorityClass = "p-plan";
+
+        // index: 목록의 번호
+        // %: 나누기
+        if (index % 3 === 0) {
+          priorityValue = "긴급";
+          priorityClass = "p-emergency";
+          // 나머지가 1인 경우
+        } else if (index % 3 === 1) {
+          priorityValue = "중점";
+          priorityClass = "p-focus";
+        }
+        return {
+          ...item, // DB에서 가져온 데이터를 그대로 복사
+          temp_priority: priorityValue,
+          temp_class: priorityClass,
+        };
+      });
       console.log("데이터 가져오기 성공", supported.value);
     }
   } catch (err) {
     console.log("데이터 가져오기 오류:", err);
   }
 };
-const getlabel = (status) => {
+const getlabel = (code) => {
   const labels = {
     d1: "대기",
     d2: "승인",
     d3: "반려",
-    승인: "승인완료",
-    대기: "대기중",
+    d4: "재승인",
   };
-  return labels[status] || "대기중";
+  return labels[code] || "-";
 };
 onBeforeMounted(async() => {
   await getSupportedList();
@@ -53,14 +75,14 @@ onBeforeMounted(async() => {
             :class="{ active: currentTab === 'list' }"
             @click="router.push('/list/supported')"
           >
-            - 지원자 현황
+            지원자 현황
           </li>
           <li
             class="sub-item"
             :class="{ active: currentTab === 'info' }"
             @click="router.push('/list/info')"
           >
-            - 지원자 정보 관리
+            지원자 정보 관리
           </li>
         </ul>
       </div>
@@ -107,34 +129,28 @@ onBeforeMounted(async() => {
               <th>최근 서류작성일</th>
               <th>작성 서류상태</th>
               <th>담당자 배정일</th>
-              <th>담당자</th>
-              <th>신청서</th>
-              <th>계획서</th>
-              <th>결과서</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="member in supported" :key="member.sup_num">
               <td>{{ member.sup_num }}</td>
               <td>{{ member.sup_name }}</td>
-              <td>{{ member.priority }}</td>
+              <td>
+                <span :class="['priority-badge', member.temp_class]">
+                  {{ member.temp_priority }}
+                </span>
+              </td>
               <td>
                 {{
                   member.sup_reg_date ? member.sup_reg_date.split("T")[0] : ""
                 }}
               </td>
-
-              <td>{{ getlabel(member.approve) }}</td>
-
+              <td>{{ getlabel(member.sup_approved) }}</td>
               <td>
                 {{
                   member.sup_reg_date ? member.sup_reg_date.split("T")[0] : ""
                 }}
               </td>
-              <td>{{ member.plan_manager }}</td>
-              <td><button>보기</button></td>
-              <td><button>보기</button></td>
-              <td><button>보기</button></td>
             </tr>
           </tbody>
         </table>
@@ -153,8 +169,87 @@ onBeforeMounted(async() => {
 th,
 td {
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   text-align: center;
   white-space: nowrap;
+}
+.content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.pages {
+  display: flex;
+  gap: 8px;
+}
+
+.pages span {
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.pages span.active {
+  font-weight: bold;
+  color: #e53e3e;
+  border-bottom: 2px solid #4caf50;
+}
+.layout-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+}
+
+.sidebar-container {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.content {
+  flex-grow: 1;
+  min-width: 0;
+}
+.priority-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 60px;
+}
+
+.p-emergency {
+  background-color: #f8d7da;
+  color: #000000;
+  border: 1px solid #f5c6cb;
+}
+
+.p-focus {
+  background-color: #fff3cd;
+  color: #000000;
+  border: 1px solid #ffeeba;
+}
+
+.p-plan {
+  background-color: #d4edda;
+  color: #000000;
+  border: 1px solid #c3e6cb;
 }
 </style>

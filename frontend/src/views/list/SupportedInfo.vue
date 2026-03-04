@@ -24,10 +24,49 @@ const resetSearch = () => {
 const detailModal = ref(false);
 const selectMember = ref(null);
 
+// 지원자 정보 수정 부분
+const Modifymodal = ref(false);
+const Modifymember = ref(null);
+
+const openModal = (member) => {
+  Modifymember.value = { ...member };
+  Modifymodal.value = true;
+};
+const sup_file = ref(null);
+const disability_category = ref("");
+// 지원자 정보 수정부분 데이터 저장
+const updateMember = async () => {
+  try {
+    const response = await axios.put("http://localhost:3000/supported/update");
+
+    if (response.status === 200) {
+      alert("정보 수정 완료");
+      Modifymodal.value = false;
+      location.reload();
+    }
+  } catch (error) {
+    console.error("수정 실패:", error);
+    alert("정보 수정을 실패 하였습니다 ");
+  }
+};
+
 // 장애 유형 보기 버튼 제어
-const openDetailModal = (member) => {
+const openDetailModal = async (member) => {
   selectMember.value = member;
-  detailModal.value = true;
+  try {
+    const response = await axios.get(
+      "http://localhost:3000/supported/disabilities",
+      {
+        params: { sup_num: member.sup_num },
+      },
+    );
+    selectMember.value.disabilities = response.data;
+    detailModal.value = true;
+    console.log("장애유형 가져오기 성공:", response.data);
+  } catch (err) {
+    console.error("장애유형 가져오기 실패:", err);
+    alert("장애 유형정보를 가져오는 중에 에러 발생");
+  }
 };
 // 담당자 배정 요청
 const requestManager = (sup_name) => {
@@ -55,11 +94,10 @@ const getList = async () => {
     if (response.data.retCode === "OK") {
       const result = response.data.result;
 
-      // 어떤 형태(객체/배열)로 오든 무조건 배열 []로 변환하여 할당
       if (Array.isArray(result)) {
         supported.value = result;
       } else if (result && typeof result === "object") {
-        supported.value = [result]; // 객체 하나면 배열에 담기
+        supported.value = result; // 객체 하나면 배열에 담기
       } else {
         supported.value = []; // 데이터가 없으면 빈 배열
       }
@@ -70,7 +108,9 @@ const getList = async () => {
     console.error("데이터 로드 실패:", err);
   }
 };
-
+onMounted(() => {
+  getList();
+});
 // 지원자 추가등록 모달 제어
 const addModal = ref(false); // 등록 모달 열림
 
@@ -113,8 +153,6 @@ const addSupported = async () => {
     if (response.data.retCode === "OK") {
       alert("등록 완료");
       closeModal();
-      onMounted();
-      await getList();
     }
   } catch (err) {
     console.log("등록 오류:", err);
@@ -234,7 +272,11 @@ const addSupported = async () => {
                     : "날짜 없음"
                 }}
               </td>
-              <td><button>수정하기</button></td>
+              <td>
+                <button class="view-btn" @click="openModal(member)">
+                  수정하기
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -278,45 +320,43 @@ const addSupported = async () => {
   </div>
 
   <!-- 지원자 정보 수정 모달창 -->
-  <div v-if="false" class="modal-overlay">
+  <div v-if="Modifymodal && Modifymember" class="modal-overlay">
     <div class="modal-content">
       <h3>지원자 정보수정</h3>
+
+      <div class="input-form">
+        <label>이름</label>
+        <input type="text" v-model="Modifymember.sup_name" />
+      </div>
+      <div class="input-form">
+        <label>휴대폰 번호</label
+        ><input type="text" v-model="Modifymember.sup_tel" />
+      </div>
+      <div class="input-form">
+        <span>주소</span
+        ><input type="text" v-model="Modifymember.sup_address" />
+      </div>
+      <div class="input-form">
+        <label>장애유형 추가</label
+        ><input
+          type="text"
+          v-model="disability_category"
+          placeholder="장애유형을 추가"
+        />
+      </div>
       <div>
-        <p>
-          <span>이름</span><input type="text" v-model="selectMember.sup_name" />
-        </p>
-        <p>
-          <span>생년월일</span
-          ><input type="text" v-model="selectMember.sup_birthday" />
-        </p>
-        <p>
-          <span>휴대폰 번호</span
-          ><input type="text" v-model="selectMember.sup_tel" />
-        </p>
-        <p>
-          <span>주소</span
-          ><input type="text" v-model="selectMember.sup_address" />
-        </p>
-        <p>
-          <span>장애유형 추가</span
-          ><input
-            type="text"
-            v-model="disability_category"
-            placeholder="장애유형을 추가"
-          />
-        </p>
-        <p>
-          <span>첨부파일</span
-          ><input
-            type="text"
-            v-model="sup_file"
-            placeholder="파일은 pdf,jpg파일만 등록 가능"
-          />
-        </p>
+        <label>첨부파일</label
+        ><input
+          type="text"
+          v-model="sup_file"
+          placeholder="파일은 pdf,jpg파일만 등록 가능"
+        />
       </div>
     </div>
-    <button class="close-btn" @click="closeAddModal">저장</button>
+    <button @click="updateMember">저장</button>
+    <button @click="Modifymodal">닫기</button>
   </div>
+  <!-- 지원자 등록 부분 모달창 -->
   <div v-if="addModal" class="modal-overlay">
     <div class="modal-content">
       <h2>지원자 등록</h2>

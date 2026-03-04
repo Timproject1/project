@@ -76,7 +76,6 @@ const getResp = async () => {
   const result = await axios.get(
     `http://localhost:3000/document/getResp/${doc.value.doc_num}`,
   );
-  console.log(result.data.response);
   // console.log(result.data.response);
   for (const key in result.data.response) {
     if (!Object.hasOwn(result.data.response, key)) continue;

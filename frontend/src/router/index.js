@@ -35,7 +35,7 @@ const routes = [
     children: [
       {
         path: "plan",
-        components: { right: () => import("../views/work/plan.vue") },
+        components: { right: () => import("../views/work/plan_manager.vue") },
       },
       {
         path: "priority",
@@ -170,12 +170,25 @@ const routes = [
     component: SignUp,
   },
   {
+    path: "/reset-password",
+    name: "resetPW",
+    component: () => import("../views/ResetPassword.vue"),
+  },
+  {
     path: "/mypage",
     component: Mypage,
     children: [
       {
-        path: "/supported",
+        path: "",
+        component: () => import("../views/mypage/mypage.vue"),
+      },
+      {
+        path: "supported",
         component: () => import("../views/mypage/supportedPage.vue"),
+      },
+      {
+        path: "info",
+        component: () => import("../views/mypage/mypageInfo.vue"),
       },
     ],
   },

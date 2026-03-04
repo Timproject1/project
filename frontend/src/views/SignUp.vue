@@ -427,65 +427,71 @@ const handleSignup = async () => {
 </style> -->
 
 <script setup>
-import { ref, reactive, computed } from "vue";
-import axios from "axios";
-import MaterialInput from "@/components/MaterialInput.vue";
+import { ref, reactive, computed } from "vue"; // Vue에서 데이터를 다루고 계산하기 위한 기능들을 가져옵니다.
+import axios from "axios"; // 서버와 통신할 때 사용하는 라이브러리를 가져옵니다.
+import MaterialInput from "@/components/MaterialInput.vue"; // 디자인된 입력창 컴포넌트를 가져옵니다.
 
-// 데이터 상태 관리
+// 데이터 상태 관리 (서버로 보낼 보따리라고 생각하면 됩니다)
 const form = reactive({
-  user_id: "",
-  user_password: "",
-  user_name: "",
-  user_tel: "",
-  user_email: "",
-  registernum: "",
-  grade: "a1", // 가입 유형 초기값 (a1: 일반사용자)
-  actived: "Y",
+  user_id: "", // 사용자가 입력한 아이디를 담습니다.
+  user_password: "", // 사용자가 입력한 비밀번호를 담습니다.
+  user_name: "", // 사용자가 입력한 이름을 담습니다.
+  user_tel: "", // 사용자가 입력한 전화번호를 담습니다.
+  user_email: "", // 사용자가 입력한 이메일을 담습니다.
+  registernum: "", // 기관 검색으로 가져온 기관 번호를 담습니다.
+  grade: "a1", // 회원 등급이며 기본값은 일반사용자(a1)입니다.
+  actived: "Y", // 계정 사용 가능 여부이며 기본값은 Y입니다.
 });
 
-const userPwCheck = ref("");
-const institutionName = ref("");
-const emailDuplicate = ref(false);
+const userPwCheck = ref(""); // 비밀번호가 맞는지 재확인하기 위해 입력한 값을 따로 담습니다.
+const institutionName = ref(""); // 화면에 보여주기 위한 기관 이름을 담습니다.
+const emailDuplicate = ref(false); // 이메일 중복 상태를 표시하기 위한 스위치입니다.
 
-// 비밀번호 일치 확인
+// 비밀번호 일치 확인 (실시간으로 두 비밀번호가 다른지 체크합니다)
 const isPasswordMismatch = computed(() => {
   return (
-    form.user_password !== "" &&
-    userPwCheck.value !== "" &&
-    form.user_password !== userPwCheck.value
+    form.user_password !== "" && // 비밀번호가 비어있지 않고
+    userPwCheck.value !== "" && // 확인란도 비어있지 않은데
+    form.user_password !== userPwCheck.value // 두 값이 서로 다르면 '참(true)'을 반환합니다.
   );
 });
 
-// 아이디 중복 확인
+// 아이디 중복 확인 함수
 const checkIdDuplication = async () => {
   if (!form.user_id) {
-    alert("아이디를 입력해주세요.");
-    return;
+    // 아이디를 입력하지 않고 버튼을 눌렀다면
+    alert("아이디를 입력해주세요."); // 알림창을 띄우고
+    return; // 여기서 멈춥니다.
   }
   try {
+    // 서버에 이 아이디가 이미 있는지 물어봅니다.
     const response = await axios.post("http://localhost:3000/user/check-id", {
       user_id: form.user_id,
     });
     if (response.data.isDuplicate) {
+      // 서버가 중복이라고 대답하면
       alert("이미 사용 중인 아이디입니다.");
     } else {
+      // 중복이 아니라고 대답하면
       alert("사용 가능한 아이디입니다.");
     }
   } catch (error) {
+    // 서버가 꺼져있거나 통신 에러가 나면 실행됩니다.
     console.error("중복 확인 에러:", error);
     alert("서버 연결 실패! 백엔드가 실행 중인지 확인하세요.");
   }
 };
 
-// 4. 기관 검색
+// 기관 검색 함수
 const searchInstitution = () => {
-  institutionName.value = "발달장애인복지관";
-  form.registernum = "1018112345";
-  alert("기관이 선택되었습니다.");
+  institutionName.value = "발달장애인복지관"; // 가짜 기관 이름을 넣습니다.
+  form.registernum = "1018112345"; // 해당 기관의 번호를 폼에 저장합니다.
+  alert("기관이 선택되었습니다."); // 완료 알림을 띄웁니다.
 };
 
-// 5. 회원가입 제출
+// 회원가입 제출 함수
 const handleSignup = async () => {
+  // 필수 값이 하나라도 빠졌는지 확인합니다.
   if (
     !form.user_id ||
     !form.user_password ||
@@ -493,22 +499,26 @@ const handleSignup = async () => {
     !form.registernum
   ) {
     alert("필수 항목(*)을 모두 입력하고 기관 검색을 완료해주세요.");
-    return;
+    return; // 빠진 게 있다면 멈춥니다.
   }
+  // 비밀번호가 서로 다른지 확인합니다.
   if (isPasswordMismatch.value) {
     alert("비밀번호가 일치하지 않습니다.");
-    return;
+    return; // 다르면 멈춥니다.
   }
 
   try {
+    // 모든 준비가 끝났으니 서버로 가입 데이터를 보냅니다.
     const response = await axios.post(
       "http://localhost:3000/user/signup",
       form,
     );
     if (response.data.success) {
+      // 가입이 성공하면
       alert("회원가입이 완료되었습니다!");
     }
   } catch (error) {
+    // 가입 중 에러가 나면
     console.error("가입 에러:", error);
     alert("가입 실패: " + (error.response?.data?.message || "서버 오류"));
   }
@@ -519,7 +529,6 @@ const handleSignup = async () => {
   <div class="signup-container">
     <div class="signup-wrap">
       <h2 class="signup-title">회원가입</h2>
-
       <div class="form-row">
         <label class="row-label">가입 유형</label>
         <div class="row-content">
@@ -678,6 +687,7 @@ const handleSignup = async () => {
 </template>
 
 <style scoped>
+/* 화면의 디자인(CSS)을 담당하는 부분입니다. 수정되지 않았습니다. */
 .signup-container {
   display: flex;
   justify-content: center;
