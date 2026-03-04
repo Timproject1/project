@@ -1,6 +1,6 @@
 <script setup>
 // import { useMemberStore } from "@/store/member";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -12,11 +12,24 @@ const totalCount = ref(0); // 전체 데이터 개수
 const currentPage = ref(1); // 현재 페이지
 const perPage = 10; // 페이지당 항목 수
 const totalPages = ref(0); // 전체 페이지 수
+
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("ko-KR");
   // 결과: "2026. 2. 22."
 };
+
+const displayedPages = computed(() => {
+  const range = 2; // 현재 페이지 앞뒤로 보여줄 개수
+  let start = Math.max(1, currentPage.value - range);
+  let end = Math.min(totalPages.value, currentPage.value + range);
+
+  const pages = [];
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
 const changePage = (page) => {
   if (page < 1 || page > totalPages.value) return;
   currentPage.value = page;
@@ -69,6 +82,11 @@ onBeforeMount(async () => {
                     <th
                       class="ps-4 text-secondary text-xxs font-weight-bolder opacity-7"
                     >
+                      번호
+                    </th>
+                    <th
+                      class="ps-4 text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
                       버전명
                     </th>
 
@@ -101,10 +119,13 @@ onBeforeMount(async () => {
                 </thead>
                 <tbody>
                   <tr
-                    v-for="form in list"
+                    v-for="(form, idx) in list"
                     :key="form.form_ver"
                     @click="getForm(form.form_ver)"
                   >
+                    <td class="ps-4 text-sm font-weight-bold">
+                      {{ totalCount - (idx + (currentPage - 1) * perPage) }}
+                    </td>
                     <td class="ps-4 text-sm font-weight-bold">
                       {{ form.form_ver }}
                     </td>
@@ -139,7 +160,7 @@ onBeforeMount(async () => {
                 />
 
                 <material-pagination-item
-                  v-for="page in totalPages"
+                  v-for="page in displayedPages"
                   :key="page"
                   :label="page"
                   :active="currentPage === page"
