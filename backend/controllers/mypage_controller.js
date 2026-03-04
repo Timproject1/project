@@ -33,5 +33,30 @@ const ctrl = {
       res.status(500).json({ error: err.message });
     }
   },
+  getPendingUsers: async (req, res) => {
+    try {
+      const users = await MypageService.getPendingUsers();
+      res.status(200).json(users);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  // 2. 일반 회원 승인 처리
+  approveUser: async (req, res) => {
+    try {
+      const { user_id } = req.body;
+      const result = await MypageService.approveUser(user_id);
+      if (result) {
+        res.status(200).json({ success: true, message: "승인 완료" });
+      } else {
+        res
+          .status(400)
+          .json({ success: false, message: "승인 처리에 실패했습니다" });
+      }
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  },
 };
 module.exports = ctrl;

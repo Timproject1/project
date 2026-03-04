@@ -170,10 +170,6 @@ const routes = [
     component: Mypage,
     children: [
       {
-        path: "",
-        component: () => import("../views/mypage/mypage.vue"),
-      },
-      {
         path: "supported",
         component: () => import("../views/mypage/supportedPage.vue"),
       },
