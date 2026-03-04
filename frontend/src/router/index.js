@@ -35,7 +35,7 @@ const routes = [
     children: [
       {
         path: "plan",
-        components: { right: () => import("../views/work/plan.vue") },
+        components: { right: () => import("../views/work/plan_manager.vue") },
       },
       {
         path: "priority",
@@ -90,6 +90,10 @@ const routes = [
       {
         path: "allotment",
         component: () => import("../views/list/allotmentList.vue"),
+      },
+      {
+        path: "appreq",
+        component: () => import("../views/list/appReqList.vue"),
       },
     ],
   },
@@ -175,8 +179,16 @@ const routes = [
     component: Mypage,
     children: [
       {
-        path: "/supported",
+        path: "",
+        component: () => import("../views/mypage/mypage.vue"),
+      },
+      {
+        path: "supported",
         component: () => import("../views/mypage/supportedPage.vue"),
+      },
+      {
+        path: "info",
+        component: () => import("../views/mypage/mypageInfo.vue"),
       },
     ],
   },

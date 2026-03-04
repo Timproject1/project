@@ -5,7 +5,8 @@ import { ref, onBeforeMount } from "vue";
 import axios from "axios";
 import { useDocStore } from "@/store/doc";
 const docStore = useDocStore();
-
+console.log("----------------------");
+console.log(docStore.doc_num);
 const router = useRouter();
 
 const goplan = () => {
@@ -27,7 +28,11 @@ const goresult = () => {
 const gorepresentative = () => {
   router.push("/work/representative");
 };
-
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleDateString("ko-KR");
+  // 결과: "2026. 2. 22."
+};
 const doc = ref({});
 const formData = ref([]);
 const userAnswers = ref({});
@@ -71,7 +76,6 @@ const getResp = async () => {
   const result = await axios.get(
     `http://localhost:3000/document/getResp/${doc.value.doc_num}`,
   );
-  console.log(result.data.response);
   // console.log(result.data.response);
   for (const key in result.data.response) {
     if (!Object.hasOwn(result.data.response, key)) continue;
@@ -115,15 +119,15 @@ onBeforeMount(async () => {
           </div>
 
           <div class="info-grid">
-            <div class="info-item">이름:</div>
-            <div class="info-item">보호자:</div>
+            <div class="info-item">이름:{{ doc.sup_name }}</div>
+            <div class="info-item">보호자:{{ doc.writer_name }}</div>
             <div class="info-item">장애유형: 발달장애</div>
             <div class="info-item">성별:</div>
             <div class="info-item">대기 단계: {{ doc.progress }}</div>
             <div class="info-item">생년월일:</div>
-            <div class="info-item">담당자:</div>
+            <div class="info-item">담당자:{{ doc.manager_name }}</div>
           </div>
-          <div class="date-stamp">2026-02-01 작성</div>
+          <div class="date-stamp">{{ formatDate(doc.write_date) }} 작성</div>
 
           <div class="content-area">
             <!-- <p class="placeholder-text">지원신청서 내용</p> -->

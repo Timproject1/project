@@ -1,6 +1,6 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
-import { ref, reactive, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
@@ -19,6 +19,7 @@ const listPlan = async () => {
     modifyPlan: false,
     showRevision: false,
     returnplan: false,
+    revision: [],
   }));
   console.log(result.data.result);
 };
@@ -76,26 +77,20 @@ const timedate = () => {
 
 const newPlan = ref(false);
 
-const revision = reactive([
-  {
-    date: "2026-02-24",
-    id: "김길동",
-    comment: "내용수정",
-    revisionPlan: false,
-  },
-  {
-    date: "2026-02-24",
-    id: "이길동",
-    comment: "제목수정",
-    revisionPlan: false,
-  },
-  {
-    date: "2026-02-24",
-    id: "홍길동",
-    comment: "첨부파일수정",
-    revisionPlan: false,
-  },
-]);
+//수정 내역 출력
+const revisions = async (id) => {
+  // console.log(id);
+  try {
+    let result = await axios
+      .get(`http://localhost:3000/document/modifyPlanlist/${id.plan_num}`)
+      .catch((err) => console.log(err));
+    id.revision = Array.isArray(result.data.result) ? result.data.result : [];
+    id.showRevision = true;
+  } catch {
+    id.revision = [];
+    id.showRevision = true;
+  }
+};
 </script>
 <template>
   <h4>지원계획서</h4>
@@ -106,7 +101,7 @@ const revision = reactive([
   <!-- 지원계획서 추가 모달 -->
   <Modal v-if="newPlan" @close="newPlan = false">
     <template #content>
-      <p>{{ timedate() }}</p>
+      <p>{{ timedate(new Date()) }}</p>
       <material-button type="button" size="sm">임시저장</material-button>
       <material-input id="text" placeholder="목표입력" />
       <material-input id="text" placeholder="내용입력" />
@@ -132,13 +127,10 @@ const revision = reactive([
       <p>{{ file }}</p>
     </div> -->
     <!-- 수정내역 -->
-    <material-button
-      type="button"
-      size="sm"
-      @click="revision.revisionPlan = true"
+    <material-button type="button" size="sm" @click="revisions(Plan)"
       >수정내역 확인</material-button
     >
-    <Modal v-if="revision.revisionPlan" @close="revision.revisionPlan = false">
+    <Modal v-if="Plan.showRevision" @close="Plan.showRevision = false">
       <template #actions="{ close }">
         <material-button type="button" @click="close">X</material-button>
       </template>
@@ -152,10 +144,13 @@ const revision = reactive([
             </tr>
           </thead>
           <tbody>
-            <tr v-for="revisions in revision" :key="revisions.id">
-              <td>{{ revisions.date }}</td>
-              <td>{{ revisions.id }}</td>
-              <td>{{ revisions.comment }}</td>
+            <tr
+              v-for="revisions in Plan.revision"
+              :key="revisions.plan_modifi_num"
+            >
+              <td>{{ timedate(revisions.plan_modified_date) }}</td>
+              <td>{{ revisions.plan_modified_by }}</td>
+              <td>{{ revisions.plan_modified_comment }}</td>
             </tr>
           </tbody>
         </table>
