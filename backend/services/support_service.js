@@ -1,3 +1,4 @@
+const { allowList } = require("../controllers/support_controller");
 const pool = require("../db/mapper");
 
 const service = {
@@ -83,7 +84,10 @@ const service = {
       throw err;
     }
   },
+  allowList: async (id) => {
+    try {
+    } catch (error) {}
+  },
 };
-
 
 module.exports = service;

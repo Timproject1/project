@@ -1,7 +1,9 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useMemberStore } from "@/store/member";
+import { useRouter } from "vue-router";
 import axios from "axios";
+const router = useRouter();
 const memberStore = useMemberStore(); //pinia에서 로그인 정보 스토어
 const sups = ref([]); //지원자 목록
 const sup_num = ref("");
@@ -40,6 +42,15 @@ const getForm = async () => {
 const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
+
+const selectedUser = computed(() => {
+  return sups.value.find((sup) => {
+    if (sup.sup_num == sup_num.value) {
+      console.log(sup);
+    }
+    return sup.sup_num == sup_num.value;
+  });
+});
 //제출
 const submitForm = async () => {
   console.log(userAnswers.value);
@@ -56,6 +67,7 @@ const submitForm = async () => {
   console.log(result);
   if (result.data.retCode == "OK") {
     alert("작성완료");
+    router.push("/list/document");
   } else {
     alert("작성실패");
   }
@@ -100,13 +112,19 @@ getForm();
                 </select>
               </div>
               <div class="col-md-2">
-                <material-input type="text" class="form-control border p-2" />
-              </div>
-              <div class="col-md-2">
                 <label class="form-label">성별</label>
-              </div>
-              <div class="col-md-3">
                 <material-input
+                  v-if="selectedUser"
+                  type="text"
+                  class="form-control border p-2"
+                  v-model="selectedUser.gender"
+                />
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label">생일</label>
+                <material-input
+                  v-if="selectedUser"
                   type="date"
                   class="form-control border p-2"
                   :readonly="true"
