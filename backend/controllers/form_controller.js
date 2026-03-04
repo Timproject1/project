@@ -52,7 +52,9 @@ const reducing = (array) => {
 const ctrl = {
   getList: async (req, res) => {
     try {
-      const result = await service.getList();
+      const limit = parseInt(req.query.limit);
+      const page = parseInt(req.query.page);
+      const result = await service.getList(page, limit);
       console.log("contr");
       console.log(result);
       res.json({ retCode: "OK", result });
@@ -119,6 +121,16 @@ const ctrl = {
       const ver = req.params.ver;
       const result = await service.changeUsage(ver);
       res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
+  count: async (req, res) => {
+    try {
+      const result = await service.count();
+      console.log(result);
+      res.json({ retCode: "OK", count: result.count });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG", error });
