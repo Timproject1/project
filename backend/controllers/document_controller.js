@@ -83,8 +83,14 @@ const ctrl = {
       const form_ver = req.body.formVer;
       const sup_num = req.body.sup_num;
       const response = req.body.response;
-      console.log(req.body);
-      const result = await service.writeDoc(form_ver, sup_num, response);
+      const user_id = req.body.user_id;
+      // console.log(req.body);
+      const result = await service.writeDoc(
+        form_ver,
+        sup_num,
+        user_id,
+        response,
+      );
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -150,7 +156,7 @@ const ctrl = {
     const list = req.params.id;
     try {
       const result = await service.recordList(list);
-      console.log(result);
+      // console.log(result);
       res.json({ result });
     } catch (error) {
       console.log(error);
@@ -161,7 +167,7 @@ const ctrl = {
     const list = req.params.id;
     try {
       const result = await service.modifyRecordList(list);
-      console.log(result);
+      // console.log(result);
       res.json({ result });
     } catch (error) {
       console.log(error);
@@ -172,7 +178,7 @@ const ctrl = {
     const save = req.body;
     try {
       const result = await service.saveRecord(save);
-      console.log(result);
+      // console.log(result);
       res.json({ retCode: "OK" });
     } catch (error) {
       console.log(error);
@@ -183,7 +189,7 @@ const ctrl = {
     const bring = req.body;
     try {
       const result = await service.saveRecordBring(bring);
-      console.log(result);
+      // console.log(result);
       res.json({ result });
     } catch (error) {
       console.log(error);
@@ -194,7 +200,7 @@ const ctrl = {
     const update = req.body;
     try {
       const result = await service.UpdateRecord(update);
-      console.log(result);
+      // console.log(result);
       res.json({ retCode: "OK" });
     } catch (error) {
       console.log(error);
@@ -212,12 +218,34 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  getDoc: async (req, res) => {
+    const num = req.params.num;
+    // console.log(num);
+    try {
+      const result = await service.getDoc(num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
   planList: async (req, res) => {
     const list = req.params.id;
     try {
       const result = await service.planList(list);
       // console.log(result);
       res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  updatePlan: async (req, res) => {
+    const update = req.body;
+    try {
+      const result = await service.updatePlan(update);
+      // console.log(result);
+      res.json({ retCode: "OK" });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG" });
@@ -272,6 +300,145 @@ const ctrl = {
     try {
       const result = await service.restartPlan(restartplan);
       console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  getResp: async (req, res) => {
+    const num = req.params.num;
+    console.log(num);
+    try {
+      const result = await service.getResp(num);
+      const retVal = {};
+      for (const row of result) {
+        retVal[row.question_num] = row.select_answer
+          ? row.select_answer
+          : row.answer_text;
+      }
+      res.json({ retCode: "OK", response: retVal });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  resultList: async (req, res) => {
+    const list = req.params.id;
+    try {
+      const result = await service.resultList(list);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  handleManager: async (req, res) => {
+    try {
+      const managerId = req.params.manager_id;
+      const doc_num = req.params.doc_num;
+      console.log(doc_num, managerId);
+      const result = await service.handleManager(doc_num, managerId);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
+  addResult: async (req, res) => {
+    const add = req.body;
+    try {
+      const result = await service.addResult(add);
+      // console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  updateresult: async (req, res) => {
+    const update = req.body;
+    // console.log(req.body);
+    try {
+      const result = await service.updateresult(update);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  saveResult: async (req, res) => {
+    const save = req.body;
+    try {
+      const result = await service.saveResult(save);
+      console.log(result);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  saveResultBring: async (req, res) => {
+    const bring = req.body;
+    try {
+      const result = await service.saveResultBring(bring);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  deleteRecord: async (req, res) => {
+    const del = req.body;
+    try {
+      const result = await service.deleteRecord(del);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  deletePlan: async (req, res) => {
+    const del = req.body;
+    try {
+      const result = await service.deletePlan(del);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  deleteResult: async (req, res) => {
+    const del = req.body;
+    try {
+      const result = await service.deleteResult(del);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  modifyResultList: async (req, res) => {
+    const list = req.params.id;
+    try {
+      const result = await service.modifyResultList(list);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  modifyPlanList: async (req, res) => {
+    const list = req.params.id;
+    try {
+      const result = await service.modifyPlanList(list);
+      // console.log(result);
       res.json({ result });
     } catch (error) {
       console.log(error);

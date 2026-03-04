@@ -19,17 +19,12 @@ const getList = async () => {
   list.value = result.data.result;
   console.log(list.value);
 };
-// const getDocument = (doc_num) => {
-//   console.log(`신청서 보기${doc_num}`);
-// };
-// const getPlan = (doc_num) => {
-//   console.log(`계획 보기${doc_num}`);
-// };
-// const getResult = (doc_num) => {
-//   console.log(`결과보기 ${doc_num}`);
-// };
+const getForm = (form_ver) => {
+  router.push(`/form/view/${form_ver}`);
+};
+
 const moveRegister = () => {
-  router.push("/document/write");
+  router.push(`/form/write`);
 };
 getList();
 </script>
@@ -86,7 +81,11 @@ getList();
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(form, index) in list" :key="form.form_ver">
+                  <tr
+                    v-for="(form, index) in list"
+                    :key="form.form_ver"
+                    @click="getForm(form.form_ver)"
+                  >
                     <td class="text-center text-sm">
                       {{ list.length - index }}
                     </td>

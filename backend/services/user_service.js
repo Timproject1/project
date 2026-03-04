@@ -1,12 +1,14 @@
 const pool = require("../db/mapper");
 
 const service = {
-  // 1. 아이디 중복 확인
+  // 아이디 중복 확인
   check: async function (id) {
     try {
       console.log("받은 아이디:", id);
       const query = `SELECT COUNT(*) AS count FROM member WHERE user_id = ?`;
-      const [rows] = await pool.query(query, [id]);
+
+      const rows = await pool.query(query, [id]);
+
       console.log("DB 확인 결과:", rows[0]);
       return rows[0];
     } catch (error) {
@@ -15,7 +17,7 @@ const service = {
     }
   },
 
-  // 2. 회원가입
+  // 회원가입
   signUp: async function (member) {
     try {
       console.log("가입 요청 데이터 상세:", member);
@@ -32,11 +34,12 @@ const service = {
         member.user_email || null,
         member.registernum || null,
         member.grade || "a1",
-        member.actived || "Y",
+        member.actived || "i1",
       ];
 
-      const [result] = await pool.query(query, params);
-      console.log("가입 완료! 생성된 ID:", result.insertId);
+      const result = await pool.query(query, params);
+
+      console.log("가입 완료! 결과:", result);
       return { success: true, result };
     } catch (error) {
       console.error("회원가입 서비스 에러 상세:", error.message);
@@ -44,13 +47,44 @@ const service = {
     }
   },
 
+  // 로그인
   login: async function (id, pw) {
     try {
       const query = `SELECT * FROM member WHERE user_id = ? AND user_password = ?`;
-      const [rows] = await pool.query(query, [id, pw]);
-      return rows.length > 0 ? rows[0] : null;
+      const rows = await pool.query(query, [id, pw]);
+
+      if (rows && rows.length > 0) {
+        return rows[0];
+      }
+      return null;
     } catch (error) {
       console.error("로그인 서비스 에러:", error);
+      throw error;
+    }
+  },
+
+  getManager: async function (id) {
+    try {
+      const query = `select * from member where grade in ("a2","a3") 
+      and registernum =(select registernum from member where user_id=?) and approve="k1"`;
+      const result = await pool.query(query, [id]);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  // 아이디 찾기
+  findId: async function (name, email) {
+    try {
+      const query = `SELECT user_id FROM member WHERE user_name = ? AND user_email = ?`;
+      const rows = await pool.query(query, [name, email]);
+
+      if (rows && rows.length > 0) {
+        return rows[0].user_id;
+      }
+      return null;
+    } catch (error) {
+      console.error("아이디 찾기 서비스 에러:", error);
       throw error;
     }
   },
