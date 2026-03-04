@@ -10,6 +10,9 @@ const memberStore = useMemberStore();
 const docStore = useDocStore();
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
+const isModalOpen = ref(false); // 모달 열림 상태
+const modalType = ref(""); // 어떤 서류인지 (doc, plan, result)
+const selectedDocData = ref({}); // 모달에 표시할 데이터
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("ko-KR");
@@ -29,14 +32,26 @@ const getList = async () => {
   console.log(result.data);
   return result;
 };
-const getDocument = (doc_num) => {
-  console.log(`신청서 보기${doc_num}`);
+const getDocument = (doc) => {
+  modalType.value = "document";
+  selectedDocData.value = doc;
+  isModalOpen.value = true;
 };
-const getPlan = (doc_num) => {
-  console.log(`계획 보기${doc_num}`);
+
+const getPlan = (doc) => {
+  modalType.value = "plan";
+  selectedDocData.value = doc;
+  isModalOpen.value = true;
 };
-const getResult = (doc_num) => {
-  console.log(`결과보기 ${doc_num}`);
+
+const getResult = (doc) => {
+  modalType.value = "result";
+  selectedDocData.value = doc;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
 };
 const moveRegister = () => {
   router.push("/document/write");
@@ -180,7 +195,7 @@ onBeforeMount(async () => {
                   <tr
                     v-for="(doc, index) in list"
                     :key="doc.doc_num"
-                    @click="selectDoc(doc.doc_num)"
+                    @click="selectDoc(doc)"
                   >
                     <td class="text-center text-sm">
                       {{ list.length - index }}
@@ -198,7 +213,7 @@ onBeforeMount(async () => {
                         color="info"
                         variant="text"
                         class="mb-0"
-                        @click.stop="getDocument(doc.doc_num)"
+                        @click.stop="getDocument(doc)"
                         >보기</material-button
                       >
                     </td>
@@ -211,7 +226,7 @@ onBeforeMount(async () => {
                         color="dark"
                         variant="outline"
                         class="mb-0 px-3"
-                        @click.stop="getPlan(doc.doc_num)"
+                        @click.stop="getPlan(doc)"
                         >보기</material-button
                       >
                     </td>
@@ -221,7 +236,7 @@ onBeforeMount(async () => {
                         color="dark"
                         variant="outline"
                         class="mb-0 px-3"
-                        @click.stop="getResult(doc.doc_num)"
+                        @click.stop="getResult(doc)"
                         >보기</material-button
                       >
                     </td>
@@ -262,6 +277,66 @@ onBeforeMount(async () => {
       </main>
     </div>
   </div>
+  <div v-if="isModalOpen" class="modal-backdrop fade show"></div>
+  <div
+    class="modal fade"
+    :class="{ 'show d-block': isModalOpen }"
+    tabindex="-1"
+    role="dialog"
+    @click.self="closeModal"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="card shadow-lg w-100">
+        <div
+          class="card-header p-3 pb-0 d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">{{ modalType }} 상세 정보</h5>
+          <button type="button" class="btn-close text-dark" @click="closeModal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <hr class="dark horizontal my-2" />
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label class="form-label fw-bold">지원자명:</label>
+              <p>{{ selectedDocData.sup_name }}</p>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label fw-bold">보호자명:</label>
+              <p>{{ selectedDocData.writer_name }}</p>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label fw-bold">담당자명:</label>
+              <p>{{ selectedDocData.manager_name }}</p>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label fw-bold">진행단계:</label>
+              <p>{{ selectedDocData.progress }}</p>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold">상세 내용:</label>
+              <div class="p-3 bg-gray-100 border-radius-lg">
+                {{ modalType }}에 대한 상세 데이터가 여기에 표시됩니다. <br />
+                현재 단계: {{ selectedDocData.progress }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end p-3">
+          <material-button
+            color="secondary"
+            variant="gradient"
+            @click="closeModal"
+            >닫기</material-button
+          >
+          <material-button color="success" variant="gradient" class="ms-2"
+            >출력하기</material-button
+          >
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import MaterialButton from "@/components/MaterialButton.vue";
@@ -279,3 +354,28 @@ export default {
   },
 };
 </script>
+<style scoped>
+.modal-backdrop.show {
+  opacity: 0.5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1050;
+  background-color: #000;
+}
+
+.modal.show.d-block {
+  display: block;
+  z-index: 1055;
+  background: rgba(0, 0, 0, 0.1); /* 배경 투명도 조절 */
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+</style>

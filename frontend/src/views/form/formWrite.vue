@@ -39,7 +39,7 @@ const check = computed(() => {
 });
 //버전목록 가져오기
 const getList = async () => {
-  const result = await axios.get("http://localhost:3000/form/list");
+  const result = await axios.get("http://localhost:3000/form/vers");
   list.value = result.data.result;
   // console.log(result.data.result);
 };
