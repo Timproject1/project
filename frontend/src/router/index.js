@@ -35,7 +35,7 @@ const routes = [
     children: [
       {
         path: "plan",
-        components: { right: () => import("../views/work/plan.vue") },
+        components: { right: () => import("../views/work/plan_manager.vue") },
       },
       {
         path: "priority",

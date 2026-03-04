@@ -117,7 +117,7 @@ const service = {
       const query = `select responce_num,doc_ver,question_num,select_answer,answer_text from responce 
       where doc_ver = (select doc_ver from recent_doc_ver where doc_num=? )`;
       const result = await pool.query(query, [num]);
-      console.log(result);
+      // console.log(result);
       return result;
     } catch (error) {
       console.log(error);
@@ -219,7 +219,8 @@ const service = {
   },
   recordList: async () => {
     try {
-      const query = `select  ROW_NUMBER() OVER(ORDER BY counsel_num ASC) AS row_num,counsel_num,doc_num,counsel_date,counsel_title,counsel_content,counsel_manager from counsels ORDER BY CAST(SUBSTRING(counsel_num, 6) AS UNSIGNED) DESC;`;
+      const query = `SELECT ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(counsel_num, '-', -1) AS UNSIGNED) ASC) AS row_num, counsel_num, doc_num, counsel_date, counsel_title, counsel_content, counsel_manager 
+                    FROM counsels ORDER BY CAST(SUBSTRING_INDEX(counsel_num, '-', -1) AS UNSIGNED) DESC`;
       const result = await pool.query(query);
       return result;
     } catch (err) {
@@ -277,45 +278,117 @@ const service = {
     }
   },
   UpdateRecord: async (id) => {
+    const conn = await pool.getConnection();
     try {
-      const query = `update counsels set counsel_title=?,counsel_content=? where counsel_num=?`;
-      const result = await pool.query(query, [
-        id.counsel_title,
-        id.counsel_content,
-        id.counsel_num,
-      ]);
-      return result[0];
+      await conn.beginTransaction();
+      await conn.query(
+        `update counsels set counsel_title=?,counsel_content=? where counsel_num=?`,
+        [id.counsel_title, id.counsel_content, id.counsel_num],
+      );
+
+      await conn.query(
+        `insert into counsel_modifi (counsel_modifi_num, counsel_num, counsel_modified_by, counsel_modified_comment, counsel_modified_title, counsel_modified_content)
+                        values (concat("coucoun-",NEXT VALUE FOR create_res_file_num_seq),?,?,?,?,?)`,
+        [
+          id.counsel_num,
+          id.counsel_modified_by,
+          id.counsel_modified_comment,
+          id.counsel_modified_title,
+          id.counsel_modified_content,
+        ],
+      );
+
+      await conn.commit();
+      return true;
     } catch (err) {
+      await conn.rollback();
       console.log(err);
       return;
+    } finally {
+      conn.release();
     }
   },
+
   addplan: async (id) => {
+    const conn = await pool.getConnection();
     try {
-      const query = `insert into plans (plan_num, doc_num,  plan_approved, plan_manager, plan_title, plan_content)
-                    values (concat("plan-",NEXT VALUE FOR create_plan_num_seq),?,?,?,?,?);`;
-      const result = await pool.query(query, [
-        id.doc_num,
-        id.plan_approved,
-        id.plan_manager,
-        id.plan_title,
-        id.plan_content,
-      ]);
-      return result[0];
+      await conn.beginTransaction();
+
+      const seqResult = await conn.query(
+        `SELECT NEXT VALUE FOR create_plan_num_seq AS seq`,
+      );
+
+      const seq = seqResult[0].seq;
+      const planNum = `plan-${seq}`;
+      const planReqNum = `planreq-${seq}`;
+      await conn.query(
+        `insert into plans(plan_num,doc_num,plan_manager,plan_title,plan_content)
+                    values(?,?,?,?,?)`,
+        [planNum, id.doc_num, id.plan_manager, id.plan_title, id.plan_content],
+      );
+
+      await conn.query(
+        `insert into plan_req (plan_req_num,plan_num,plan_manager,plan_approved,plan_title,plan_content)
+                    values (?,?,?,?,?,?)`,
+        [
+          planReqNum,
+          planNum,
+          id.plan_manager,
+          id.plan_approved,
+          id.plan_title,
+          id.plan_content,
+        ],
+      );
+      await conn.commit();
+      return true;
     } catch (err) {
+      await conn.rollback();
       console.log(err);
       return;
+    } finally {
+      conn.release();
     }
   },
   planList: async () => {
     try {
-      const query = `select ROW_NUMBER() OVER(ORDER BY plan_num ASC) AS row_num, plan_num, doc_num, plan_date, plan_req_date, plan_approved, plan_manager, plan_title, plan_content,plan_return_reason
-                      from plans order by row_num DESC`;
+      const query = `select ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(p.plan_num, '-', -1) AS UNSIGNED) ASC) AS row_num ,p.plan_num,p.doc_num,p.plan_date,p.plan_manager,p.plan_title,p.plan_content,r.plan_approved,r.plan_return_reason
+                    from plans p join plan_req r on p.plan_num = r.plan_num ORDER BY CAST(SUBSTRING_INDEX(p.plan_num, '-', -1) AS UNSIGNED) DESC;`;
       const result = await pool.query(query);
       return result;
     } catch (err) {
       console.log(err);
       return;
+    }
+  },
+  updatePlan: async (id) => {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      await conn.query(
+        `update plans set plan_title=?,plan_content=? where plan_num=?`,
+        [id.plan_title, id.plan_content, id.plan_num],
+      );
+
+      await conn.query(
+        `insert into plan_modifi (plan_modifi_num, plan_num, plan_modified_by, plan_modified_comment, plan_modified_title, plan_modified_content)
+                        values (concat("couplan-",NEXT VALUE FOR create_res_file_num_seq),?,?,?,?,?)`,
+        [
+          id.plan_num,
+          id.plan_modified_by,
+          id.plan_modified_comment,
+          id.plan_modified_title,
+          id.plan_modified_content,
+        ],
+      );
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      console.log(err);
+      return;
+    } finally {
+      conn.release();
     }
   },
   savePlan: async (id) => {
@@ -358,7 +431,7 @@ const service = {
   },
   appPlan: async (id) => {
     try {
-      const query = `update plans set plan_approved="d2",plan_app_date=current_date where plan_num=?`;
+      const query = `update plan_req set plan_approved="d2",plan_app_date=current_date where plan_num=?`;
       const result = await pool.query(query, [id.plan_num]);
       return result[0];
     } catch (err) {
@@ -368,7 +441,7 @@ const service = {
   },
   returnPlan: async (id) => {
     try {
-      const query = `update plans set plan_approved="d3",plan_return_reason=? where plan_num=?`;
+      const query = `update plan_req set plan_approved="d3",plan_return_reason=? where plan_num=?`;
       const result = await pool.query(query, [
         id.plan_return_reason,
         id.plan_num,
@@ -391,8 +464,8 @@ const service = {
   },
   resultList: async (id) => {
     try {
-      const query = `select ROW_NUMBER() OVER(ORDER BY result_num ASC) AS row_num, result_num, doc_num, result_manager, result_title, result_contnet, result_date
-                      from results order by row_num DESC`;
+      const query = `SELECT ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(result_num, '-', -1) AS UNSIGNED) ASC) AS row_num, result_num, doc_num, result_manager, result_title, result_contnet, result_date 
+                      FROM results ORDER BY CAST(SUBSTRING_INDEX(result_num, '-', -1) AS UNSIGNED) DESC;`;
       const result = await pool.query(query);
       return result;
     } catch (err) {
@@ -486,10 +559,86 @@ const service = {
     }
   },
   deleteRecord: async (id) => {
+    const conn = await pool.getConnection();
     try {
-      const query = `delete from counsels where counsel_num = ?`;
-      const result = await pool.query(query, [id.counsel_num]);
-      return result[0];
+      await conn.beginTransaction();
+      await conn.query(`delete from counsel_modifi where counsel_num = ?`, [
+        id.counsel_num,
+      ]);
+
+      await conn.query(`  delete from counsels where counsel_num = ?`, [
+        id.counsel_num,
+      ]);
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      console.log(err);
+      return;
+    } finally {
+      conn.release();
+    }
+  },
+  deletePlan: async (id) => {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      await conn.query(`delete from plan_modifi where plan_num = ?`, [
+        id.plan_num,
+      ]);
+
+      await conn.query(`delete from plans where plan_num = ?`, [id.plan_num]);
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      console.log(err);
+      return;
+    } finally {
+      conn.release();
+    }
+  },
+  deleteResult: async (id) => {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      await conn.query(`delete from result_modifi where result_num = ?`, [
+        id.result_num,
+      ]);
+
+      await conn.query(`delete from results where result_num=?`, [
+        id.result_num,
+      ]);
+
+      await conn.commit();
+      return true;
+    } catch (err) {
+      await conn.rollback();
+      console.log(err);
+      return;
+    } finally {
+      conn.release();
+    }
+  },
+  modifyResultList: async (id) => {
+    try {
+      const query = `select result_modifi_num,result_num,result_modified_by,result_modified_date,result_modified_comment,result_modified_title,result_modified_content
+                    from result_modifi where result_num = ?`;
+      const result = await pool.query(query, [id]);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  modifyPlanList: async (id) => {
+    try {
+      const query = `select plan_modifi_num, plan_num, plan_modified_by, plan_modified_date, plan_modified_comment, plan_modified_title,plan_modified_content
+                    from plan_modifi where plan_num = ?`;
+      const result = await pool.query(query, [id]);
+      return result;
     } catch (err) {
       console.log(err);
       return;
