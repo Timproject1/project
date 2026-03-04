@@ -166,6 +166,11 @@ const routes = [
     component: SignUp,
   },
   {
+    path: "/reset-password",
+    name: "resetPW",
+    component: () => import("../views/ResetPassword.vue"),
+  },
+  {
     path: "/mypage",
     component: Mypage,
     children: [

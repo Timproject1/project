@@ -1,4 +1,6 @@
 const pool = require("../db/mapper");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 const service = {
   // 아이디 중복 확인
@@ -6,9 +8,7 @@ const service = {
     try {
       console.log("받은 아이디:", id);
       const query = `SELECT COUNT(*) AS count FROM member WHERE user_id = ?`;
-
       const rows = await pool.query(query, [id]);
-
       console.log("DB 확인 결과:", rows[0]);
       return rows[0];
     } catch (error) {
@@ -38,7 +38,6 @@ const service = {
       ];
 
       const result = await pool.query(query, params);
-
       console.log("가입 완료! 결과:", result);
       return { success: true, result };
     } catch (error) {
@@ -73,6 +72,7 @@ const service = {
       console.log(error);
     }
   },
+
   // 아이디 찾기
   findId: async function (name, email) {
     try {
@@ -85,6 +85,82 @@ const service = {
       return null;
     } catch (error) {
       console.error("아이디 찾기 서비스 에러:", error);
+      throw error;
+    }
+  },
+
+  requestPasswordReset: async function (userId, userEmail) {
+    try {
+      // 정보 일치 확인
+      const checkQuery = `SELECT * FROM member WHERE user_id = ? AND user_email = ?`;
+      const rows = await pool.query(checkQuery, [userId, userEmail]);
+
+      if (!rows || rows.length === 0) {
+        return { success: false, message: "일치하는 회원 정보가 없습니다." };
+      }
+
+      // 인증 번호생성
+      const token = crypto.randomBytes(32).toString("hex");
+
+      const insertCertQuery = `
+        INSERT INTO certification (certnum, user_id, token) 
+        VALUES (?, ?, ?)`;
+
+      const certNum = Math.random().toString(36).substr(2, 6).toUpperCase();
+      await pool.query(insertCertQuery, [certNum, userId, token]);
+
+      // 이메일 발송 설정
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "bu881843@gmail.com",
+          pass: "vrunhyamzbnpqvdb",
+        },
+      });
+
+      const resetLink = `http://localhost:8080/reset-password?token=${token}`;
+
+      await transporter.sendMail({
+        from: '"보안팀" <bu881843@gmail.com>',
+        to: userEmail,
+        subject: "비밀번호 재설정 인증 링크입니다.",
+        html: `<p>아래 링크를 클릭하여 비밀번호를 재설정하세요. (5분 내 유효)</p>
+               <a href="${resetLink}">${resetLink}</a>`,
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("비밀번호 재설정 메일 발송 에러:", error);
+      throw error;
+    }
+  },
+
+  updatePasswordWithToken: async function (token, newPassword) {
+    try {
+      //  certification 테이블에서 유효한 토큰인지 확인
+      const query = `SELECT user_id FROM certification WHERE token = ? AND \`limit\` > NOW()`;
+      const rows = await pool.query(query, [token]);
+
+      if (!rows || rows.length === 0) {
+        return {
+          success: false,
+          message: "유효하지 않거나 만료된 링크입니다.",
+        };
+      }
+
+      const userId = rows[0].user_id;
+
+      // member 테이블의 비밀번호 업데이트
+      const updateQuery = `UPDATE member SET user_password = ? WHERE user_id = ?`;
+      await pool.query(updateQuery, [newPassword, userId]);
+
+      // 사용된 인증 정보 삭제
+      const deleteQuery = `DELETE FROM certification WHERE user_id = ?`;
+      await pool.query(deleteQuery, [userId]);
+
+      return { success: true };
+    } catch (error) {
+      console.error("비밀번호 업데이트 서비스 에러:", error);
       throw error;
     }
   },
