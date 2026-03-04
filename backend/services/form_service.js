@@ -19,7 +19,7 @@ const service = {
       console.log(error);
     }
   },
-  writeForm: async (form) => {
+  writeForm: async (form, comment) => {
     //커넥션 받아오기
     const con = await pool.getConnection();
 
@@ -28,8 +28,8 @@ const service = {
       await con.beginTransaction();
       //버전 등록
       let query = `insert into form_version (form_ver,\`comment\`,\`usage\`) 
-      values(concat('v.',NEXT VALUE FOR create_form_ver_seq),"test","h2") returning form_ver`;
-      let result = await con.query(query);
+      values(concat('v.',NEXT VALUE FOR create_form_ver_seq),?,"h2") returning form_ver`;
+      let result = await con.query(query, [comment]);
       //버전넘버 저장
       const form_ver = result[0].form_ver;
       // console.log(form_ver);

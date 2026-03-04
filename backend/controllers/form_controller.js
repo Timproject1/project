@@ -78,9 +78,12 @@ const ctrl = {
   writeForm: async (req, res) => {
     try {
       const form = req.body.form;
+      const comment = req.body.comment;
       console.log("con");
-      console.log(form);
-      const result = await service.writeForm(form);
+      console.log(req.body);
+      // console.log(form);
+      console.log(comment);
+      const result = await service.writeForm(form, comment);
       if (result.form_ver) {
         res.json({ retCode: "OK", form_ver: result.form_ver });
         // res.send("ok");

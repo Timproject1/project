@@ -45,7 +45,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/getManager/:id", con.getManager);
+router.get("/getManager/:id", con.getManager); //아이디를 기준으로 같은센터의 담당자,관리자 받아오기
+
 router.post("/find-id", async (req, res) => {
   try {
     const { userName, userEmail } = req.body;
