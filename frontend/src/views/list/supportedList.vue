@@ -1,8 +1,5 @@
 <script setup>
 // 전체 완료 (DB연결 포함) css만 수정하면 됨 - 3월 3일
-// 3월 4일 해야할 목록: list 폴더에 있는 allotmentList.vue, centerList.vue, manager_lookList.vue, SupportedInfo.vue
-// 내용 빠진 부분이나 DB연결 마무리
-// mypage 폴더의 mypage.vue, supportedPage.vue(작성해야 함) DB연결 및 화면 구성에서 빠진 부분 마무리
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
@@ -42,7 +39,7 @@ const getSupportedList = async () => {
           priorityClass = "p-focus";
         }
         return {
-          ...item, // DB에서 가져온 데이터를 그대로 복시
+          ...item, // DB에서 가져온 데이터를 그대로 복사
           temp_priority: priorityValue,
           temp_class: priorityClass,
         };

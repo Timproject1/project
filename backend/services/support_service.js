@@ -59,6 +59,27 @@ const service = {
       throw error;
     }
   },
+  updataSupported: async function (memberData) {
+    const { sup_name, sup_tel, sup_address, disability_category, sup_file } =
+      memberData;
+    const query = `update supported set sup_name = ?, sup_tel = ?, sup_address = ?, disability_category =?, sup_file = ?
+    where sup_num = ?`;
+
+    try {
+      const [result] = await pool.query(query, [
+        sup_name,
+        sup_tel,
+        sup_address,
+        disability_category || null,
+        sup_file || null,
+        sup_num,
+      ]);
+      return result;
+    } catch (error) {
+      console.error("서비스 애러:", error);
+      throw error;
+    }
+  },
 };
 
 module.exports = service;
