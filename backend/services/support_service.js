@@ -1,3 +1,4 @@
+const { allowList } = require("../controllers/support_controller");
 const pool = require("../db/mapper");
 
 const service = {
@@ -8,7 +9,7 @@ const service = {
       const params = [];
 
       if (managerId) {
-        query += ` WHERE manager = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
+        query += ` WHERE user_id = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
         params.push(managerId);
       }
 
@@ -80,7 +81,10 @@ const service = {
       throw error;
     }
   },
+  allowList: async (id) => {
+    try {
+    } catch (error) {}
+  },
 };
-
 
 module.exports = service;

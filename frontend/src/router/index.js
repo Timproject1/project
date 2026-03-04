@@ -91,6 +91,10 @@ const routes = [
         path: "allotment",
         component: () => import("../views/list/allotmentList.vue"),
       },
+      {
+        path: "appreq",
+        component: () => import("../views/list/appReqList.vue"),
+      },
     ],
   },
   {

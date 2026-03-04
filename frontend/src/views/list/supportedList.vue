@@ -59,8 +59,8 @@ const getlabel = (code) => {
   };
   return labels[code] || "-";
 };
-onMounted(() => {
-  getSupportedList();
+onBeforeMounted(async() => {
+  await getSupportedList();
 });
 </script>
 <template>

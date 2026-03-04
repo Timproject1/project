@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 // import { useMemberStore } from "@/store/member";
 // import axios from "axios";
 // const memberStore = useMemberStore(); //pinia에서 로그인 정보 스토어
@@ -17,18 +17,33 @@ import axios from "axios";
 const formData = ref([]); //설문지 양식
 const list = ref([]);
 const selectedVersion = ref("");
-const addQuestion = (subCategory) => {
-  subCategory.questions.push({
-    question: "",
-    type: "l1",
-    options: [],
+const comment = ref("");
+//모든값이 다 들어가있는지 확인
+const check = computed(() => {
+  return formData.value.some((bcategory) => {
+    if (!bcategory.name) return true;
+
+    return bcategory.scategory.some((scategory) => {
+      if (!scategory.name) return true;
+
+      return scategory.questions.some((question) => {
+        if (!question.question) return true;
+
+        // 옵션 배열 중 하나라도 비어있으면 true
+        return question.options.some(
+          (option) => option === "" || option === null || option === undefined,
+        );
+      });
+    });
   });
-};
+});
+//버전목록 가져오기
 const getList = async () => {
   const result = await axios.get("http://localhost:3000/form/list");
   list.value = result.data.result;
   // console.log(result.data.result);
 };
+//지정한 버전 가지고 오기
 const getForm = async () => {
   // console.log(route.params.num);
   const result = await axios.get(
@@ -36,9 +51,35 @@ const getForm = async () => {
   );
   console.log(result.data.form);
   // formData.value = result.data.form;
-
+  const newForm = [];
+  result.data.form.forEach((bcategory) => {
+    const newBig = {
+      name: bcategory.bcategory,
+      scategory: [],
+    };
+    newForm.push(newBig);
+    bcategory.scategory.forEach((scategory) => {
+      const newSmall = {
+        name: scategory.scategory,
+        questions: [],
+      };
+      newBig.scategory.push(newSmall);
+      scategory.questions.forEach((question) => {
+        const newQue = {
+          question: question.question,
+          type: question.response,
+          options: [],
+        };
+        newSmall.questions.push(newQue);
+        question.options.forEach((option) => {
+          newQue.options.push(option.value);
+        });
+      });
+    });
+    formData.value = newForm;
+  });
   // formData.value.forEach((bcategory) => {
-  //   console.group(bcategory);
+  //   console.log(bcategory);
   //   bcategory.scategory.forEach((scategory) => {
   //     console.log(scategory);
   //     scategory.questions.forEach((question) => {
@@ -46,6 +87,14 @@ const getForm = async () => {
   //     });
   //   });
   // });
+};
+//질문추가
+const addQuestion = (subCategory) => {
+  subCategory.questions.push({
+    question: "",
+    type: "l1",
+    options: [],
+  });
 };
 // 소분류 추가 (특정 대분류 내부에 추가)
 const addScategory = (category) => {
@@ -128,6 +177,7 @@ const submitForm = async () => {
     "http://localhost:3000/form/write",
     {
       form: formData.value,
+      comment: comment.value,
     },
     {
       headers: { "Content-Type": "application/json" },
@@ -179,7 +229,7 @@ const submitForm = async () => {
               <div class="col-md-8">
                 <label class="form-label fw-bold">양식 설명 (코멘트)</label>
                 <material-input
-                  v-model="formDescription"
+                  v-model="comment"
                   placeholder="이 신청서 양식에 대한 설명을 입력하세요 (예: 2026년 상반기 정기 신청용)"
                   :type="text"
                 />
@@ -308,6 +358,7 @@ const submitForm = async () => {
               <material-button
                 class="btn bg-gradient-primary"
                 @click="submitForm"
+                :disabled="check"
               >
                 제출
               </material-button>
