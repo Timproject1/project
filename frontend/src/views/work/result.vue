@@ -1,6 +1,6 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
-import { ref, reactive, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
@@ -14,9 +14,10 @@ const listresult = async () => {
   results.value = (result.data.result || []).map((r) => ({
     ...r,
     file: r.file || [],
-    showrecordDelete: false,
+    showResultDelete: false,
     modifyResult: false,
     showRevision: false,
+    revision: [],
   }));
   console.log(results.value);
 };
@@ -24,7 +25,19 @@ const listresult = async () => {
 onBeforeMount(() => {
   listresult();
 });
-
+const revisions = async (id) => {
+  // console.log(id);
+  try {
+    let result = await axios
+      .get(`http://localhost:3000/document/modifyResultlist/${id.result_num}`)
+      .catch((err) => console.log(err));
+    id.revision = Array.isArray(result.data.result) ? result.data.result : [];
+    id.showRevision = true;
+  } catch {
+    id.revision = [];
+    id.showRevision = true;
+  }
+};
 //지원결과서 추가
 const addresultsName = ref("");
 const addresultsContent = ref("");
@@ -148,29 +161,27 @@ const timedate = (id) => {
   const dd = String(today.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 };
-
+//삭제
+const delresult = async (id) => {
+  let del = {
+    result_num: id.result_num,
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/deleteresult",
+      del,
+    );
+    console.log(res.data);
+    result.value = res.data;
+    results.value.showResultDelete = false;
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
 const newresult = ref(false);
-
-const revision = reactive([
-  {
-    date: "2026-02-24",
-    id: "김길동",
-    comment: "내용수정",
-    revisionResult: false,
-  },
-  {
-    date: "2026-02-24",
-    id: "이길동",
-    comment: "제목수정",
-    revisionResult: false,
-  },
-  {
-    date: "2026-02-24",
-    id: "홍길동",
-    comment: "첨부파일수정",
-    revisionResult: false,
-  },
-]);
 </script>
 <template>
   <h4>지원결과서</h4>
@@ -219,7 +230,7 @@ const revision = reactive([
   </Modal>
   <!-- 지원결과서 출력 -->
   <div v-for="result in results" :key="result.result_num">
-    <p>{{ timedate(result.result_date) }} 지원계획 {{ result.row_num }}</p>
+    <p>{{ timedate(result.result_date) }} 지원결과 {{ result.row_num }}</p>
     <material-button type="button" size="sm" @click="openresmodal(result)"
       >수정</material-button
     >
@@ -262,7 +273,9 @@ const revision = reactive([
     >
       <template #content>
         <p>해당 지원계획서를 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger">예</material-button>
+        <material-button type="button" color="danger" @click="delresult(result)"
+          >예</material-button
+        >
       </template>
       <template #actions="{ close }">
         <material-button type="button" @click="close">아니오</material-button>
@@ -281,16 +294,10 @@ const revision = reactive([
       <p>{{ file }}</p>
     </div> -->
     <!-- 수정내역 -->
-    <material-button
-      type="button"
-      size="sm"
-      @click="revision.revisionResult = true"
+    <material-button type="button" size="sm" @click="revisions(result)"
       >수정내역 확인</material-button
     >
-    <Modal
-      v-if="revision.revisionResult"
-      @close="revision.revisionResult = false"
-    >
+    <Modal v-if="result.showRevision" @close="result.showRevision = false">
       <template #actions="{ close }">
         <material-button type="button" @click="close">X</material-button>
       </template>
@@ -304,10 +311,13 @@ const revision = reactive([
             </tr>
           </thead>
           <tbody>
-            <tr v-for="revisions in revision" :key="revisions.id">
-              <td>{{ revisions.date }}</td>
-              <td>{{ revisions.id }}</td>
-              <td>{{ revisions.comment }}</td>
+            <tr
+              v-for="revisions in result.revision"
+              :key="revisions.result_modifi_num"
+            >
+              <td>{{ timedate(revisions.result_modified_date) }}</td>
+              <td>{{ revisions.result_modified_by }}</td>
+              <td>{{ revisions.result_modified_comment }}</td>
             </tr>
           </tbody>
         </table>

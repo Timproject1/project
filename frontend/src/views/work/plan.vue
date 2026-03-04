@@ -1,6 +1,6 @@
 <script setup>
 import MaterialButton from "@/components/MaterialButton.vue";
-import { ref, reactive, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
@@ -17,12 +17,14 @@ const listPlan = async () => {
     modifyPlan: false,
     showRevision: false,
     returnPlan: false,
+    revision: [],
   }));
   console.log(result.data.result);
 };
 onBeforeMount(() => {
   listPlan();
 });
+
 //지원계획 추가
 const addPlanName = ref(""); //목표
 const addPlanContent = ref(""); //내용
@@ -38,8 +40,8 @@ const addPlan = async () => {
 
   let add = {
     doc_num: "doc-1",
-    plan_approved: "d1",
     plan_manager: "ca1",
+    plan_approved: "d1",
     plan_title: addPlanName.value,
     plan_content: addPlanContent.value,
   };
@@ -108,7 +110,86 @@ const restart = async (id) => {
   console.log(data);
   location.reload();
 };
+//수정완료
+const original = ref([]);
+const openresmodal = (res) => {
+  original.value = { ...res };
+  res.modifyPlan = true;
+};
+const plancomment = ref("");
+const Update = async (id) => {
+  const columns = [];
+  console.log(id);
+  for (let key of Object.keys(id)) {
+    // 수정 가능한 필드만 체크
+    if (["plan_title", "plan_content"].includes(key)) {
+      // console.log(id);
+      if (id[key] !== original.value[key]) {
+        columns.push(key);
+      }
+    }
+  }
 
+  let updatedate = {
+    plan_title: id.plan_title,
+    plan_content: id.plan_content,
+    plan_num: id.plan_num,
+    plan_modified_by: "ca1",
+    plan_modified_comment: plancomment.value,
+    plan_modified_title: columns.join(","),
+    plan_modified_content: id.plan_content,
+  };
+  console.log(plancomment.value);
+  console.log(id);
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/updateplan",
+      updatedate,
+    );
+    console.log(res.data);
+    result.value = res.data;
+    id.modifyPlan = false;
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
+//수정 내역 출력
+const revisions = async (id) => {
+  // console.log(id);
+  try {
+    let result = await axios
+      .get(`http://localhost:3000/document/modifyPlanlist/${id.plan_num}`)
+      .catch((err) => console.log(err));
+    id.revision = Array.isArray(result.data.result) ? result.data.result : [];
+    id.showRevision = true;
+  } catch {
+    id.revision = [];
+    id.showRevision = true;
+  }
+};
+
+//삭제
+const delplan = async (id) => {
+  let del = {
+    plan_num: id.plan_num,
+  };
+  const result = ref(null);
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/document/deleteplan",
+      del,
+    );
+    console.log(res.data);
+    result.value = res.data;
+    Plans.value.showPlanDelete = false;
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    result.value = "서버 에러 발생";
+  }
+};
 //시간 2026-02-27식으로 출력하기
 const timedate = (id) => {
   const today = new Date(id);
@@ -119,27 +200,6 @@ const timedate = (id) => {
 };
 //지원기획서 추가 모달
 const newPlan = ref(false);
-
-const revision = reactive([
-  {
-    date: "2026-02-24",
-    id: "김길동",
-    comment: "내용수정",
-    revisionPlan: false,
-  },
-  {
-    date: "2026-02-24",
-    id: "이길동",
-    comment: "제목수정",
-    revisionPlan: false,
-  },
-  {
-    date: "2026-02-24",
-    id: "홍길동",
-    comment: "첨부파일수정",
-    revisionPlan: false,
-  },
-]);
 </script>
 <template>
   <h4>지원계획서</h4>
@@ -182,10 +242,10 @@ const revision = reactive([
       >
     </template>
   </Modal>
-  <!-- 지원기획서 출력 -->
+  <!-- 지원계획서 출력 -->
   <div v-for="Plan in Plans" :key="Plan.plan_num">
-    <p>{{ timedate(Plan.plan_req_date) }} 지원계획 {{ Plan.row_num }}</p>
-    <material-button type="button" size="sm" @click="Plan.modifyPlan = true"
+    <p>{{ timedate(Plan.plan_date) }} 지원계획 {{ Plan.row_num }}</p>
+    <material-button type="button" size="sm" @click="openresmodal(Plan)"
       >수정</material-button
     >
     <material-button type="button" size="sm" @click="Plan.showPlanDelete = true"
@@ -197,19 +257,25 @@ const revision = reactive([
         <material-input
           id="text"
           placeholder="제목입력"
-          :value="`${Plan.planName}`"
+          v-model="Plan.plan_title"
         />
         <material-input
           id="text"
           placeholder="내용입력"
-          :value="`${Plan.planContent}`"
+          v-model="Plan.plan_content"
         />
-        <material-input id="text" placeholder="수정사유" />
+        <material-input
+          id="text"
+          placeholder="수정사유"
+          v-model="plancomment"
+        />
         <!-- <material-button type="button">첨부파일 등록</material-button>
         <div v-for="file in Plan.file" :key="file">
           <p>{{ file }}</p>
         </div> -->
-        <material-button type="button">수정 완료</material-button>
+        <material-button type="button" @click="Update(Plan)"
+          >수정 완료</material-button
+        >
       </template>
       <template #actions="{ close }">
         <material-button type="button" @click="close">취소</material-button>
@@ -219,7 +285,9 @@ const revision = reactive([
     <Modal v-if="Plan.showPlanDelete" @close="Plan.showPlanDelete = false">
       <template #content>
         <p>해당 지원계획서를 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger">예</material-button>
+        <material-button type="button" color="danger" @click="delplan(Plan)"
+          >예</material-button
+        >
       </template>
       <template #actions="{ close }">
         <material-button type="button" @click="close">아니오</material-button>
@@ -238,13 +306,10 @@ const revision = reactive([
       <p>{{ file }}</p>
     </div> -->
     <!-- 수정내역 -->
-    <material-button
-      type="button"
-      size="sm"
-      @click="revision.revisionPlan = true"
+    <material-button type="button" size="sm" @click="revisions(Plan)"
       >수정내역 확인</material-button
     >
-    <Modal v-if="revision.revisionPlan" @close="revision.revisionPlan = false">
+    <Modal v-if="Plan.showRevision" @close="Plan.showRevision = false">
       <template #actions="{ close }">
         <material-button type="button" @click="close">X</material-button>
       </template>
@@ -258,10 +323,13 @@ const revision = reactive([
             </tr>
           </thead>
           <tbody>
-            <tr v-for="revisions in revision" :key="revisions.id">
-              <td>{{ revisions.date }}</td>
-              <td>{{ revisions.id }}</td>
-              <td>{{ revisions.comment }}</td>
+            <tr
+              v-for="revisions in Plan.revision"
+              :key="revisions.plan_modifi_num"
+            >
+              <td>{{ timedate(revisions.plan_modified_date) }}</td>
+              <td>{{ revisions.plan_modified_by }}</td>
+              <td>{{ revisions.plan_modified_comment }}</td>
             </tr>
           </tbody>
         </table>
