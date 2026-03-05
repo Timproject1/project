@@ -1,6 +1,6 @@
 <script setup>
 import { useMemberStore } from "@/store/member";
-import { useDocStore } from "../../store/doc";
+import { useDocStore } from "@/store/doc";
 import { ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -514,6 +514,13 @@ onBeforeMount(async () => {
             variant="gradient"
             @click="closeModal"
             >수정</material-button
+          >
+          <material-button
+            v-if="modalType == 'document'"
+            color="success"
+            variant="gradient"
+            @click="closeModal"
+            >삭제</material-button
           >
           <material-button
             color="secondary"

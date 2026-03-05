@@ -45,11 +45,8 @@ const handleLogin = async () => {
         id: response.data.user.user_id,
         center: response.data.user.center || "1018112345",
         grade: response.data.user.grade,
+        name: response.data.user.user_name,
       });
-
-      // 브라우저 로컬 스토리지에 나중에 꺼내 쓸 이름과 등급을 저장합니다.
-      localStorage.setItem("userName", response.data.user.user_name);
-      localStorage.setItem("userGrade", response.data.user.grade);
 
       router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
     } else {

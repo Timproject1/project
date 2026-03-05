@@ -445,7 +445,7 @@ const service = {
         id.doc_num,
       ]);
       await conn.query(
-        `update plan_req set plan_approved="d2",plan_app_date=current_date where plan_num=?`,
+        `update plan_req set plan_approved="d2",plan_appdate=current_date where plan_num=?`,
         [id.plan_num],
       );
       await conn.commit();
