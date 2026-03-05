@@ -1,6 +1,6 @@
 <script setup>
 // 전체 완료 (DB연결 포함) css만 수정하면 됨 - 3월 3일
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -11,14 +11,60 @@ const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
 
-const supported = ref([]);
-const searchName = ref("");
-const manager = ref("");
+const search = reactive({
+  sup_name: "",
+  priority: "전체",
+  disability_category: "",
+});
 
+// 지원자 검색
+const putButton = (value) => {
+  search.priority = value;
+  fetchData();
+};
+
+const supported = ref([]);
+
+// <script setup> 내부에 추가하세요
+
+const fetchData = async () => {
+  try {
+    // 1. 서버에 검색 조건(search)을 담아서 보냅니다.
+    const response = await axios.get("http://localhost:3000/support/list", {
+      params: search,
+    });
+
+    // 2. 서버 응답이 성공(OK)일 경우 화면 데이터를 갱신합니다.
+    if (response.data.retCode === "OK") {
+      supported.value = response.data.result.map((item, index) => {
+        // 기존 배지 디자인 로직을 동일하게 적용합니다.
+        let priorityValue = "계획";
+        let priorityClass = "p-plan";
+
+        if (index % 3 === 0) {
+          priorityValue = "긴급";
+          priorityClass = "p-emergency";
+        } else if (index % 3 === 1) {
+          priorityValue = "중점";
+          priorityClass = "p-focus";
+        }
+
+        return {
+          ...item,
+          temp_priority: priorityValue,
+          temp_class: priorityClass,
+        };
+      });
+      console.log("검색 결과 반영 성공:", supported.value);
+    }
+  } catch (error) {
+    console.error("검색 중 오류 발생:", error);
+  }
+};
 // 지원자 목록 가져오기
 const getSupportedList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/supported/list");
+    const response = await axios.get("http://localhost:3000/support/list");
     // 임시 데이터 생성
     // map: 배열 안 데이터들을 하나씩 꺼내서 담아주는 도구
     // priorityValue: 우선순위 값 (화면에 직접 글자로 보여줄 내용을 담는 변수)
@@ -59,7 +105,7 @@ const getlabel = (code) => {
   };
   return labels[code] || "-";
 };
-onBeforeMounted(async() => {
+onMounted(async () => {
   await getSupportedList();
 });
 </script>
@@ -92,27 +138,39 @@ onBeforeMounted(async() => {
         <div class="search-form">
           <div class="form-group">
             <label>지원자 명</label>
-            <input type="text" v-model="searchName" />
+            <input type="text" v-model="search.sup_name" />
           </div>
           <div class="form-group">
             <label>대기단계</label>
             <div class="gender-btns">
-              <button class="active">전체</button>
-              <button>계획</button>
-              <button>중점</button>
-              <button>긴급</button>
+              <button
+                :class="{ active: search.priority === '전체' }"
+                @click="putButton('전체')"
+              >
+                전체
+              </button>
+              <button
+                :class="{ active: search.priority === '계획' }"
+                @click="putButton('계획')"
+              >
+                계획
+              </button>
+              <button
+                :class="{ active: search.priority === '중점' }"
+                @click="putButton('중점')"
+              >
+                중점
+              </button>
+              <button
+                :class="{ active: search.priority === '긴급' }"
+                @click="putButton('긴급')"
+              >
+                긴급
+              </button>
             </div>
           </div>
-          <div class="form-group">
-            <label>장애유형</label>
-            <input type="text" />
-          </div>
-          <div class="form-group">
-            <label>담당자</label>
-            <input type="text" v-model="manager" />
-          </div>
-          <button class="search-btn" @click="resetSearch">검색</button>
         </div>
+        <button class="search-btn" @click="fetchData">검색</button>
       </div>
     </aside>
     <div class="content">

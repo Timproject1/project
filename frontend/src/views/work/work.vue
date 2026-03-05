@@ -4,17 +4,28 @@
 import { ref, onBeforeMount } from "vue";
 import axios from "axios";
 import { useDocStore } from "@/store/doc";
+import { useMemberStore } from "@/store/member";
 const docStore = useDocStore();
-console.log("----------------------");
-console.log(docStore.doc_num);
+const memberStore = useMemberStore();
+// console.log("----------------------");
+// console.log(docStore.doc_num);
+// console.log(memberStore.grade);
 const router = useRouter();
 
 const goplan = () => {
-  router.push("/work/plan");
+  if (memberStore.grade == "a3") {
+    router.push("/work/plan_manager");
+  } else {
+    router.push("/work/plan");
+  }
 };
 
 const gopriority = () => {
-  router.push("/work/priority");
+  if (memberStore.grade == "a3") {
+    router.push("/work/priority_manager");
+  } else {
+    router.push("/work/priority");
+  }
 };
 
 const gorecord = () => {
@@ -44,7 +55,7 @@ const getDoc = async () => {
     `http://localhost:3000/document/getDoc/${docStore.doc_num}`,
   ).catch((err) => console.error(err));
   doc.value = result.data.result[0];
-  console.log(doc.value);
+  // console.log(result.data);
   docStore.setInfo({ doc_num: doc.value.doc_num, writer: doc.value.writer_id });
 };
 
@@ -203,16 +214,25 @@ onBeforeMount(async () => {
   </div>
 </template>
 <style scoped>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* 전체 페이지 스크롤 제거 */
+}
+
 .layout {
   display: flex;
-  height: 100vh;
-  overflow: hidden; /* body 스크롤 차단 */
+  height: 100vh; /* 화면 전체 높이 */
 }
 
 .left,
 .right {
   flex: 1;
-  overflow-y: auto; /* 각각 독립 스크롤 */
+  height: 100%; /* 패널 높이를 100vh에 맞춤 */
+  min-height: 0; /* 중요! flex 아이템 내부 스크롤용 */
+  overflow-y: auto; /* 패널 내부 스크롤만 */
 }
 .left-panel {
   flex: 1;

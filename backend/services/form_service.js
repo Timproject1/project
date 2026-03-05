@@ -160,5 +160,18 @@ const service = {
       throw error;
     }
   },
+  getVers: async () => {
+    try {
+      console.log("ser");
+      // console.log(id);
+      const query = `select form_ver from form_version`;
+
+      const result = await pool.query(query);
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 module.exports = service;

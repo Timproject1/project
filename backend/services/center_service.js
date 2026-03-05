@@ -37,5 +37,39 @@ const service = {
       throw err;
     }
   },
+  // center_service.js 수정
+  updateCenter: async function (centerData) {
+    const {
+      registernum, // 실제 PK 이름
+      center_name,
+      center_tel,
+      center_addr, // DB 컬럼명에 맞춤
+      center_email,
+    } = centerData;
+
+    // 테이블명을 centers에서 center로 수정
+    const query = `
+    UPDATE center 
+    SET center_name = ?, 
+        center_tel = ?, 
+        center_addr = ?, 
+        center_email = ?
+    WHERE registernum = ?
+  `;
+
+    try {
+      const result = await pool.query(query, [
+        center_name,
+        center_tel,
+        center_addr,
+        center_email,
+        registernum,
+      ]);
+      return result;
+    } catch (error) {
+      console.error("기관 정보 수정 DB 에러:", error);
+      throw error;
+    }
+  },
 };
 module.exports = service;

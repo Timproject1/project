@@ -1,5 +1,5 @@
 <script setup>
-// DB 연결 완료 2월 25일
+// 최종 완료
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -23,30 +23,35 @@ const resetSearch = () => {
 // 장애 유형을 보는 모달창
 const detailModal = ref(false);
 const selectMember = ref(null);
+const sup_file = ref(null);
 
 // 지원자 정보 수정 부분
-const Modifymodal = ref(false);
 const Modifymember = ref(null);
+const isEditModalOpen = ref(false);
 
-const openModal = (member) => {
+const openEditModal = (member) => {
+  // 클릭한 행의 데이터를 깊은 복사하여 담기
   Modifymember.value = { ...member };
-  Modifymodal.value = true;
+  isEditModalOpen.value = true;
 };
-const sup_file = ref(null);
-const disability_category = ref("");
+
 // 지원자 정보 수정부분 데이터 저장
 const updateMember = async () => {
   try {
-    const response = await axios.put("http://localhost:3000/supported/update");
+    // 반드시 Modifymember.value를 두 번째 인자로 전달!
+    const response = await axios.put(
+      "http://localhost:3000/supported/update",
+      Modifymember.value,
+    );
 
     if (response.status === 200) {
       alert("정보 수정 완료");
-      Modifymodal.value = false;
-      location.reload();
+      isEditModalOpen.value = false;
+      getList(); // location.reload() 대신 목록 다시 불러오기
     }
   } catch (error) {
     console.error("수정 실패:", error);
-    alert("정보 수정을 실패 하였습니다 ");
+    alert("정보 수정을 실패 하였습니다.");
   }
 };
 
@@ -88,7 +93,7 @@ const supported = ref([]);
 // 함수 선언
 const getList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/supported/list");
+    const response = await axios.get("http://localhost:3000/support/list");
     console.log("서버 원본 응답:", response.data);
 
     if (response.data.retCode === "OK") {
@@ -171,14 +176,14 @@ const addSupported = async () => {
             :class="{ active: currentTab === 'list' }"
             @click="router.push('/list/supported')"
           >
-            - 지원자 현황
+            지원자 현황
           </li>
           <li
             class="sub-item"
             :class="{ active: currentTab === 'info' }"
             @click="router.push('/list/info')"
           >
-            - 지원자 정보관리
+            지원자 정보관리
           </li>
         </ul>
       </div>
@@ -273,7 +278,7 @@ const addSupported = async () => {
                 }}
               </td>
               <td>
-                <button class="view-btn" @click="openModal(member)">
+                <button class="view-btn" @click="openEditModal(member)">
                   수정하기
                 </button>
               </td>
@@ -315,12 +320,12 @@ const addSupported = async () => {
           </tr>
         </tbody>
       </table>
-      <button class="close-btn" @click="closeDetailModal">닫기</button>
+      <button @click="isEditModalOpen = false">닫기</button>
     </div>
   </div>
 
   <!-- 지원자 정보 수정 모달창 -->
-  <div v-if="Modifymodal && Modifymember" class="modal-overlay">
+  <div v-if="isEditModalOpen && Modifymember" class="modal-overlay">
     <div class="modal-content">
       <h3>지원자 정보수정</h3>
 
@@ -340,7 +345,7 @@ const addSupported = async () => {
         <label>장애유형 추가</label
         ><input
           type="text"
-          v-model="disability_category"
+          v-model="Modifymember.disability_category"
           placeholder="장애유형을 추가"
         />
       </div>
@@ -354,7 +359,7 @@ const addSupported = async () => {
       </div>
     </div>
     <button @click="updateMember">저장</button>
-    <button @click="Modifymodal">닫기</button>
+    <button @click="closeDetailModal">닫기</button>
   </div>
   <!-- 지원자 등록 부분 모달창 -->
   <div v-if="addModal" class="modal-overlay">

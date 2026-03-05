@@ -20,9 +20,8 @@ app.use(cors());
 app.use("/center", center_route); //센터 라우트
 app.use("/user", user_route); //유저 라우트
 app.use("/document", doc_route);
-app.use("/support", sup_route);
 app.use("/form", form_route);
-app.use(["/support", "/supported"], sup_route);
+app.use("/support", sup_route);
 app.use("/mypage", mypage_route);
 app.get("/", async (req, res) => {
   console.log(process.env.DB_HOST);

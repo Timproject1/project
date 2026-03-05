@@ -1,14 +1,10 @@
-const {
-  getResp,
-  handleManager,
-} = require("../controllers/document_controller");
 const pool = require("../db/mapper");
 
 const service = {
   //목록받아오기
   getList: async (info, searchFilters) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id from getDocumentList`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id,form_ver from getDocumentList`;
       const conditions = [];
       const values = [];
       if (info.grade == "a1") {
@@ -124,14 +120,25 @@ const service = {
       return error;
     }
   },
+  //담당자변경
   handleManager: async (doc_num, manager_id) => {
+    const con = await pool.getConnection();
     try {
+      await con.beginTransaction();
       const query = `update documents set manager = ? , priority=if(priority="c1","c2",priority) where doc_num=?`;
-      const result = await pool.query(query, [manager_id, doc_num]);
+      const result = await con.query(query, [manager_id, doc_num]);
+      await con.query(
+        `UPDATE documents SET progress = 'b2' WHERE doc_num = ? and progress='b1'`,
+        [doc_num],
+      );
+      await con.commit();
       return result;
     } catch (error) {
       console.log(error);
+      await con.rollback();
       throw error;
+    } finally {
+      await con.release();
     }
   },
   //우선순위 셋팅
@@ -157,7 +164,7 @@ const service = {
       const query = `SELECT p.priority_req_num, p.doc_num, p.priority_reason, p.priority, p.priority_approved,d.sup_num
                     FROM priority_req p
                     JOIN documents d ON p.doc_num = d.doc_num
-                    WHERE p.priority_req_num = ?`;
+                    WHERE p.doc_num = ?`;
       const result = await pool.query(query, [id]);
       return result[0];
     } catch (err) {
@@ -170,10 +177,10 @@ const service = {
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
-      await conn.query(`update documents set priority=? where doc_num = ?; `, [
-        id.priority,
-        id.doc_num,
-      ]);
+      await conn.query(
+        `update documents set priority=? progress=? where doc_num = ?; `,
+        [id.priority, id.progress, id.doc_num],
+      );
       await conn.query(`delete from priority_req where priority_req_num = ?`, [
         id.priority_req_num,
       ]);
@@ -217,11 +224,11 @@ const service = {
       return;
     }
   },
-  recordList: async () => {
+  recordList: async (id) => {
     try {
       const query = `SELECT ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(counsel_num, '-', -1) AS UNSIGNED) ASC) AS row_num, counsel_num, doc_num, counsel_date, counsel_title, counsel_content, counsel_manager 
-                    FROM counsels ORDER BY CAST(SUBSTRING_INDEX(counsel_num, '-', -1) AS UNSIGNED) DESC`;
-      const result = await pool.query(query);
+                    FROM counsels where doc_num=? ORDER BY CAST(SUBSTRING_INDEX(counsel_num, '-', -1) AS UNSIGNED) DESC`;
+      const result = await pool.query(query, [id]);
       return result;
     } catch (err) {
       console.log(err);
@@ -349,11 +356,11 @@ const service = {
       conn.release();
     }
   },
-  planList: async () => {
+  planList: async (id) => {
     try {
       const query = `select ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(p.plan_num, '-', -1) AS UNSIGNED) ASC) AS row_num ,p.plan_num,p.doc_num,p.plan_date,p.plan_manager,p.plan_title,p.plan_content,r.plan_approved,r.plan_return_reason
-                    from plans p join plan_req r on p.plan_num = r.plan_num ORDER BY CAST(SUBSTRING_INDEX(p.plan_num, '-', -1) AS UNSIGNED) DESC;`;
-      const result = await pool.query(query);
+                    from plans p join plan_req r on p.plan_num = r.plan_num where p.doc_num = ? ORDER BY CAST(SUBSTRING_INDEX(p.plan_num, '-', -1) AS UNSIGNED) DESC`;
+      const result = await pool.query(query, [id]);
       return result;
     } catch (err) {
       console.log(err);
@@ -430,13 +437,25 @@ const service = {
     }
   },
   appPlan: async (id) => {
+    const conn = await pool.getConnection();
     try {
-      const query = `update plan_req set plan_approved="d2",plan_app_date=current_date where plan_num=?`;
-      const result = await pool.query(query, [id.plan_num]);
-      return result[0];
+      await conn.beginTransaction();
+      await conn.query(`update documents set progress=? where doc_num = ?; `, [
+        id.progress,
+        id.doc_num,
+      ]);
+      await conn.query(
+        `update plan_req set plan_approved="d2",plan_app_date=current_date where plan_num=?`,
+        [id.plan_num],
+      );
+      await conn.commit();
+      return true;
     } catch (err) {
+      await conn.rollback();
       console.log(err);
       return;
+    } finally {
+      conn.release();
     }
   },
   returnPlan: async (id) => {
@@ -465,8 +484,8 @@ const service = {
   resultList: async (id) => {
     try {
       const query = `SELECT ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(result_num, '-', -1) AS UNSIGNED) ASC) AS row_num, result_num, doc_num, result_manager, result_title, result_contnet, result_date 
-                      FROM results ORDER BY CAST(SUBSTRING_INDEX(result_num, '-', -1) AS UNSIGNED) DESC;`;
-      const result = await pool.query(query);
+                      FROM results where doc_num=? ORDER BY CAST(SUBSTRING_INDEX(result_num, '-', -1) AS UNSIGNED) DESC;`;
+      const result = await pool.query(query, [id]);
       return result;
     } catch (err) {
       console.log(err);
@@ -474,19 +493,26 @@ const service = {
     }
   },
   addResult: async (id) => {
+    const conn = await pool.getConnection();
     try {
-      const query = `insert into results (result_num,doc_num,result_manager,result_title,result_contnet)
-                    values (concat("result-",NEXT VALUE FOR create_result_num_seq),?,?,?,?);`;
-      const result = await pool.query(query, [
+      await conn.beginTransaction();
+      await conn.query(`update documents set progress=? where doc_num = ?; `, [
+        id.progress,
         id.doc_num,
-        id.result_manager,
-        id.result_title,
-        id.result_contnet,
       ]);
-      return result[0];
+      await conn.query(
+        `insert into results (result_num,doc_num,result_manager,result_title,result_contnet)
+                    values (concat("result-",NEXT VALUE FOR create_result_num_seq),?,?,?,?)`,
+        [id.doc_num, id.result_manager, id.result_title, id.result_contnet],
+      );
+      await conn.commit();
+      return true;
     } catch (err) {
+      await conn.rollback();
       console.log(err);
       return;
+    } finally {
+      conn.release();
     }
   },
   updateresult: async (id) => {
@@ -708,6 +734,44 @@ const service = {
     } catch (error) {
       console.log(error);
       throw error;
+    }
+  },
+  getManager: async (doc_num) => {
+    const query = `select manager from documents where doc_num=?`;
+    const result = await pool.query(query, [doc_num]);
+    return result[0];
+  },
+  recordFile: async () => {
+    try {
+      const query = `select file_num, counsel_num, path, origin_name, filetype, upload_date,file_byte
+                    from counsel_file`;
+      const result = await pool.query(query);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  planFile: async () => {
+    try {
+      const query = `select file_num, plan_num, path, origin_name, filetype, upload_date,file_byte
+                    from plan_file`;
+      const result = await pool.query(query);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  resultFile: async () => {
+    try {
+      const query = `select file_num, result_num, path, origin_name, filetype, upload_date,file_byte
+                    from result_file`;
+      const result = await pool.query(query);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
     }
   },
 };

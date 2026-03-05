@@ -7,6 +7,7 @@ import Home from "../views/Home.vue";
 import FindId from "../views/FindId.vue";
 import findpw from "../views/findpw.vue";
 import Mypage from "../views/mypage/mypage.vue";
+// import { useMemberStore } from "../store/member";
 
 const routes = [
   {
@@ -32,13 +33,24 @@ const routes = [
     path: "/work",
     name: "work",
     component: work,
+    // meta: { requiredLevel: "a2" },
     children: [
       {
         path: "plan",
+        components: { right: () => import("../views/work/plan.vue") },
+      },
+      {
+        path: "plan_manager",
         components: { right: () => import("../views/work/plan_manager.vue") },
       },
       {
         path: "priority",
+        components: {
+          right: () => import("../views/work/priority.vue"),
+        },
+      },
+      {
+        path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
         },
@@ -179,10 +191,6 @@ const routes = [
     component: Mypage,
     children: [
       {
-        path: "",
-        component: () => import("../views/mypage/mypage.vue"),
-      },
-      {
         path: "supported",
         component: () => import("../views/mypage/supportedPage.vue"),
       },
@@ -206,5 +214,17 @@ const router = createRouter({
   routes,
   linkActiveClass: "active",
 });
+// router.beforeEach((to, from, next) => {
+//   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
+//   const myLevel = memberStore.grade; // 내 실제 등급
+//   const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
 
+//   // 기준이 설정된 페이지인데, 내 등급이 기준보다 낮다면?
+//   if (requiredLevel && myLevel < requiredLevel) {
+//     alert("권한이 부족하여 이전 페이지로 돌아갑니다.");
+//     next(false); // ❌ 입장 거부 (이전 페이지 유지)
+//   } else {
+//     next(); // ✅ 입장 허가
+// }
+// });
 export default router;
