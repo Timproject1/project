@@ -4,11 +4,17 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
+import { useMemberStore } from "@/store/member";
+import { useDocStore } from "../../store/doc";
+
+const memberStore = useMemberStore();
+const docStore = useDocStore();
 
 const Plans = ref([]);
 const listPlan = async () => {
+  let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/planlist`)
+    .get(`http://localhost:3000/document/planlist/${doc}`)
     .catch((err) => console.log(err));
   Plans.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -19,10 +25,11 @@ const listPlan = async () => {
     returnPlan: false,
     revision: [],
   }));
-  console.log(result.data.result);
+  // console.log(result.data.result);
 };
 onBeforeMount(() => {
   listPlan();
+  filelist();
 });
 
 //지원계획 추가
@@ -39,8 +46,8 @@ const addPlan = async () => {
   }
 
   let add = {
-    doc_num: "doc-1",
-    plan_manager: "ca1",
+    doc_num: docStore.doc_num,
+    plan_manager: memberStore.id,
     plan_approved: "d1",
     plan_title: addPlanName.value,
     plan_content: addPlanContent.value,
@@ -64,7 +71,7 @@ const addPlan = async () => {
 const draft = async () => {
   let savedate = {
     plan_num: "plan-9999999",
-    doc_num: "doc-1",
+    doc_num: docStore.doc_num,
     plan_title: addPlanName.value,
     plan_content: addPlanContent.value,
   };
@@ -134,7 +141,7 @@ const Update = async (id) => {
     plan_title: id.plan_title,
     plan_content: id.plan_content,
     plan_num: id.plan_num,
-    plan_modified_by: "ca1",
+    plan_modified_by: memberStore.id,
     plan_modified_comment: plancomment.value,
     plan_modified_title: columns.join(","),
     plan_modified_content: id.plan_content,
@@ -200,6 +207,16 @@ const timedate = (id) => {
 };
 //지원기획서 추가 모달
 const newPlan = ref(false);
+//파일리스트
+const filename = ref([]);
+console.log(filename);
+const filelist = async () => {
+  let result = await axios
+    .get(`http://localhost:3000/document/planFile`)
+    .catch((err) => console.log(err));
+  console.log(result.data.result);
+  filename.value = Array.isArray(result.data.result) ? result.data.result : [];
+};
 </script>
 <template>
   <h4>지원계획서</h4>
@@ -222,8 +239,8 @@ const newPlan = ref(false);
         placeholder="내용입력"
         v-model="addPlanContent"
       />
-      <!-- <material-button type="button">첨부파일 등록</material-button>
-      <p>파일이름</p> -->
+      <material-button type="button">첨부파일 등록</material-button>
+      <p>파일이름</p>
       <material-button type="button" @click="addPlan()"
         >승인 요청</material-button
       >
@@ -271,7 +288,7 @@ const newPlan = ref(false);
         />
         <!-- <material-button type="button">첨부파일 등록</material-button>
         <div v-for="file in Plan.file" :key="file">
-          <p>{{ file }}</p>
+          <p>첨부파일</p>
         </div> -->
         <material-button type="button" @click="Update(Plan)"
           >수정 완료</material-button
@@ -301,10 +318,13 @@ const newPlan = ref(false);
       <br />
     </div>
     <!-- 첨부파일 -->
-    <!-- <div v-for="file in Plan.file" :key="file">
-      <p>첨부파일</p>
-      <p>{{ file }}</p>
-    </div> -->
+    <p>첨부파일</p>
+    <div
+      v-for="file in filename.filter((f) => f.plan_num === Plan.plan_num)"
+      :key="file.file_num"
+    >
+      <p>{{ file.origin_name }}</p>
+    </div>
     <!-- 수정내역 -->
     <material-button type="button" size="sm" @click="revisions(Plan)"
       >수정내역 확인</material-button

@@ -113,7 +113,7 @@ const ctrl = {
     try {
       const result = await service.priorityApp(priority);
       console.log(result);
-      res.json({ retCode: "OK" });
+      res.json({ result });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG" });
@@ -459,6 +459,49 @@ const ctrl = {
     try {
       const result = await service.modifyPlanList(list);
       // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  getManager: async (req, res) => {
+    try {
+      const doc_num = req.params.num;
+      const result = await service.getManager(doc_num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
+  recordFile: async (req, res) => {
+    const filename = req.params.id;
+    try {
+      const result = await service.recordFile(filename);
+      // console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  planFile: async (req, res) => {
+    const filename = req.params.id;
+    try {
+      const result = await service.planFile(filename);
+      console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  resultFile: async (req, res) => {
+    const filename = req.params.id;
+    try {
+      const result = await service.resultFile(filename);
+      console.log(result);
       res.json({ result });
     } catch (error) {
       console.log(error);

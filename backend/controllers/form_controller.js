@@ -136,5 +136,15 @@ const ctrl = {
       res.json({ retCode: "NG", error });
     }
   },
+  getVers: async (req, res) => {
+    try {
+      const result = await service.getVers();
+      console.log(result);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
 };
 module.exports = ctrl;

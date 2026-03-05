@@ -1,26 +1,29 @@
 <script setup>
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import axios from "axios";
 
-import { useRoute } from "vue-router";
+// import { useRoute } from "vue-router";
+import { useDocStore } from "../../store/doc";
 
-const route = useRoute();
+const docStore = useDocStore();
+
+// const route = useRoute();
 
 const memberStore = useMemberStore();
 
 let prioritydb = ref({});
-
+console.log(prioritydb);
 //get으로 데이터 당겨오기
-const priorityData = async (id) => {
+const priorityData = async () => {
+  let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/priority/${id}`)
+    .get(`http://localhost:3000/document/priority/${doc}`)
     .catch((err) => console.log(err));
-  prioritydb.value = result.data;
+  prioritydb.value = result.data.result;
 };
 onBeforeMount(() => {
-  let searchId = route.query.no;
-  priorityData(searchId);
+  priorityData();
 });
 
 const items = [
@@ -30,8 +33,6 @@ const items = [
 ];
 
 const box = ref(null);
-
-onMounted(() => {});
 
 const display = () => {
   if (box.value) {
@@ -47,7 +48,7 @@ const nonedisplay = () => {
 const appPri = async () => {
   let appcontent = {
     priority_req_num: prioritydb.value.priority_req_num,
-    doc_num: prioritydb.value.doc_num,
+    doc_num: docStore.doc_num,
     priority: prioritydb.value.priority,
   };
   const result = ref(null);
@@ -91,7 +92,7 @@ const returnPri = async () => {
   <div id="rea_container">
     <div id="rea">
       <h3>{{ memberStore.id }}님의 대기단계</h3>
-      <div class="wrapper" v-if="prioritydb.value?.priority === 'c3'">
+      <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
         <div
           class="circle"
           :style="{ backgroundColor: items[0].color, color: '#fff' }"
@@ -100,7 +101,7 @@ const returnPri = async () => {
           {{ items[0].label }}
         </div>
       </div>
-      <div class="wrapper" v-else-if="prioritydb.value?.priority === 'c4'">
+      <div class="wrapper" v-else-if="prioritydb?.priority == 'c4'">
         <div
           class="circle"
           :style="{ backgroundColor: items[1].color, color: '#fff' }"

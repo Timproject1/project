@@ -2,10 +2,11 @@
 import { ref } from "vue";
 import MaterialButton from "@/components/MaterialButton.vue";
 import { useMemberStore } from "@/store/member";
+import { useDocStore } from "../../store/doc";
 import axios from "axios";
 
 // import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-
+const docStore = useDocStore();
 const memberStore = useMemberStore();
 
 const selected = ref(null);
@@ -34,10 +35,10 @@ const appSign = async () => {
     return;
   }
   let appcontent = {
-    doc_num: "doc-1",
+    doc_num: docStore.doc_num,
     priority_reason: reason.value,
     priority: selected.value,
-    priority_app_manager: "ca1",
+    priority_app_manager: memberStore.id,
     priority_approved: "d1",
   };
   count.value = 1;

@@ -4,13 +4,19 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
+// import { useMemberStore } from "@/store/member";
+import { useDocStore } from "../../store/doc";
+
+// const memberStore = useMemberStore();
+const docStore = useDocStore();
 
 //지원기획서 승인 리스트
 const Plans = ref([]);
 console.log(Plans);
 const listPlan = async () => {
+  let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/planlist`)
+    .get(`http://localhost:3000/document/planlist/${doc}`)
     .catch((err) => console.log(err));
   Plans.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -30,7 +36,8 @@ onBeforeMount(() => {
 //승인
 const appPlan = async (id) => {
   let appPlan = {
-    plan_num: id,
+    doc_num: docStore.doc_num,
+    plan_num: id.plan_num,
   };
   const result = ref(null);
   try {
@@ -105,8 +112,8 @@ const revisions = async (id) => {
       <material-button type="button" size="sm">임시저장</material-button>
       <material-input id="text" placeholder="목표입력" />
       <material-input id="text" placeholder="내용입력" />
-      <!-- <material-button type="button">첨부파일 등록</material-button>
-      <p>파일이름</p> -->
+      <material-button type="button">첨부파일 등록</material-button>
+      <p>파일이름</p>
       <material-button type="button">등록</material-button>
     </template>
     <template #actions="{ close }">
@@ -122,11 +129,13 @@ const revisions = async (id) => {
     <p>{{ Plan.plan_content }}</p>
     <br />
     <!-- 첨부파일 -->
-    <!-- <div v-for="file in Plan.file" :key="file">
-      <p>첨부파일</p>
-      <p>{{ file }}</p>
-    </div> -->
-    <!-- 수정내역 -->
+    <p>첨부파일</p>
+    <div
+      v-for="file in filename.filter((f) => f.plan_num === Plan.plan_num)"
+      :key="file.file_num"
+    >
+      <p>{{ file.origin_name }}</p>
+    </div>
     <material-button type="button" size="sm" @click="revisions(Plan)"
       >수정내역 확인</material-button
     >
@@ -157,10 +166,7 @@ const revisions = async (id) => {
       </template>
     </Modal>
     <p v-if="Plan.plan_approved == 'd1'">
-      <material-button
-        type="button"
-        color="warning"
-        @click="appPlan(Plan.plan_num)"
+      <material-button type="button" color="warning" @click="appPlan(Plan)"
         >승인</material-button
       ><material-button
         type="button"

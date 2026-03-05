@@ -4,13 +4,20 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
+import { useMemberStore } from "@/store/member";
+import { useDocStore } from "../../store/doc";
 
+const memberStore = useMemberStore();
+const docStore = useDocStore();
+// console.log(docStore.doc_num);
 //지원결과서 출력
 const results = ref([]);
 const listresult = async () => {
+  let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/resultlist`)
+    .get(`http://localhost:3000/document/resultlist/${doc}`)
     .catch((err) => console.log(err));
+
   results.value = (result.data.result || []).map((r) => ({
     ...r,
     file: r.file || [],
@@ -24,6 +31,7 @@ const listresult = async () => {
 
 onBeforeMount(() => {
   listresult();
+  filelist();
 });
 const revisions = async (id) => {
   // console.log(id);
@@ -52,8 +60,8 @@ const addresults = async () => {
   }
 
   let add = {
-    doc_num: "doc-1",
-    result_manager: "ca1",
+    doc_num: docStore.doc_num,
+    result_manager: memberStore.id,
     result_title: addresultsName.value,
     result_contnet: addresultsContent.value,
   };
@@ -97,7 +105,7 @@ const Update = async (id) => {
     result_title: id.result_title,
     result_contnet: id.result_contnet,
     result_num: id.result_num,
-    result_modified_by: "ca1",
+    result_modified_by: memberStore.id,
     result_modified_comment: resreason.value,
     result_modified_title: columns.join(","),
     result_modified_content: id.result_contnet,
@@ -122,7 +130,7 @@ const Update = async (id) => {
 const draft = async () => {
   let savedate = {
     result_num: "result-9999999",
-    doc_num: "doc-1",
+    doc_num: docStore.doc_num,
     result_title: addresultsName.value,
     result_content: addresultsContent.value,
   };
@@ -182,6 +190,16 @@ const delresult = async (id) => {
   }
 };
 const newresult = ref(false);
+//파일리스트
+const filename = ref([]);
+console.log(filename);
+const filelist = async () => {
+  let result = await axios
+    .get(`http://localhost:3000/document/resultFile`)
+    .catch((err) => console.log(err));
+  console.log(result.data.result);
+  filename.value = Array.isArray(result.data.result) ? result.data.result : [];
+};
 </script>
 <template>
   <h4>지원결과서</h4>
@@ -289,10 +307,13 @@ const newresult = ref(false);
       <br />
     </div>
     <!-- 첨부파일 -->
-    <!-- <div v-for="file in result.file" :key="file">
-      <p>첨부파일</p>
-      <p>{{ file }}</p>
-    </div> -->
+    <p>첨부파일</p>
+    <div
+      v-for="file in filename.filter((f) => f.result_num === result.result_num)"
+      :key="file.result_num"
+    >
+      <p>{{ file.origin_name }}</p>
+    </div>
     <!-- 수정내역 -->
     <material-button type="button" size="sm" @click="revisions(result)"
       >수정내역 확인</material-button
