@@ -178,8 +178,8 @@ const service = {
     try {
       await conn.beginTransaction();
       await conn.query(
-        `update documents set priority=? progress=? where doc_num = ?; `,
-        [id.priority, id.progress, id.doc_num],
+        `update documents set priority=? progress="b3" where doc_num = ?; `,
+        [id.priority, id.doc_num],
       );
       await conn.query(`delete from priority_req where priority_req_num = ?`, [
         id.priority_req_num,
@@ -440,12 +440,12 @@ const service = {
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
-      await conn.query(`update documents set progress=? where doc_num = ?; `, [
-        id.progress,
-        id.doc_num,
-      ]);
       await conn.query(
-        `update plan_req set plan_approved="d2",plan_app_date=current_date where plan_num=?`,
+        `update documents set progress="b4" where doc_num = ?; `,
+        [id.doc_num],
+      );
+      await conn.query(
+        `update plan_req set plan_approved="d2",plan_appdate=current_date where plan_num=?`,
         [id.plan_num],
       );
       await conn.commit();
@@ -496,10 +496,10 @@ const service = {
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
-      await conn.query(`update documents set progress=? where doc_num = ?; `, [
-        id.progress,
-        id.doc_num,
-      ]);
+      await conn.query(
+        `update documents set progress="b5" where doc_num = ?; `,
+        [id.doc_num],
+      );
       await conn.query(
         `insert into results (result_num,doc_num,result_manager,result_title,result_contnet)
                     values (concat("result-",NEXT VALUE FOR create_result_num_seq),?,?,?,?)`,

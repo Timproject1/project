@@ -7,10 +7,10 @@ import axios from "axios";
 // import { useRoute } from "vue-router";
 // export default { components: { MaterialInput } };
 // const route = useRoute();
-// import { useMemberStore } from "@/store/member";
+import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
 
-// const memberStore = useMemberStore();
+const memberStore = useMemberStore();
 const docStore = useDocStore();
 //상담기록 출력
 const records = ref([]);
@@ -80,7 +80,7 @@ const addrecord = async () => {
     doc_num: docStore.doc_num,
     counsel_title: addRecordName.value,
     counsel_content: addRecordContent.value,
-    counsel_manager: "ca1",
+    counsel_manager: memberStore.id,
   };
 
   const result = ref(null);
@@ -163,7 +163,7 @@ const Update = async (id) => {
     counsel_title: id.counsel_title,
     counsel_content: id.counsel_content,
     counsel_num: id.counsel_num,
-    counsel_modified_by: "ca1",
+    counsel_modified_by: memberStore.id,
     counsel_modified_comment: recordcomment.value,
     counsel_modified_title: columns.join(","),
     counsel_modified_content: id.counsel_content,
@@ -292,13 +292,13 @@ const filelist = async () => {
           placeholder="수정사유"
           v-model="recordcomment"
         />
-        <material-button type="button">첨부파일 등록</material-button>
+        <!-- <material-button type="button">첨부파일 등록</material-button>
         <div v-if="record.file && record.file.length">
           <div v-for="file in record.file" :key="file">
             <p>첨부파일</p>
             <p>첨부파일이름</p>
           </div>
-        </div>
+        </div> -->
         <material-button type="button" @click="Update(record)"
           >수정 완료</material-button
         >

@@ -48,7 +48,6 @@ const nonedisplay = () => {
 const appPri = async () => {
   let appcontent = {
     priority_req_num: prioritydb.value.priority_req_num,
-    progress: "b3",
     doc_num: docStore.doc_num,
     priority: prioritydb.value.priority,
   };

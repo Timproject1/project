@@ -4,10 +4,10 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
-// import { useMemberStore } from "@/store/member";
+import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
 
-// const memberStore = useMemberStore();
+const memberStore = useMemberStore();
 const docStore = useDocStore();
 // console.log(docStore.doc_num);
 //지원결과서 출력
@@ -60,9 +60,8 @@ const addresults = async () => {
   }
 
   let add = {
-    progress: "d5",
     doc_num: docStore.doc_num,
-    result_manager: "ca1",
+    result_manager: memberStore.id,
     result_title: addresultsName.value,
     result_contnet: addresultsContent.value,
   };
@@ -106,7 +105,7 @@ const Update = async (id) => {
     result_title: id.result_title,
     result_contnet: id.result_contnet,
     result_num: id.result_num,
-    result_modified_by: "ca1",
+    result_modified_by: memberStore.id,
     result_modified_comment: resreason.value,
     result_modified_title: columns.join(","),
     result_modified_content: id.result_contnet,
