@@ -57,6 +57,7 @@ const ctrl = {
   approveUser: async (req, res) => {
     try {
       const { user_id } = req.body;
+      console.log(`con:${user_id}`);
       const result = await MypageService.approveUser(user_id);
       if (result) {
         res.status(200).json({ success: true, message: "승인 완료" });

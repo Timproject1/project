@@ -43,6 +43,7 @@ const handleLogin = async () => {
       // Pinia 스토어에 사용자 정보를 저장합니다.
       memberStore.setMember({
         id: response.data.user.user_id,
+<<<<<<< HEAD
         center: response.data.user.user_tel, // DB의 기관 연락처 정보 활용
         grade: response.data.user.approve, // DB의 approve(k1, k2) 상태 저장
       });
@@ -57,6 +58,14 @@ const handleLogin = async () => {
       } else {
         router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
       }
+=======
+        center: response.data.user.center || "1018112345",
+        grade: response.data.user.grade,
+        name: response.data.user.user_name,
+      });
+
+      router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
+>>>>>>> d20278614a903d237f4126757f414ee07100d139
     } else {
       // 아이디나 비번이 틀려서 서버가 실패 응답을 보낸 경우입니다.
       loginError.value = true; // 에러 상태를 켭니다.

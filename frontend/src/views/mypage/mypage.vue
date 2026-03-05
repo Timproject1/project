@@ -1,63 +1,61 @@
-<script>
-export default {
-  data() {
-    return {
-      isCheck: false,
-      passwordConfirm: "",
-      userInfo: {
-        user_id: "",
-      },
-    };
-  },
-  created() {
-    // const id = sessionStorage.getItem("user_id");
-    // [방어 로직] 세션에 아이디가 없으면 요청을 막고 로그인으로 보냄
-    // if (!id || id === "null") {
-    //   alert("로그인이 필요합니다.");
-    //   this.$router.push("/login");
-    //   return;
-    // }
-    this.userInfo.user_id = "test";
-  },
+<script setup>
+import { ref, reactive } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useMemberStore } from "@/store/member";
 
-  methods: {
-    async checkpassword() {
-      // 아이디가 없는 상태로 요청 보내는 것을 원천 차단
-      if (!this.userInfo.user_id) return alert("로그인 정보가 없습니다.");
-      if (!this.passwordConfirm) return alert("비밀번호를 입력해주세요.");
+// 1. 변수 및 라이브러리 초기화
+const router = useRouter();
+const route = useRoute();
+const memberStore = useMemberStore();
 
-      try {
-        const response = await fetch("http://localhost:3000/mypage/check", {
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: this.userInfo.user_id,
-            password: this.passwordConfirm,
-          }),
-        });
+// 2. Data (Reactive States)
+const isCheck = ref(false);
+const passwordConfirm = ref("");
+const userInfo = reactive({
+  user_id: "",
+});
 
-        if (response.ok) {
-          alert("본인 확인 완료");
-          this.isCheck = true;
+// 3. Lifecycle (Created/Mounted 역할)
+// script setup 자체가 created 시점과 유사하게 작동합니다.
+console.log("현재 로그인 아이디:", memberStore.id);
+userInfo.user_id = memberStore.id || "test";
 
-          // 페이지 이동 (이미 인증되었으므로 이동된 페이지에서 데이터를 가져옴)
-          if (
-            this.$route.path === "/mypage" ||
-            this.$route.path === "/mypage/"
-          ) {
-            this.$router.push("/mypage/info");
-          }
-        } else {
-          alert("비밀번호가 일치하지 않습니다.");
-        }
-      } catch (error) {
-        console.error("인증오류:", error);
+// 4. Methods
+const checkpassword = async () => {
+  // 아이디가 없는 상태로 요청 보내는 것을 원천 차단
+  // if (!memberStore.id) return alert("로그인 정보가 없습니다.");
+
+  if (!passwordConfirm.value) {
+    alert("비밀번호를 입력해주세요.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/mypage/check", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userInfo.user_id,
+        password: passwordConfirm.value,
+      }),
+    });
+
+    if (response.ok) {
+      alert("본인 확인 완료");
+      isCheck.value = true;
+
+      // 페이지 이동 logic
+      if (route.path === "/mypage" || route.path === "/mypage/") {
+        router.push("/mypage/info");
       }
-    },
-  },
+    } else {
+      alert("비밀번호가 일치하지 않습니다.");
+    }
+  } catch (error) {
+    console.error("인증오류:", error);
+  }
 };
 </script>
-
 <template>
   <h2>마이페이지</h2>
   <div v-if="!isCheck" class="password-check-box">

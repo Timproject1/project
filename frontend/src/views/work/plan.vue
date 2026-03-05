@@ -4,10 +4,10 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
-// import { useMemberStore } from "@/store/member";
+import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
 
-// const memberStore = useMemberStore();
+const memberStore = useMemberStore();
 const docStore = useDocStore();
 
 const Plans = ref([]);
@@ -47,7 +47,7 @@ const addPlan = async () => {
 
   let add = {
     doc_num: docStore.doc_num,
-    plan_manager: "ca1",
+    plan_manager: memberStore.id,
     plan_approved: "d1",
     plan_title: addPlanName.value,
     plan_content: addPlanContent.value,
@@ -141,7 +141,7 @@ const Update = async (id) => {
     plan_title: id.plan_title,
     plan_content: id.plan_content,
     plan_num: id.plan_num,
-    plan_modified_by: "ca1",
+    plan_modified_by: memberStore.id,
     plan_modified_comment: plancomment.value,
     plan_modified_title: columns.join(","),
     plan_modified_content: id.plan_content,
@@ -239,8 +239,8 @@ const filelist = async () => {
         placeholder="내용입력"
         v-model="addPlanContent"
       />
-      <!-- <material-button type="button">첨부파일 등록</material-button>
-      <p>파일이름</p> -->
+      <material-button type="button">첨부파일 등록</material-button>
+      <p>파일이름</p>
       <material-button type="button" @click="addPlan()"
         >승인 요청</material-button
       >
@@ -288,7 +288,7 @@ const filelist = async () => {
         />
         <!-- <material-button type="button">첨부파일 등록</material-button>
         <div v-for="file in Plan.file" :key="file">
-          <p>{{ file }}</p>
+          <p>첨부파일</p>
         </div> -->
         <material-button type="button" @click="Update(Plan)"
           >수정 완료</material-button

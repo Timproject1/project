@@ -99,13 +99,12 @@ const service = {
     // user_id를 업데이트하고 배정 상태(예: d1)로 변경하는 쿼리
     const query = `
     UPDATE supported
-    SET user_id = ?, 
-        sup_approved = 'd1' 
+    SET sup_approved = 'd1' 
     WHERE sup_num = ?
   `;
 
     try {
-      const result = await pool.query(query, [user_id, sup_num]);
+      const result = await pool.query(query, [sup_num]);
       return result;
     } catch (error) {
       throw error;
