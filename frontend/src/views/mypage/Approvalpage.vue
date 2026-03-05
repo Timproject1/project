@@ -9,7 +9,7 @@ const toggleMenu = () => {
 // 실제 DB에서 가져온 데이터를 담을 배열 (초기값 빈 배열)
 const userInfo = ref([]);
 
-const choiceUser = ref(null);
+const choiceUser = ref({});
 const showInfo = ref(true);
 const Noapprove = ref(false);
 const Reason = ref("");
@@ -20,6 +20,7 @@ const fetchUsers = async () => {
     const response = await fetch(
       "http://localhost:3000/mypage/admin/users/pending",
     );
+    console.log(response);
     if (response.ok) {
       userInfo.value = await response.json();
     }
@@ -38,6 +39,7 @@ const viewInfo = (user) => {
   choiceUser.value = user;
   showInfo.value = false;
   Noapprove.value = false;
+  console.log(choiceUser.value);
 };
 
 // 2. 승인 버튼 클릭 (DB 업데이트)

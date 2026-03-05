@@ -2,9 +2,10 @@ import { defineStore } from "pinia";
 
 export const useMemberStore = defineStore("member", {
   state: () => ({
-    id: "test",
-    center: "1018112345",
-    grade: "a1",
+    id: "",
+    center: "",
+    grade: "",
+    name: "",
   }),
 
   actions: {
@@ -12,6 +13,7 @@ export const useMemberStore = defineStore("member", {
       this.id = data.id;
       this.center = data.center;
       this.grade = data.grade;
+      this.name = data.name;
     },
 
     logout() {
