@@ -35,10 +35,20 @@ const routes = [
     children: [
       {
         path: "plan",
+        components: { right: () => import("../views/work/plan.vue") },
+      },
+      {
+        path: "plan_manager",
         components: { right: () => import("../views/work/plan_manager.vue") },
       },
       {
         path: "priority",
+        components: {
+          right: () => import("../views/work/priority.vue"),
+        },
+      },
+      {
+        path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
         },
