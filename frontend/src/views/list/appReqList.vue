@@ -8,6 +8,7 @@ import axios from "axios";
 const router = useRouter();
 const memberStore = useMemberStore();
 const docStore = useDocStore();
+const currentTab = ref("priority");
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
 const formatDate = (dateString) => {
@@ -15,36 +16,35 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("ko-KR");
   // 결과: "2026. 2. 22."
 };
+const getPath = {
+  priority: "priReqList",
+  plan: "planReqList",
+};
+const movePath = {
+  priority: "priority",
+  plan: "plan",
+};
 const getList = async () => {
-  const result = await axios.get("http://localhost:3000/document/list", {
-    params: {
-      id: memberStore.id ? memberStore.id : "",
-      grade: memberStore.grade ? memberStore.grade : "",
-      writer: searchQuery.value.writer,
-      maneger: searchQuery.value.maneger,
-      sup: searchQuery.value.sup,
-    },
-  });
+  const result = await axios.get(
+    `http://localhost:3000/document/${getPath[currentTab.value]}/${
+      memberStore.center
+    }`,
+  );
   list.value = result.data.result;
   console.log(result.data);
   return result;
 };
-const getDocument = (doc_num) => {
-  console.log(`신청서 보기${doc_num}`);
-};
-const getPlan = (doc_num) => {
-  console.log(`계획 보기${doc_num}`);
-};
-const getResult = (doc_num) => {
-  console.log(`결과보기 ${doc_num}`);
-};
-const moveRegister = () => {
-  router.push("/document/write");
-};
+
 const selectDoc = (doc_num) => {
+  // console.log("test");
   console.log(doc_num);
-  docStore.setDoc(doc_num);
-  router.push("/work");
+  docStore.doc_num = doc_num;
+  router.push(`/work/${movePath[currentTab.value]}`);
+};
+
+const fetchTableData = async (tab) => {
+  currentTab.value = tab;
+  await getList();
 };
 onBeforeMount(async () => {
   await getList();
@@ -57,7 +57,7 @@ onBeforeMount(async () => {
         class="rounded-3 shadow-dark p-3 text-white"
         style="
           min-width: 240px;
-          background-color: #adb5bd;
+          background-color: #344767;
           border-radius: 0.75rem;
         "
       >
@@ -122,7 +122,21 @@ onBeforeMount(async () => {
           <div class="card-header p-3">
             <h6 class="mb-0 font-weight-bolder">지원 신청 내역</h6>
           </div>
+          <div class="px-3 d-flex gap-2">
+            <material-button
+              @click="fetchTableData('priority')"
+              :active="currentTab == 'priority'"
+            >
+              우선순위
+            </material-button>
 
+            <material-button
+              @click="fetchTableData('plan')"
+              :active="currentTab == 'plan'"
+            >
+              지원계획
+            </material-button>
+          </div>
           <div class="card-body px-0 pb-2">
             <div class="table-responsive">
               <table class="table align-items-center mb-0">
@@ -148,32 +162,18 @@ onBeforeMount(async () => {
                     >
                       신청일
                     </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      신청서
-                    </th>
+
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
                       담당자
                     </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      계획서
-                    </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      결과서
-                    </th>
+
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
                       단계
                     </th>
-                    <th>test</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -192,46 +192,15 @@ onBeforeMount(async () => {
                     <td class="text-center text-sm">
                       {{ formatDate(doc.write_date) }}
                     </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="info"
-                        variant="text"
-                        class="mb-0"
-                        @click.stop="getDocument(doc.doc_num)"
-                        >보기</material-button
-                      >
-                    </td>
+
                     <td class="text-center text-sm">
                       {{ doc.manager_name }}
                     </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="dark"
-                        variant="outline"
-                        class="mb-0 px-3"
-                        @click.stop="getPlan(doc.doc_num)"
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="dark"
-                        variant="outline"
-                        class="mb-0 px-3"
-                        @click.stop="getResult(doc.doc_num)"
-                        >보기</material-button
-                      >
-                    </td>
+
                     <td class="text-center">
                       <span class="badge badge-sm bg-gradient-success">{{
                         doc.progress
                       }}</span>
-                    </td>
-                    <td>
-                      {{ doc.doc_num }}
                     </td>
                   </tr>
                 </tbody>
@@ -247,15 +216,6 @@ onBeforeMount(async () => {
                 <material-pagination-item label="2" />
                 <material-pagination-item next />
               </material-pagination>
-
-              <material-button
-                color="success"
-                variant="gradient"
-                class="mb-0"
-                @click="moveRegister()"
-              >
-                <i class="material-icons text-sm me-2">edit</i>신청서작성
-              </material-button>
             </div>
           </div>
         </div>

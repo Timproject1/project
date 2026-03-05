@@ -91,6 +91,10 @@ const routes = [
         path: "allotment",
         component: () => import("../views/list/allotmentList.vue"),
       },
+      {
+        path: "appreq",
+        component: () => import("../views/list/appReqList.vue"),
+      },
     ],
   },
   {
@@ -164,6 +168,11 @@ const routes = [
     path: "/sign-up",
     name: "SignUp",
     component: SignUp,
+  },
+  {
+    path: "/reset-password",
+    name: "resetPW",
+    component: () => import("../views/ResetPassword.vue"),
   },
   {
     path: "/mypage",

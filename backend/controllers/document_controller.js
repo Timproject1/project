@@ -401,6 +401,26 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  priReqList: async (req, res) => {
+    try {
+      const center_num = req.params.num;
+      const result = await service.priReqList(center_num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
+  planReqList: async (req, res) => {
+    try {
+      const center_num = req.params.num;
+      const result = await service.planReqList(center_num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
   deletePlan: async (req, res) => {
     const del = req.body;
     try {

@@ -2,12 +2,12 @@ import { defineStore } from "pinia";
 
 export const useDocStore = defineStore("document", {
   state: () => ({
-    doc_num: "doc-1",
+    doc_num: "",
     writer: "",
   }),
 
   actions: {
-    setMember(doc_num) {
+    setDoc(doc_num) {
       this.doc_num = doc_num;
     },
     setInfo(info) {
