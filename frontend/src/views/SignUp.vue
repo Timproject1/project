@@ -1,30 +1,31 @@
 <script setup>
-import { ref, reactive, computed } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import MaterialInput from "@/components/MaterialInput.vue";
+import { ref, reactive, computed } from "vue"; // Vue의 반응형 상태 관리 및 계산된 속성 도구 임포트
+import { useRouter } from "vue-router"; // 페이지 이동을 위한 라우터 도구 임포트
+import axios from "axios"; // API 통신을 위한 axios 라이브러리 임포트
+import MaterialInput from "@/components/MaterialInput.vue"; // 커스텀 입력창 컴포넌트 임포트
 
-const router = useRouter();
+const router = useRouter(); // 라우터 인스턴스 생성
 
+// 회원가입 폼에 입력될 데이터를 담는 반응형 객체
 const form = reactive({
   user_id: "", // 사용자 아이디
   user_password: "", // 비밀번호
   user_name: "", // 사용자 이름
   user_tel: "", // 연락처
   user_email: "", // 이메일
-  registernum: "", // 기관 등록 번호
-  grade: "a1", // 기본 권한 등급
-  actived: "Y", // 활성 상태 여부
+  registernum: "", // 선택된 기관의 고유 등록 번호
+  grade: "a1", // 회원 등급 (기본값 a1: 일반사용자)
+  actived: "i1", // 계정 상태 (기본값 i1: 승인 대기 등)
 });
 
-const userPwCheck = ref(""); // 비밀번호 확인 입력값
-const institutionName = ref(""); // 선택된 기관 이름 (화면 표시용)
-const emailDuplicate = ref(false); // 이메일 중복 여부 상태
-const isModalOpen = ref(false); // 기관 검색 모달 열림/닫힘 상태
-const searchQuery = ref(""); // 기관 검색어
-const centers = ref([]); // 검색된 기관 목록 리스트
+const userPwCheck = ref(""); // 비밀번호 일치 확인을 위한 입력값 저장 변수
+const institutionName = ref(""); // 화면에 표시될 기관의 이름
+const emailDuplicate = ref(false); // 이메일 중복 상태 (UI 표시용)
+const isModalOpen = ref(false); // 기관 검색 모달창의 열림/닫힘 상태
+const searchQuery = ref(""); // 모달 내 기관 검색어 저장 변수
+const centers = ref([]); // 검색 결과로 받은 기관 목록 저장 배열
 
-// 비밀번호와 비밀번호 확인 값이 입력되었고, 두 값이 일치하지 않는지 체크
+// 비밀번호와 확인용 비밀번호가 입력되었을 때, 두 값이 서로 다른지 실시간으로 확인
 const isPasswordMismatch = computed(() => {
   return (
     form.user_password !== "" &&
@@ -33,60 +34,62 @@ const isPasswordMismatch = computed(() => {
   );
 });
 
-// 아이디 중복 확인 함수
+// 아이디 중복 확인 버튼 클릭 시 실행되는 함수
 const checkIdDuplication = async () => {
   if (!form.user_id) {
-    alert("아이디를 입력해주세요.");
+    alert("아이디를 입력해주세요."); // 아이디 미입력 시 경고
     return;
   }
   try {
     const res = await axios.post("http://localhost:3000/user/check-id", {
-      user_id: form.user_id,
+      user_id: form.user_id, // 서버로 현재 입력된 아이디 전송
     });
     alert(
       res.data.isDuplicate
-        ? "이미 사용 중인 아이디입니다."
-        : "사용 가능한 아이디입니다.",
+        ? "이미 사용 중인 아이디입니다." // 중복된 경우
+        : "사용 가능한 아이디입니다.", // 사용 가능한 경우
     );
   } catch (e) {
-    alert("서버 연결 실패");
+    alert("서버 연결 실패"); // 서버 에러 발생 시
   }
 };
 
-// 기관 목록 조회 함수 (API 통신)
+// 기관 검색 버튼 클릭 시 서버에서 기관 목록을 가져오는 함수
 const fetchInstitutions = async () => {
   try {
     const url = `http://localhost:3000/center/list`;
-    const res = await axios.get(url, { params: { name: searchQuery.value } });
+    const res = await axios.get(url, { params: { name: searchQuery.value } }); // 검색어를 쿼리로 전달
 
     console.log("서버 응답 데이터:", res.data);
-    centers.value = res.data.result; // 검색 결과를 상태값에 저장
+    centers.value = res.data.result; // 받아온 기관 데이터를 배열에 저장
   } catch (e) {
     console.error("에러 상세:", e);
     alert("서버 연결에 실패했습니다.");
   }
 };
 
-// 모달에서 특정 기관을 선택했을 때 처리하는 함수
+// 모달 테이블에서 특정 기관의 '사용' 버튼을 클릭했을 때 처리
 const selectOrg = (org) => {
-  institutionName.value = org.center_name; // 화면에 보일 기관명 설정
-  form.registernum = org.registernum; // 폼 데이터에 등록번호 저장
-  isModalOpen.value = false; // 모달 닫기
+  institutionName.value = org.center_name; // 화면에 기관명 표시
+  form.registernum = org.registernum; // 가입 데이터에 해당 기관 번호 저장
+  isModalOpen.value = false; // 선택 완료 후 모달 닫기
 };
 
+// 최종 '가입하기' 버튼 클릭 시 실행되는 함수
 const handleSignup = async () => {
+  // 필수 입력값이 빠졌는지 최종 확인
   if (!form.user_id || !form.user_password || !form.registernum) {
     alert("필수 항목을 모두 입력해주세요.");
     return;
   }
   try {
-    const res = await axios.post("http://localhost:3000/user/signup", form);
+    const res = await axios.post("http://localhost:3000/user/signup", form); // 전체 데이터 전송
     if (res.data.success) {
-      alert("회원가입 완료!");
-      router.push("/sign-in");
+      alert("회원가입 완료!"); // 가입 성공 메시지
+      router.push("/sign-in"); // 로그인 페이지로 페이지 이동
     }
   } catch (e) {
-    alert("가입 실패");
+    alert("가입 실패"); // 가입 실패 메시지
   }
 };
 </script>
@@ -96,6 +99,22 @@ const handleSignup = async () => {
     <div class="signup-wrap">
       <h2 class="signup-title">회원가입</h2>
 
+      <!-- 가입 유형 선택 행 -->
+      <div class="form-row">
+        <label class="row-label">가입 유형</label>
+        <div class="row-content">
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" v-model="form.grade" value="a2" /> 기관담당자
+            </label>
+            <label class="radio-label">
+              <input type="radio" v-model="form.grade" value="a1" /> 일반사용자
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 아이디 입력 행 -->
       <div class="form-row">
         <label class="row-label">아이디</label>
         <div class="row-content">
@@ -117,6 +136,7 @@ const handleSignup = async () => {
         </div>
       </div>
 
+      <!-- 비밀번호 입력 행 -->
       <div class="form-row">
         <label class="row-label">비밀번호</label>
         <div class="row-content">
@@ -132,6 +152,7 @@ const handleSignup = async () => {
         </div>
       </div>
 
+      <!-- 비밀번호 확인 행 및 에러 메시지 -->
       <div class="form-row">
         <label class="row-label">비밀번호 확인</label>
         <div class="row-content">
@@ -144,12 +165,14 @@ const handleSignup = async () => {
             />
             <span class="required">(필수)</span>
           </div>
+          <!-- 비밀번호 불일치 시 실시간 경고 표시 -->
           <p v-if="isPasswordMismatch" class="error-msg-abs">
             * 비밀번호가 틀렸습니다.
           </p>
         </div>
       </div>
 
+      <!-- 이름 입력 행 -->
       <div class="form-row">
         <label class="row-label">이름</label>
         <div class="row-content">
@@ -164,6 +187,7 @@ const handleSignup = async () => {
         </div>
       </div>
 
+      <!-- 연락처 입력 행 -->
       <div class="form-row">
         <label class="row-label">연락처</label>
         <div class="row-content">
@@ -178,6 +202,7 @@ const handleSignup = async () => {
         </div>
       </div>
 
+      <!-- 이메일 입력 행 -->
       <div class="form-row">
         <label class="row-label">이메일</label>
         <div class="row-content">
@@ -196,6 +221,7 @@ const handleSignup = async () => {
         </div>
       </div>
 
+      <!-- 기관명 검색 행 (ReadOnly) -->
       <div class="form-row">
         <label class="row-label">기관명</label>
         <div class="row-content">
@@ -218,6 +244,7 @@ const handleSignup = async () => {
         </div>
       </div>
 
+      <!-- 회원가입 완료 버튼 영역 -->
       <div class="btn-area">
         <button
           type="button"
@@ -229,8 +256,10 @@ const handleSignup = async () => {
       </div>
     </div>
 
+    <!-- 기관 검색 모달 레이어 (v-if로 조건부 렌더링) -->
     <div v-if="isModalOpen" class="modal-overlay">
       <div class="modal-content">
+        <!-- 모달 내부 검색창 -->
         <div class="modal-search-box">
           <label class="row-label" style="width: 80px">기관명</label>
           <input
@@ -244,6 +273,7 @@ const handleSignup = async () => {
           </button>
         </div>
 
+        <!-- 검색 결과 데이터 출력 테이블 -->
         <div class="table-container">
           <table class="org-table">
             <thead>
@@ -255,6 +285,7 @@ const handleSignup = async () => {
               </tr>
             </thead>
             <tbody>
+              <!-- 검색된 리스트 반복 출력 -->
               <tr v-for="center in centers" :key="center.registernum">
                 <td>{{ center.center_name }}</td>
                 <td>{{ center.center_addr }}</td>
@@ -272,6 +303,7 @@ const handleSignup = async () => {
             </tbody>
           </table>
         </div>
+        <!-- 모달 닫기 버튼 영역 -->
         <div style="text-align: right; margin-top: 20px">
           <button
             class="green-btn"
@@ -287,7 +319,7 @@ const handleSignup = async () => {
 </template>
 
 <style scoped>
-/* 스타일은 동일하여 생략합니다. */
+/* 컨테이너 및 폼 스타일 유지 */
 .signup-container {
   display: flex;
   justify-content: center;
@@ -363,6 +395,7 @@ const handleSignup = async () => {
   font-weight: bold;
   border-radius: 8px;
 }
+/* 모달창 스타일 유지 */
 .modal-overlay {
   position: fixed;
   top: 0;
