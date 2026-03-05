@@ -8,8 +8,12 @@ import Navbar from "@/examples/PageLayout/Navbar.vue"; // 상단 네비게이션
 import MaterialInput from "@/components/MaterialInput.vue"; // 디자인된 입력창 컴포넌트를 가져옵니다.
 import MaterialButton from "@/components/MaterialButton.vue"; // 디자인된 버튼 컴포넌트를 가져옵니다.
 
+// Pinia 스토어를 가져옵니다. (이미지 경로인 @/store/member로 맞춤)
+import { useMemberStore } from "@/store/member";
+
 const store = useStore(); // Vuex 저장소 인스턴스를 사용 가능하게 만듭니다.
 const router = useRouter(); // 라우터 인스턴스를 생성하여 이동 함수를 준비합니다.
+const memberStore = useMemberStore(); // Pinia 스토어 인스턴스를 생성합니다.
 
 const userId = ref(""); // 사용자가 입력창에 쓴 아이디를 담는 변수입니다.
 const password = ref(""); // 사용자가 입력창에 쓴 비밀번호를 담는 변수입니다.
@@ -36,6 +40,13 @@ const handleLogin = async () => {
       loginError.value = false; // 에러 상태를 끕니다.
       alert(`환영합니다, ${response.data.user.user_name}님!`); // 환영 메시지를 띄웁니다.
 
+      // Pinia 스토어에 사용자 정보를 저장합니다.
+      memberStore.setMember({
+        id: response.data.user.user_id,
+        center: response.data.user.center || "1018112345",
+        grade: response.data.user.grade,
+      });
+
       // 브라우저 로컬 스토리지에 나중에 꺼내 쓸 이름과 등급을 저장합니다.
       localStorage.setItem("userName", response.data.user.user_name);
       localStorage.setItem("userGrade", response.data.user.grade);
@@ -52,7 +63,7 @@ const handleLogin = async () => {
     loginError.value = true; // 에러 상태를 켭니다.
 
     if (error.response && error.response.status === 404) {
-      // 서버 주소가 잘못되었을 때입니다.
+      // 서버 주소가 잘못되었을때 입니다.
       alert("서버의 로그인 경로를 찾을 수 없습니다.");
     } else {
       // 그 외 서버와 연결할 수 없을 때입니다.
