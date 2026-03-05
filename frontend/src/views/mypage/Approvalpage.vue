@@ -114,7 +114,7 @@ const confirmReject = () => {
         <td>{{ user.user_id }}</td>
         <td>{{ user.user_name }}</td>
         <td>{{ user.user_email }}</td>
-        <td>{{ user.user_ref_date }}</td>
+        <td>{{ user.user_reg_date }}</td>
         <td><button @click="viewInfo(user)">등록</button></td>
       </tr>
     </tbody>
