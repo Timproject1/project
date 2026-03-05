@@ -1,6 +1,15 @@
 <script setup>
 import { useRouter } from "vue-router";
+import { useMemberStore } from "@/store/member";
+
+const memberStore = useMemberStore();
 const router = useRouter();
+const grades = {
+  a1: "일반사용자",
+  a2: "기관담당자",
+  a3: "기관관리자",
+  a4: "시스템관리자",
+};
 const goplan = () => {
   router.push("/work/plan");
 };
@@ -53,7 +62,9 @@ const gorepresentative = () => {
       </div>
 
       <div class="ms-md-auto d-flex align-items-center">
-        <span class="me-4 text-sm font-weight-bold">시스템 관리자 김길동</span>
+        <span class="me-4 text-sm font-weight-bold"
+          >{{ grades[memberStore.grade] }} {{ memberStore.name }}</span
+        >
 
         <ul class="navbar-nav justify-content-end flex-row">
           <li class="nav-item d-flex align-items-center me-2">
