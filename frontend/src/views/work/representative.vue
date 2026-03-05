@@ -5,6 +5,7 @@ import { useDocStore } from "../../store/doc";
 const managers = ref(["정찬우", "장수연", "이민호", "안형주", "김진환"]);
 const selectedManager = ref("");
 const docStore = useDocStore();
+
 const handleRegister = async () => {
   if (!selectedManager.value) {
     alert("담당자를 먼저 선택해주세요.");
@@ -19,17 +20,26 @@ const handleRegister = async () => {
     alert("오류발생 관리자에게 문의해주세요");
   }
 };
-const getManager = async () => {
+//작성자의 센터의 기관담당자 또는 관리자 가져오기
+const getManagerList = async () => {
   console.log(docStore.writer);
   const result = await axios.get(
     `http://localhost:3000/user/getManager/${docStore.writer}`,
   );
   managers.value = result.data.result;
 };
+const getManager = async () => {
+  const result = await axios.get(
+    `http://localhost:3000/document/manager/${docStore.doc_num}`,
+  );
+  console.log(result.data);
+  selectedManager.value = result.data.result.manager || "";
+};
 const handleCancel = () => {
   selectedManager.value = "";
 };
 onBeforeMount(async () => {
+  await getManagerList();
   await getManager();
 });
 </script>

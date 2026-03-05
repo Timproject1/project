@@ -1,14 +1,10 @@
-const {
-  getResp,
-  handleManager,
-} = require("../controllers/document_controller");
 const pool = require("../db/mapper");
 
 const service = {
   //목록받아오기
   getList: async (info, searchFilters) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id from getDocumentList`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id,form_ver from getDocumentList`;
       const conditions = [];
       const values = [];
       if (info.grade == "a1") {
@@ -124,14 +120,25 @@ const service = {
       return error;
     }
   },
+  //담당자변경
   handleManager: async (doc_num, manager_id) => {
+    const con = await pool.getConnection();
     try {
+      await con.beginTransaction();
       const query = `update documents set manager = ? , priority=if(priority="c1","c2",priority) where doc_num=?`;
-      const result = await pool.query(query, [manager_id, doc_num]);
+      const result = await con.query(query, [manager_id, doc_num]);
+      await con.query(
+        `UPDATE documents SET progress = 'b2' WHERE doc_num = ? and progress='b1'`,
+        [doc_num],
+      );
+      await con.commit();
       return result;
     } catch (error) {
       console.log(error);
+      await con.rollback();
       throw error;
+    } finally {
+      await con.release();
     }
   },
   //우선순위 셋팅
@@ -728,6 +735,11 @@ const service = {
       console.log(error);
       throw error;
     }
+  },
+  getManager: async (doc_num) => {
+    const query = `select manager from documents where doc_num=?`;
+    const result = await pool.query(query, [doc_num]);
+    return result[0];
   },
   recordFile: async () => {
     try {
