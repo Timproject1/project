@@ -38,7 +38,7 @@ const appSign = async () => {
     doc_num: docStore.doc_num,
     priority_reason: reason.value,
     priority: selected.value,
-    priority_app_manager: "ca1",
+    priority_app_manager: memberStore.id,
     priority_approved: "d1",
   };
   count.value = 1;
