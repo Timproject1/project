@@ -30,7 +30,7 @@ const service = {
   getPendingUsers: async () => {
     // user_status가 '0'(승인대기)인 회원만 조회
     const query =
-      "SELECT user_id, user_name, user_email, user_ref_date, user_tel FROM member WHERE user_status = '0' ORDER BY user_ref_date ASC";
+      "SELECT user_id, user_name, user_email, user_reg_date, user_tel FROM member WHERE approve = 'k2' ORDER BY user_reg_date ASC";
     const rows = await pool.query(query);
     return rows;
   },
@@ -38,7 +38,8 @@ const service = {
   // 2. 일반 회원 승인 처리 (상태 변경)
   approveUser: async (user_id) => {
     // user_status를 '1'(승인완료)로 변경
-    const query = "UPDATE member SET user_status = '1' WHERE user_id = ?";
+    console.log(`${user_id}`);
+    const query = "UPDATE member SET approve = 'k1' WHERE user_id = ?";
     const result = await pool.query(query, [user_id]);
     return result.affectedRows > 0;
   },

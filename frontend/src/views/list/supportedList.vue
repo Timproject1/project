@@ -3,14 +3,16 @@
 import { ref, onMounted, reactive } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-
+import { useMemberStore } from "../../store/member";
 const router = useRouter();
 const isOpen = ref(true);
 const currentTab = ref("list");
+const memberStore = useMemberStore();
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
-
+memberStore.id = "test";
+console.log(`pinina:${memberStore.id}`);
 const search = reactive({
   sup_name: "",
   priority: "전체",
