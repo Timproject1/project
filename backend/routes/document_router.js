@@ -7,6 +7,7 @@ router.get("/getDoc/:num", ctrl.getDoc);
 router.post("/write", ctrl.writeDoc); //신청서 작성
 router.get("/getForm/:num", ctrl.getForm); //신청서 양식 받아오기
 router.get("/getResp/:num", ctrl.getResp); //응답받아오기
+router.get("/manager/:num", ctrl.getManager);
 router.patch("/manager/:doc_num/:manager_id", ctrl.handleManager); //담당자 변경하기
 router.post("/priority", ctrl.prioritySetting); //우선순위 신청
 router.get("/priority/:id", ctrl.priorityApp); //우선순위 신청 데이터 당겨오기

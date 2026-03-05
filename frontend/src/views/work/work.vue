@@ -55,7 +55,7 @@ const getDoc = async () => {
     `http://localhost:3000/document/getDoc/${docStore.doc_num}`,
   ).catch((err) => console.error(err));
   doc.value = result.data.result[0];
-  // console.log(doc.value);
+  // console.log(result.data);
   docStore.setInfo({ doc_num: doc.value.doc_num, writer: doc.value.writer_id });
 };
 
