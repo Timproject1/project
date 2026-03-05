@@ -37,10 +37,20 @@ const routes = [
     children: [
       {
         path: "plan",
+        components: { right: () => import("../views/work/plan.vue") },
+      },
+      {
+        path: "plan_manager",
         components: { right: () => import("../views/work/plan_manager.vue") },
       },
       {
         path: "priority",
+        components: {
+          right: () => import("../views/work/priority.vue"),
+        },
+      },
+      {
+        path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
         },
@@ -180,10 +190,6 @@ const routes = [
     path: "/mypage",
     component: Mypage,
     children: [
-      {
-        path: "",
-        component: () => import("../views/mypage/mypage.vue"),
-      },
       {
         path: "supported",
         component: () => import("../views/mypage/supportedPage.vue"),

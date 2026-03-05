@@ -73,6 +73,34 @@ const addCenter = async () => {
     alert("기관 등록이 실패하였습니다");
   }
 };
+// 기관 수정하기
+// <script setup> 내부에 추가
+const isCenterModalOpen = ref(false);
+const modifyCenter = ref(null);
+
+// 수정 버튼 클릭 시 실행 (해당 행의 기관 데이터 전달)
+const openCenterEditModal = (center) => {
+  modifyCenter.value = { ...center }; // 원본 데이터 복사
+  isCenterModalOpen.value = true;
+};
+
+// 수정된 데이터를 서버로 전송
+const updateCenter = async () => {
+  try {
+    const response = await axios.put(
+      "http://localhost:3000/center/update",
+      modifyCenter.value,
+    );
+    if (response.status === 200) {
+      alert("기관 정보 수정 완료");
+      isCenterModalOpen.value = false;
+      getCenterList(); // 목록 새로고침 함수 (기존 getList와 유사한 이름일 것임)
+    }
+  } catch (error) {
+    console.error("기관 수정 실패:", error);
+    alert("기관 정보 수정 중 오류가 발생했습니다.");
+  }
+};
 </script>
 <template>
   <div class="main-container">
@@ -128,7 +156,11 @@ const addCenter = async () => {
             <td>{{ center.center_email }}</td>
             <td>{{ center.reg_date }}</td>
             <td>{{ center.runed }}</td>
-            <td><button>수정하기</button></td>
+            <td>
+              <button class="edit-btn" @click="openCenterEditModal(center)">
+                수정하기
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -182,6 +214,18 @@ const addCenter = async () => {
         </div>
       </div>
     </div>
+    <div v-if="isCenterModalOpen && modifyCenter" class="modal-overlay">
+      <div class="modal-content">
+        <h3>기관 정보 수정</h3>
+        <input v-model="modifyCenter.center_name" placeholder="기관명" />
+        <input v-model="modifyCenter.center_tel" placeholder="대표번호" />
+        <input v-model="modifyCenter.center_addr" placeholder="주소" />
+        <input v-model="modifyCenter.center_email" placeholder="이메일" />
+
+        <button @click="updateCenter">저장</button>
+        <button @click="isCenterModalOpen = false">닫기</button>
+      </div>
+    </div>
   </div>
 </template>
 <style scoped>
@@ -213,5 +257,36 @@ td {
   white-space: nowrap; /* 글자가 줄바꿈되지 않게 함 */
   overflow: hidden;
   text-overflow: ellipsis; /* 너무 길면 ...으로 표시 */
+}
+/* 모달 배경: 화면 전체를 덮고 반투명 검정색 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* 사이드바(10)보다 훨씬 높아야 함 */
+}
+
+/* 모달 박스: 흰색 배경에 그림자 효과 */
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 입력 폼 간격 */
+.modal-content input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  box-sizing: border-box;
 }
 </style>

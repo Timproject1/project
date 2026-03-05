@@ -4,12 +4,10 @@ const pool = require("../db/mapper");
 const ctrl = {
   getList: async (req, res) => {
     try {
-      console.log(req.query);
-      const managerId = req.query.id;
-      console.log("로그인 한 담당자 ID:", managerId);
+      console.log("로그인 한 담당자 ID:", req.query);
 
       // 담당자 id join 호출
-      const result = await service.getList(managerId);
+      const result = await service.getList(req.query);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -58,7 +56,7 @@ const ctrl = {
           generatedSupNum,
           code,
         ]);
-        const Disquery = `insert into disabilities (category_num, sup_num, disability_code) values ?`;
+        const Disquery = `insert into disabilities (category_num, sup_num) values ?`;
         await connection.query(Disquery, [disValues]);
       }
       await connection.commit();
@@ -101,11 +99,11 @@ const ctrl = {
   getDisabilities: async (req, res) => {
     try {
       const { sup_num } = req.query;
-      const query = `select dc.disability_category as type, 
-                            dc.disability_level as level
-                            from disabilities ds
-                            join disability_code dc on ds.disability_code = dc.disability_code
-                            where ds.sup_num = ?`;
+      const query = `SELECT dc.disability_category AS type, 
+             dc.disability_level AS level
+      FROM disabilities ds
+      JOIN disability_code dc ON ds.disability_code = dc.disability_code
+      WHERE ds.sup_num = ?`;
 
       const rows = await pool.query(query, [sup_num]);
       res.json(rows);
@@ -116,17 +114,9 @@ const ctrl = {
   },
   updateSupported: async (req, res) => {
     try {
-      const query = `update supported set sup_name = ?, sup_tel = ?, sup_address =?, disability_category = ?, sup_file = ?
-      where sup_num = ?`;
-      const result = await pool.query([
-        sup_num,
-        sup_name,
-        sup_tel,
-        sup_address,
-        disability_category || null,
-        sup_file || null,
-        sup_num,
-      ]);
+      const memberData = req.body;
+      console.log("수정요청 받은 데이터:", memberData);
+      const result = await service.updataSupported(memberData);
       if (result.affectedRows > 0) {
         res.status(200).json({ message: "수정완료" });
       } else {
@@ -135,6 +125,23 @@ const ctrl = {
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "서버 오류" });
+    }
+  },
+  assignManager: async (req, res) => {
+    try {
+      const { sup_num, user_id } = req.body;
+      const result = await service.assignManager({ sup_num, user_id });
+
+      if (result.affectedRows > 0) {
+        res.status(200).json({ retCode: "OK", message: "배정 성공" });
+      } else {
+        res
+          .status(400)
+          .json({ retCode: "FAIL", message: "배정 대상이 없습니다." });
+      }
+    } catch (err) {
+      console.error("컨트롤러 에러:", err);
+      res.status(500).json({ error: err.message });
     }
   },
 };
