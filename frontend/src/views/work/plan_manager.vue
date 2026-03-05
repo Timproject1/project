@@ -4,13 +4,19 @@ import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
+// import { useMemberStore } from "@/store/member";
+import { useDocStore } from "../../store/doc";
+
+// const memberStore = useMemberStore();
+const docStore = useDocStore();
 
 //지원기획서 승인 리스트
 const Plans = ref([]);
 console.log(Plans);
 const listPlan = async () => {
+  let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/planlist`)
+    .get(`http://localhost:3000/document/planlist/${doc}`)
     .catch((err) => console.log(err));
   Plans.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -30,6 +36,8 @@ onBeforeMount(() => {
 //승인
 const appPlan = async (id) => {
   let appPlan = {
+    progress: "b4",
+    doc_num: docStore.doc_num,
     plan_num: id,
   };
   const result = ref(null);

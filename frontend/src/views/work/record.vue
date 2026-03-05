@@ -7,12 +7,18 @@ import axios from "axios";
 // import { useRoute } from "vue-router";
 // export default { components: { MaterialInput } };
 // const route = useRoute();
+// import { useMemberStore } from "@/store/member";
+import { useDocStore } from "../../store/doc";
+
+// const memberStore = useMemberStore();
+const docStore = useDocStore();
 //상담기록 출력
 const records = ref([]);
-
+console.log(records);
 const listrecord = async () => {
+  let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/recordlist`)
+    .get(`http://localhost:3000/document/recordlist/${doc}`)
     .catch((err) => console.log(err));
   records.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -41,6 +47,7 @@ const revisions = async (id) => {
 
 onBeforeMount(() => {
   listrecord();
+  filelist();
   // let searchId = route.query.no;
   // revisions(searchId);
 });
@@ -70,7 +77,7 @@ const addrecord = async () => {
   }
 
   let add = {
-    doc_num: "doc-1",
+    doc_num: docStore.doc_num,
     counsel_title: addRecordName.value,
     counsel_content: addRecordContent.value,
     counsel_manager: "ca1",
@@ -94,7 +101,7 @@ const addrecord = async () => {
 const draft = async () => {
   let savedate = {
     counsel_num: "coun-9999999",
-    doc_num: "doc-1",
+    doc_num: docStore.doc_num,
     counsel_title: addRecordName.value,
     counsel_content: addRecordContent.value,
   };
@@ -196,6 +203,16 @@ const delRecord = async (id) => {
     result.value = "서버 에러 발생";
   }
 };
+//파일리스트
+const filename = ref([]);
+console.log(filename);
+const filelist = async () => {
+  let result = await axios
+    .get(`http://localhost:3000/document/recordFile`)
+    .catch((err) => console.log(err));
+  console.log(result.data.result);
+  filename.value = Array.isArray(result.data.result) ? result.data.result : [];
+};
 </script>
 <template>
   <h4>상담기록</h4>
@@ -276,12 +293,12 @@ const delRecord = async (id) => {
           v-model="recordcomment"
         />
         <material-button type="button">첨부파일 등록</material-button>
-        <!-- <div v-if="record.file && record.file.length">
+        <div v-if="record.file && record.file.length">
           <div v-for="file in record.file" :key="file">
             <p>첨부파일</p>
-            <p>{{ file }}</p>
+            <p>첨부파일이름</p>
           </div>
-        </div> -->
+        </div>
         <material-button type="button" @click="Update(record)"
           >수정 완료</material-button
         >
@@ -311,12 +328,16 @@ const delRecord = async (id) => {
       <p>{{ record.counsel_content }}</p>
       <br />
     </div>
-    <!-- <div v-if="record.file && record.file.length">
-      <div v-for="file in record.file" :key="file">
-        <p>첨부파일</p>
-        <p>{{ file }}</p>
-      </div>
-    </div> -->
+    <!-- 첨부파일 -->
+    <p>첨부파일</p>
+    <div
+      v-for="file in filename.filter(
+        (f) => f.counsel_num === record.counsel_num,
+      )"
+      :key="file.file_num"
+    >
+      <p>{{ file.origin_name }}</p>
+    </div>
     <material-button type="button" size="sm" @click="revisions(record)"
       >수정내역 확인</material-button
     >
