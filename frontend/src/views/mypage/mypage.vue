@@ -77,11 +77,6 @@ const checkpassword = async () => {
   </div>
 
   <div v-else class="mypage-content">
-    <nav class="mypage-menu">
-      <router-link to="/mypage/info">내 정보 수정</router-link>
-      <router-link to="/mypage/supported">지원 목록</router-link>
-    </nav>
-    <hr />
     <router-view />
   </div>
 </template>
