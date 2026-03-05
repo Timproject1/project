@@ -81,7 +81,7 @@ const routes = [
       },
       {
         path: "look",
-        component: () => import("../views/list/manager_lookList.vue"),
+        component: () => import("../views/list/managementList.vue"),
       },
       {
         path: "center",
@@ -89,7 +89,7 @@ const routes = [
       },
       {
         path: "allotment",
-        component: () => import("../views/list/allotmentList.vue"),
+        component: () => import("../views/list/requestList.vue"),
       },
     ],
   },
@@ -171,7 +171,7 @@ const routes = [
     children: [
       {
         path: "supported",
-        component: () => import("../views/mypage/supportedPage.vue"),
+        component: () => import("../views/mypage/Approvalpage.vue"),
       },
       {
         path: "info",
