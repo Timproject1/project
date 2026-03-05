@@ -88,7 +88,7 @@ const handleSendAuthEmail = async () => {
     if (response.data.success) {
       // 서버가 정보 확인 후 메일 전송에 성공했다는 응답을 준 경우입니다.
       alert("정보 확인 완료! 인증 메일이 발송되었습니다.\n(유효시간: 5분)"); // 안내 메시지를 보여줍니다.
-      router.push("/login"); // 메일을 확인하러 갈 수 있도록 로그인 화면으로 이동시킵니다.
+      router.push("/sign-in"); // 메일을 확인하러 갈 수 있도록 로그인 화면으로 이동시킵니다.
     } else {
       // 서버는 응답했으나 정보가 일치하지 않거나 오류가 난 경우입니다.
       alert(response.data.message || "입력하신 정보가 일치하지 않습니다."); // 서버의 에러 메시지를 보여줍니다.
