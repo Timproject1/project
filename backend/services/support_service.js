@@ -1,3 +1,4 @@
+const { allowList } = require("../controllers/support_controller");
 const pool = require("../db/mapper");
 
 const service = {

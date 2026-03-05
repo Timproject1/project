@@ -1,25 +1,27 @@
 const pool = require("../db/mapper");
 
 const service = {
-  getList: async (id) => {
+  getList: async (page, limit) => {
     try {
       console.log("ser");
-      console.log(id);
+      // console.log(id);
       const query = `select form_ver,writedate,ifnull(begindate,"미사용") as begindate,
       if(enddate is null ,if(begindate is null,'미사용','사용중'),enddate) as enddate,
       \`comment\`,
       c.detail_name as 'usage'
       from form_version f
       join code_detail c
-      on f.\`usage\`=c.detail_code`;
-      const result = await pool.query(query);
+      on f.\`usage\`=c.detail_code
+      ORDER BY CAST(REGEXP_REPLACE(form_ver, '[^0-9]', '') AS UNSIGNED) desc
+      limit ? offset ? `;
+      const result = await pool.query(query, [limit, (page - 1) * limit]);
       console.log(result);
       return result;
     } catch (error) {
       console.log(error);
     }
   },
-  writeForm: async (form) => {
+  writeForm: async (form, comment) => {
     //커넥션 받아오기
     const con = await pool.getConnection();
 
@@ -28,8 +30,8 @@ const service = {
       await con.beginTransaction();
       //버전 등록
       let query = `insert into form_version (form_ver,\`comment\`,\`usage\`) 
-      values(concat('v.',NEXT VALUE FOR create_form_ver_seq),"test","h2") returning form_ver`;
-      let result = await con.query(query);
+      values(concat('v.',NEXT VALUE FOR create_form_ver_seq),?,"h2") returning form_ver`;
+      let result = await con.query(query, [comment]);
       //버전넘버 저장
       const form_ver = result[0].form_ver;
       // console.log(form_ver);
@@ -146,6 +148,29 @@ const service = {
       throw error;
     } finally {
       await con.release();
+    }
+  },
+  count: async () => {
+    try {
+      const query = `select count(*) as count from form_version`;
+      const result = await pool.query(query);
+      return result[0];
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  getVers: async () => {
+    try {
+      console.log("ser");
+      // console.log(id);
+      const query = `select form_ver from form_version`;
+
+      const result = await pool.query(query);
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.log(error);
     }
   },
 };

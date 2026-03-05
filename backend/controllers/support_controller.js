@@ -84,6 +84,18 @@ const ctrl = {
       res.status(500).json({ error: error.message });
     }
   },
+  allowList: async (req, res) => {
+    try {
+      const id = req.params.id;
+      console.log("로그인 ID:", id);
+      // 담당자 id join 호출
+      const result = await service.allowList(id);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
   getDisabilities: async (req, res) => {
     try {
       const { sup_num } = req.query;

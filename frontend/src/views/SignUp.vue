@@ -1,97 +1,92 @@
-<!-- <script setup>
-import { ref, nextTick } from "vue";
+<script setup>
+import { ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
 import MaterialInput from "@/components/MaterialInput.vue";
-import MaterialRadio from "@/components/MaterialRadio.vue";
 
-// 데이터 상태 관리
-const userGrade = ref("a1");
-const userId = ref("");
-const userPw = ref("");
-const userPwCheck = ref("");
-const userName = ref("");
-const userTel = ref("");
-const userEmail = ref("");
-const zipCode = ref("");
-const userAddress = ref("");
-const detailAddress = ref("");
-const centerName = ref("");
+const router = useRouter();
 
-const isAddressVisible = ref(false);
+const form = reactive({
+  user_id: "", // 사용자 아이디
+  user_password: "", // 비밀번호
+  user_name: "", // 사용자 이름
+  user_tel: "", // 연락처
+  user_email: "", // 이메일
+  registernum: "", // 기관 등록 번호
+  grade: "a1", // 기본 권한 등급
+  actived: "Y", // 활성 상태 여부
+});
 
-//아이디 중복 확인
+const userPwCheck = ref(""); // 비밀번호 확인 입력값
+const institutionName = ref(""); // 선택된 기관 이름 (화면 표시용)
+const emailDuplicate = ref(false); // 이메일 중복 여부 상태
+const isModalOpen = ref(false); // 기관 검색 모달 열림/닫힘 상태
+const searchQuery = ref(""); // 기관 검색어
+const centers = ref([]); // 검색된 기관 목록 리스트
+
+// 비밀번호와 비밀번호 확인 값이 입력되었고, 두 값이 일치하지 않는지 체크
+const isPasswordMismatch = computed(() => {
+  return (
+    form.user_password !== "" &&
+    userPwCheck.value !== "" &&
+    form.user_password !== userPwCheck.value
+  );
+});
+
+// 아이디 중복 확인 함수
 const checkIdDuplication = async () => {
-  if (!userId.value) {
+  if (!form.user_id) {
     alert("아이디를 입력해주세요.");
     return;
   }
-
   try {
-    const response = await axios.post("http://localhost:3000/user/check-id", {
-      userId: userId.value,
+    const res = await axios.post("http://localhost:3000/user/check-id", {
+      user_id: form.user_id,
     });
+    alert(
+      res.data.isDuplicate
+        ? "이미 사용 중인 아이디입니다."
+        : "사용 가능한 아이디입니다.",
+    );
+  } catch (e) {
+    alert("서버 연결 실패");
+  }
+};
 
-    if (response.data.isDuplicate) {
-      alert("이미 사용 중인 아이디입니다.");
-    } else {
-      alert("사용 가능한 아이디입니다.");
-    }
-  } catch (error) {
-    console.error("중복 확인 에러:", error);
+// 기관 목록 조회 함수 (API 통신)
+const fetchInstitutions = async () => {
+  try {
+    const url = `http://localhost:3000/center/list`;
+    const res = await axios.get(url, { params: { name: searchQuery.value } });
+
+    console.log("서버 응답 데이터:", res.data);
+    centers.value = res.data.result; // 검색 결과를 상태값에 저장
+  } catch (e) {
+    console.error("에러 상세:", e);
     alert("서버 연결에 실패했습니다.");
   }
 };
 
-// 주소 검색 (카카오 API)
-const openPostcode = () => {
-  isAddressVisible.value = !isAddressVisible.value;
-  if (isAddressVisible.value) {
-    nextTick(() => {
-      new window.daum.Postcode({
-        oncomplete: (data) => {
-          userAddress.value = data.roadAddress || data.jibunAddress;
-          zipCode.value = data.zonecode;
-          isAddressVisible.value = false;
-        },
-        width: "100%",
-        height: "100%",
-      }).embed(document.getElementById("address-layer"));
-    });
-  }
+// 모달에서 특정 기관을 선택했을 때 처리하는 함수
+const selectOrg = (org) => {
+  institutionName.value = org.center_name; // 화면에 보일 기관명 설정
+  form.registernum = org.registernum; // 폼 데이터에 등록번호 저장
+  isModalOpen.value = false; // 모달 닫기
 };
 
-// 가입하기
 const handleSignup = async () => {
-  if (!userId.value || !userPw.value || !userName.value || !userAddress.value) {
-    alert("필수 항목(*)을 모두 입력해주세요.");
+  if (!form.user_id || !form.user_password || !form.registernum) {
+    alert("필수 항목을 모두 입력해주세요.");
     return;
   }
-  if (userPw.value !== userPwCheck.value) {
-    alert("비밀번호가 일치하지 않습니다.");
-    return;
-  }
-
   try {
-    const response = await axios.post("http://localhost:3000/user/signup", {
-      grade: userGrade.value,
-      userId: userId.value,
-      userPw: userPw.value,
-      userName: userName.value,
-      userTel: userTel.value,
-      userEmail: userEmail.value,
-      zipCode: zipCode.value,
-      userAddress: userAddress.value,
-      detailAddress: detailAddress.value,
-      centerName: centerName.value,
-    });
-
-    if (response.data.success) {
-      alert("회원가입 신청이 완료되었습니다.");
+    const res = await axios.post("http://localhost:3000/user/signup", form);
+    if (res.data.success) {
+      alert("회원가입 완료!");
+      router.push("/sign-in");
     }
-  } catch (error) {
-    console.error("가입 에러:", error);
-    const errorMsg = error.response?.data?.message || "서버 연결 실패";
-    alert("가입 실패: " + errorMsg);
+  } catch (e) {
+    alert("가입 실패");
   }
 };
 </script>
@@ -99,34 +94,15 @@ const handleSignup = async () => {
 <template>
   <div class="signup-container">
     <div class="signup-wrap">
-      <div class="form-row">
-        <label class="row-label">회원 구분</label>
-        <div class="row-content radio-group">
-          <material-radio
-            v-model="userGrade"
-            value="a1"
-            id="grade-a1"
-            name="userGrade"
-            >일반사용자</material-radio
-          >
-          <material-radio
-            v-model="userGrade"
-            value="a2"
-            id="grade-a2"
-            name="userGrade"
-            >기관담당자</material-radio
-          >
-        </div>
-      </div>
+      <h2 class="signup-title">회원가입</h2>
 
       <div class="form-row">
         <label class="row-label">아이디</label>
         <div class="row-content">
           <div class="input-flex">
             <material-input
-              v-model="userId"
+              v-model="form.user_id"
               variant="outline"
-              id="userId"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
@@ -146,15 +122,13 @@ const handleSignup = async () => {
         <div class="row-content">
           <div class="input-flex">
             <material-input
-              v-model="userPw"
+              v-model="form.user_password"
               type="password"
               variant="outline"
-              id="userPw"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
           </div>
-          <div class="btn-placeholder"></div>
         </div>
       </div>
 
@@ -166,12 +140,13 @@ const handleSignup = async () => {
               v-model="userPwCheck"
               type="password"
               variant="outline"
-              id="userPwCheck"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
           </div>
-          <div class="btn-placeholder"></div>
+          <p v-if="isPasswordMismatch" class="error-msg-abs">
+            * 비밀번호가 틀렸습니다.
+          </p>
         </div>
       </div>
 
@@ -180,14 +155,12 @@ const handleSignup = async () => {
         <div class="row-content">
           <div class="input-flex">
             <material-input
-              v-model="userName"
+              v-model="form.user_name"
               variant="outline"
-              id="userName"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
           </div>
-          <div class="btn-placeholder"></div>
         </div>
       </div>
 
@@ -196,14 +169,12 @@ const handleSignup = async () => {
         <div class="row-content">
           <div class="input-flex">
             <material-input
-              v-model="userTel"
+              v-model="form.user_tel"
               variant="outline"
-              id="userTel"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
           </div>
-          <div class="btn-placeholder"></div>
         </div>
       </div>
 
@@ -212,444 +183,27 @@ const handleSignup = async () => {
         <div class="row-content">
           <div class="input-flex">
             <material-input
-              v-model="userEmail"
-              variant="outline"
-              id="userEmail"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-          <div class="btn-placeholder"></div>
-        </div>
-      </div>
-
-      <div class="form-row align-start">
-        <label class="row-label pt-2">주소</label>
-        <div class="row-content column-layout">
-          <div class="d-flex align-center w-100">
-            <div class="input-flex">
-              <material-input
-                v-model="userAddress"
-                id="userAddress"
-                placeholder="검색버튼을 눌러주세요"
-                variant="outline"
-                readonly
-                class="flex-grow-1"
-              />
-              <span class="required">(필수)</span>
-            </div>
-            <button
-              type="button"
-              class="green-btn shadow-btn"
-              @click="openPostcode"
-            >
-              검색
-            </button>
-          </div>
-
-          <div
-            v-show="isAddressVisible"
-            id="address-layer"
-            class="address-box"
-          ></div>
-
-          <div class="address-sub-inputs">
-            <material-input
-              v-model="zipCode"
-              id="zipCode"
-              placeholder="우편번호"
-              variant="outline"
-              readonly
-              style="width: 150px"
-            />
-            <material-input
-              v-model="detailAddress"
-              id="detailAddress"
-              placeholder="상세 주소를 입력하세요"
-              variant="outline"
-              class="w-100"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row mt-3">
-        <label class="row-label">기관명</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="centerName"
-              id="centerName"
-              placeholder="기관 검색 버튼을 눌러주세요"
-              variant="outline"
-              readonly
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-          <button type="button" class="green-btn shadow-btn">기관 검색</button>
-        </div>
-      </div>
-
-      <div class="btn-area">
-        <button
-          type="button"
-          class="green-btn signup-btn shadow-btn"
-          @click="handleSignup"
-        >
-          가입하기
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
-<style scoped>
-.signup-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 60px 20px;
-  background-color: #fff;
-}
-.signup-wrap {
-  width: 100%;
-  max-width: 900px;
-}
-.form-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 25px;
-}
-.align-start {
-  align-items: flex-start;
-}
-.row-label {
-  width: 160px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #333;
-  flex-shrink: 0;
-}
-.row-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-.input-flex {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-.radio-group {
-  gap: 40px;
-}
-.required {
-  color: #f44335;
-  font-size: 14px;
-  width: 70px;
-  text-align: center;
-  flex-shrink: 0;
-}
-.green-btn {
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 25px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.btn-placeholder {
-  width: 103px;
-}
-.shadow-btn {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.shadow-btn:hover {
-  background-color: #43a047;
-  transform: translateY(-1px);
-}
-.btn-area {
-  margin-top: 50px;
-  display: flex;
-  justify-content: flex-end;
-}
-.signup-btn {
-  padding: 15px 70px;
-  font-size: 18px;
-  border-radius: 10px;
-}
-.column-layout {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-}
-.address-sub-inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  max-width: 500px;
-}
-:deep(.form-control) {
-  border: 1px solid #d2d6da !important;
-  border-radius: 8px !important;
-  height: 48px !important;
-  padding: 10px 15px !important;
-}
-.address-box {
-  width: 100%;
-  border: 1px solid #d2d6da;
-  border-radius: 8px;
-  height: 400px;
-  margin: 10px 0;
-}
-.d-flex {
-  display: flex;
-}
-.align-center {
-  align-items: center;
-}
-.w-100 {
-  width: 100%;
-}
-.flex-grow-1 {
-  flex: 1;
-}
-.mt-3 {
-  margin-top: 15px;
-}
-</style> -->
-
-<script setup>
-import { ref, reactive, computed } from "vue";
-import axios from "axios";
-import MaterialInput from "@/components/MaterialInput.vue";
-
-// 데이터 상태 관리
-const form = reactive({
-  user_id: "",
-  user_password: "",
-  user_name: "",
-  user_tel: "",
-  user_email: "",
-  registernum: "",
-  grade: "a1", // 가입 유형 초기값 (a1: 일반사용자)
-  actived: "Y",
-});
-
-const userPwCheck = ref("");
-const institutionName = ref("");
-const emailDuplicate = ref(false);
-
-// 비밀번호 일치 확인
-const isPasswordMismatch = computed(() => {
-  return (
-    form.user_password !== "" &&
-    userPwCheck.value !== "" &&
-    form.user_password !== userPwCheck.value
-  );
-});
-
-// 아이디 중복 확인
-const checkIdDuplication = async () => {
-  if (!form.user_id) {
-    alert("아이디를 입력해주세요.");
-    return;
-  }
-  try {
-    const response = await axios.post("http://localhost:3000/user/check-id", {
-      user_id: form.user_id,
-    });
-    if (response.data.isDuplicate) {
-      alert("이미 사용 중인 아이디입니다.");
-    } else {
-      alert("사용 가능한 아이디입니다.");
-    }
-  } catch (error) {
-    console.error("중복 확인 에러:", error);
-    alert("서버 연결 실패! 백엔드가 실행 중인지 확인하세요.");
-  }
-};
-
-// 4. 기관 검색
-const searchInstitution = () => {
-  institutionName.value = "발달장애인복지관";
-  form.registernum = "1018112345";
-  alert("기관이 선택되었습니다.");
-};
-
-// 5. 회원가입 제출
-const handleSignup = async () => {
-  if (
-    !form.user_id ||
-    !form.user_password ||
-    !form.user_name ||
-    !form.registernum
-  ) {
-    alert("필수 항목(*)을 모두 입력하고 기관 검색을 완료해주세요.");
-    return;
-  }
-  if (isPasswordMismatch.value) {
-    alert("비밀번호가 일치하지 않습니다.");
-    return;
-  }
-
-  try {
-    const response = await axios.post(
-      "http://localhost:3000/user/signup",
-      form,
-    );
-    if (response.data.success) {
-      alert("회원가입이 완료되었습니다!");
-    }
-  } catch (error) {
-    console.error("가입 에러:", error);
-    alert("가입 실패: " + (error.response?.data?.message || "서버 오류"));
-  }
-};
-</script>
-
-<template>
-  <div class="signup-container">
-    <div class="signup-wrap">
-      <h2 class="signup-title">회원가입</h2>
-
-      <div class="form-row">
-        <label class="row-label">가입 유형</label>
-        <div class="row-content">
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" v-model="form.grade" value="a2" /> 기관담당자
-            </label>
-            <label class="radio-label">
-              <input type="radio" v-model="form.grade" value="a1" /> 일반사용자
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label class="row-label" for="user_id">아이디</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="form.user_id"
-              id="user_id"
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-          <button
-            type="button"
-            class="green-btn shadow-btn"
-            @click="checkIdDuplication"
-          >
-            중복 확인
-          </button>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label class="row-label" for="user_password">비밀번호</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="form.user_password"
-              id="user_password"
-              type="password"
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label class="row-label" for="user_password_check">비밀번호 확인</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="userPwCheck"
-              id="user_password_check"
-              type="password"
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-          <p v-if="isPasswordMismatch" class="error-msg-abs">
-            * 비밀번호가 일치하지 않습니다.
-          </p>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label class="row-label" for="user_name">이름</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="form.user_name"
-              id="user_name"
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label class="row-label" for="user_tel">연락처</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="form.user_tel"
-              id="user_tel"
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label class="row-label" for="user_email">이메일</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              type="email"
               v-model="form.user_email"
-              id="user_email"
+              type="email"
               variant="outline"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
           </div>
           <p v-if="emailDuplicate" class="error-msg-abs">
-            * 이미 가입된 이메일입니다.
+            * 기입 된 이메일입니다.
           </p>
         </div>
       </div>
 
       <div class="form-row">
-        <label class="row-label" for="institution_name">기관명</label>
+        <label class="row-label">기관명</label>
         <div class="row-content">
           <div class="input-flex">
             <material-input
               v-model="institutionName"
-              id="institution_name"
-              placeholder="기관 검색 버튼을 눌러주세요"
-              variant="outline"
               readonly
+              variant="outline"
               class="flex-grow-1"
             />
             <span class="required">(필수)</span>
@@ -657,9 +211,9 @@ const handleSignup = async () => {
           <button
             type="button"
             class="green-btn shadow-btn"
-            @click="searchInstitution"
+            @click="isModalOpen = true"
           >
-            기관 검색
+            검색
           </button>
         </div>
       </div>
@@ -674,10 +228,66 @@ const handleSignup = async () => {
         </button>
       </div>
     </div>
+
+    <div v-if="isModalOpen" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-search-box">
+          <label class="row-label" style="width: 80px">기관명</label>
+          <input
+            type="text"
+            v-model="searchQuery"
+            @keyup.enter="fetchInstitutions"
+            placeholder="기관명을 입력하세요"
+          />
+          <button type="button" class="green-btn" @click="fetchInstitutions">
+            검색
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="org-table">
+            <thead>
+              <tr>
+                <th>기관명</th>
+                <th>주소</th>
+                <th>연락처</th>
+                <th>사용</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="center in centers" :key="center.registernum">
+                <td>{{ center.center_name }}</td>
+                <td>{{ center.center_addr }}</td>
+                <td>{{ center.center_tel }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="green-btn select-btn"
+                    @click="selectOrg(center)"
+                  >
+                    사용
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="text-align: right; margin-top: 20px">
+          <button
+            class="green-btn"
+            style="background-color: #666"
+            @click="isModalOpen = false"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+/* 스타일은 동일하여 생략합니다. */
 .signup-container {
   display: flex;
   justify-content: center;
@@ -694,6 +304,7 @@ const handleSignup = async () => {
   text-align: center;
   margin-bottom: 40px;
   color: #00a000;
+  font-size: 24px;
 }
 .form-row {
   display: flex;
@@ -710,22 +321,6 @@ const handleSignup = async () => {
   flex: 1;
   display: flex;
   align-items: center;
-}
-.radio-group {
-  display: flex;
-  gap: 30px;
-}
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-input[type="radio"] {
-  accent-color: #00a000;
-  width: 18px;
-  height: 18px;
 }
 .input-flex {
   display: flex;
@@ -748,10 +343,7 @@ input[type="radio"] {
   border-radius: 4px;
   cursor: pointer;
   margin-left: 10px;
-  transition: 0.2s;
-}
-.green-btn:hover {
-  background-color: #008800;
+  white-space: nowrap;
 }
 .error-msg-abs {
   color: #f44335;
@@ -771,7 +363,48 @@ input[type="radio"] {
   font-weight: bold;
   border-radius: 8px;
 }
-.shadow-btn {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+.modal-content {
+  background: white;
+  padding: 30px;
+  border: 1px solid #333;
+  width: 750px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-search-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.modal-search-box input {
+  flex: 1;
+  height: 40px;
+  border: 1px solid #ccc;
+  padding: 0 10px;
+}
+.org-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.org-table th,
+.org-table td {
+  border: 1px solid #333;
+  padding: 10px;
+  text-align: center;
+}
+.org-table th {
+  background: #eee;
 }
 </style>

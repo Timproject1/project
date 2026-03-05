@@ -7,4 +7,6 @@ router.get("/usageForm", ctrl.usageForm);
 router.get("/getForm/:num", ctrl.getForm);
 router.get("/getInfo/:num", ctrl.getInfo);
 router.patch("/usage/:ver", ctrl.changeUsage);
+router.get("/count", ctrl.count);
+router.get("/vers", ctrl.getVers);
 module.exports = router;
