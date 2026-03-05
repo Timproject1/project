@@ -465,5 +465,15 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  getManager: async (req, res) => {
+    try {
+      const doc_num = req.params.num;
+      const result = await service.getManager(doc_num);
+      res.json({ retCode: "OK", result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
 };
 module.exports = ctrl;

@@ -13,10 +13,20 @@ const list = ref([]);
 const isModalOpen = ref(false); // 모달 열림 상태
 const modalType = ref(""); // 어떤 서류인지 (doc, plan, result)
 const selectedDocData = ref({}); // 모달에 표시할 데이터
+const plans = ref([]);
+const results = ref([]);
+const userAnswers = ref({});
+const formData = ref([]);
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("ko-KR");
   // 결과: "2026. 2. 22."
+};
+
+const docName = {
+  document: "지원신청서",
+  plan: "지원계획서",
+  result: "지원결과서",
 };
 const getList = async () => {
   const result = await axios.get("http://localhost:3000/document/list", {
@@ -32,20 +42,34 @@ const getList = async () => {
   console.log(result.data);
   return result;
 };
-const getDocument = (doc) => {
+const getDocument = async (doc) => {
   modalType.value = "document";
+  await getForm(doc.form_ver);
+  await getResp(doc.doc_num);
+  // console.log(formData.value);
+  // console.log(userAnswers.value);
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
 
-const getPlan = (doc) => {
+const getPlan = async (doc) => {
   modalType.value = "plan";
+  const result = await axios
+    .get(`http://localhost:3000/document/planlist`)
+    .catch((err) => console.log(err));
+  console.log(result.data);
+  plans.value = result.data.result;
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
 
-const getResult = (doc) => {
+const getResult = async (doc) => {
   modalType.value = "result";
+  const result = await axios
+    .get(`http://localhost:3000/document/resultlist`)
+    .catch((err) => console.log(err));
+  console.log(result.data);
+  results.value = result.data.result;
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
@@ -60,6 +84,39 @@ const selectDoc = (doc_num) => {
   console.log(doc_num);
   docStore.setDoc(doc_num);
   router.push("/work");
+};
+const getForm = async (form_ver) => {
+  // console.log(doc.value);
+  const result = await axios.get(
+    `http://localhost:3000/form/getForm/${form_ver}`,
+  );
+  // console.log(result);
+  formData.value = result.data.form;
+
+  // formData.value.forEach((bcategory) => {
+  //   // console.group(bcategory);
+  //   bcategory.scategory.forEach((scategory) => {
+  //     // console.log(scategory);
+  //     scategory.questions.forEach((question) => {
+  //       // console.log(question);
+  //       userAnswers.value[question.question_num] = {
+  //         type: question.response,
+  //         response: "",
+  //       };
+  //     });
+  //   });
+  // });
+};
+const getResp = async (doc_num) => {
+  const result = await axios.get(
+    `http://localhost:3000/document/getResp/${doc_num}`,
+  );
+  // console.log(result.data.response);
+  for (const key in result.data.response) {
+    if (!Object.hasOwn(result.data.response, key)) continue;
+
+    userAnswers.value[key] = result.data.response[key];
+  }
 };
 onBeforeMount(async () => {
   await getList();
@@ -188,14 +245,13 @@ onBeforeMount(async () => {
                     >
                       단계
                     </th>
-                    <th>test</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
                     v-for="(doc, index) in list"
                     :key="doc.doc_num"
-                    @click="selectDoc(doc)"
+                    @click="selectDoc(doc.doc_num)"
                   >
                     <td class="text-center text-sm">
                       {{ list.length - index }}
@@ -245,9 +301,6 @@ onBeforeMount(async () => {
                         doc.progress
                       }}</span>
                     </td>
-                    <td>
-                      {{ doc.doc_num }}
-                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -277,6 +330,7 @@ onBeforeMount(async () => {
       </main>
     </div>
   </div>
+
   <div v-if="isModalOpen" class="modal-backdrop fade show"></div>
   <div
     class="modal fade"
@@ -286,17 +340,17 @@ onBeforeMount(async () => {
     @click.self="closeModal"
   >
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="card shadow-lg w-100">
+      <div class="card shadow-lg w-100 modal-content-scroll">
         <div
           class="card-header p-3 pb-0 d-flex justify-content-between align-items-center"
         >
-          <h5 class="mb-0">{{ modalType }} 상세 정보</h5>
+          <h5 class="mb-0">{{ docName[modalType] }}</h5>
           <button type="button" class="btn-close text-dark" @click="closeModal">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <hr class="dark horizontal my-2" />
-        <div class="card-body p-4">
+        <div class="card-body modal-body p-4">
           <div class="row">
             <div class="col-md-3 mb-3">
               <label class="form-label fw-bold">지원자명:</label>
@@ -317,8 +371,129 @@ onBeforeMount(async () => {
             <div class="col-12">
               <label class="form-label fw-bold">상세 내용:</label>
               <div class="p-3 bg-gray-100 border-radius-lg">
-                {{ modalType }}에 대한 상세 데이터가 여기에 표시됩니다. <br />
-                현재 단계: {{ selectedDocData.progress }}
+                <div v-if="modalType == 'document'">
+                  <section
+                    v-for="big in formData"
+                    :key="big.bcategory"
+                    class="big-section"
+                  >
+                    <h1 class="big-title">{{ big.bcategory }}</h1>
+
+                    <div
+                      v-for="small in big.scategory"
+                      :key="small.scategory"
+                      class="small-group"
+                    >
+                      <h2 class="small-title">▣ {{ small.scategory }}</h2>
+
+                      <div
+                        v-for="q in small.questions"
+                        :key="q.question_num"
+                        class="question-card"
+                      >
+                        <p class="question-text">
+                          <span class="q-num"></span>
+                          {{ q.question }}
+                        </p>
+
+                        <div class="answer-area">
+                          <div v-if="q.options.length > 0" class="radio-group">
+                            <label
+                              v-for="opt in q.options"
+                              :key="opt.exam_num"
+                              class="radio-item"
+                            >
+                              <input
+                                type="radio"
+                                :name="q.question_num"
+                                :value="opt.exam_num"
+                                v-model="userAnswers[q.question_num]"
+                                :disabled="true"
+                              />
+                              {{ opt.value }}
+                            </label>
+                          </div>
+
+                          <div v-else class="text-group">
+                            <textarea
+                              v-model="userAnswers[q.question_num]"
+                              placeholder="답변을 입력해주세요."
+                              :readonly="true"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+                <div v-if="modalType == 'result'">
+                  <div class="card-body modal-body">
+                    <div class="row">
+                      <div
+                        class="col-12 mb-4"
+                        v-for="result of results"
+                        :key="result.result_num"
+                      >
+                        <div
+                          class="d-flex justify-content-between align-items-center mb-2"
+                        >
+                          <h5 class="fw-bold mb-0">
+                            제목: {{ result.result_title }}
+                          </h5>
+                          <span class="text-muted small"
+                            >작성일: {{ formatDate(result.result_date) }}</span
+                          >
+                        </div>
+
+                        <div>
+                          <label class="fw-bold d-block mb-1">내용:</label>
+                          <p
+                            class="text-secondary"
+                            style="white-space: pre-wrap"
+                          >
+                            {{ result.result_contnet }}
+                          </p>
+                        </div>
+
+                        <hr class="border-2" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="modalType == 'plan'">
+                  <div class="card-body modal-body">
+                    <div class="row">
+                      <div
+                        class="col-12 mb-4"
+                        v-for="plan of plans"
+                        :key="plan.plan_num"
+                      >
+                        <div
+                          class="d-flex justify-content-between align-items-center mb-2"
+                        >
+                          <h5 class="fw-bold mb-0">
+                            제목: {{ plan.plan_title }}
+                          </h5>
+                          <span class="text-muted small"
+                            >작성일: {{ formatDate(plan.plan_date) }}</span
+                          >
+                        </div>
+
+                        <div>
+                          <label class="fw-bold d-block mb-1">내용:</label>
+                          <p
+                            class="text-secondary"
+                            style="white-space: pre-wrap"
+                          >
+                            {{ plan.plan_contnet }}
+                          </p>
+                        </div>
+
+                        <hr class="border-2" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -329,9 +504,6 @@ onBeforeMount(async () => {
             variant="gradient"
             @click="closeModal"
             >닫기</material-button
-          >
-          <material-button color="success" variant="gradient" class="ms-2"
-            >출력하기</material-button
           >
         </div>
       </div>
@@ -355,27 +527,31 @@ export default {
 };
 </script>
 <style scoped>
-.modal-backdrop.show {
-  opacity: 0.5;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1050;
-  background-color: #000;
+/* 1. 모달 전체 영역에서 포인터 이벤트가 투명하게 본문으로 전달되도록 설정 */
+.modal {
+  pointer-events: none;
 }
 
-.modal.show.d-block {
-  display: block;
-  z-index: 1055;
-  background: rgba(0, 0, 0, 0.1); /* 배경 투명도 조절 */
+/* 2. 실제 다이얼로그 박스만 이벤트를 다시 활성화 */
+.modal-dialog {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 3.5rem); /* 중앙 정렬 유지 */
 }
 
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+/* 3. 본문 영역의 스크롤을 확실하게 보장 */
+.modal-content-scroll {
+  display: flex;
+  flex-direction: column;
+  height: 85vh; /* 높이를 명시적으로 고정 */
+  overflow: hidden; /* 헤더/푸터는 고정 */
+}
+
+.modal-body {
+  flex: 1 1 auto; /* 남은 공간을 꽉 채움 */
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch; /* 모바일 대응 */
+  position: relative; /* 내부 요소 위치 계산 기준 */
 }
 </style>

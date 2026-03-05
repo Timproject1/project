@@ -59,7 +59,7 @@ const getlabel = (code) => {
   };
   return labels[code] || "-";
 };
-onBeforeMounted(async() => {
+onMounted(async () => {
   await getSupportedList();
 });
 </script>

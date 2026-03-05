@@ -1,14 +1,10 @@
-const {
-  getResp,
-  handleManager,
-} = require("../controllers/document_controller");
 const pool = require("../db/mapper");
 
 const service = {
   //목록받아오기
   getList: async (info, searchFilters) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id from getDocumentList`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id,form_ver from getDocumentList`;
       const conditions = [];
       const values = [];
       if (info.grade == "a1") {
@@ -124,6 +120,7 @@ const service = {
       return error;
     }
   },
+  //담당자변경
   handleManager: async (doc_num, manager_id) => {
     try {
       const query = `update documents set manager = ? , priority=if(priority="c1","c2",priority) where doc_num=?`;
@@ -709,6 +706,11 @@ const service = {
       console.log(error);
       throw error;
     }
+  },
+  getManager: async (doc_num) => {
+    const query = `select manager from documents where doc_num=?`;
+    const result = await pool.query(query, [doc_num]);
+    return result[0];
   },
 };
 module.exports = service;
