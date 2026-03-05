@@ -31,27 +31,29 @@ const docName = {
 const getList = async () => {
   const result = await axios.get("http://localhost:3000/document/list", {
     params: {
-      id: memberStore.id ? memberStore.id : "",
-      grade: memberStore.grade ? memberStore.grade : "",
-      writer: searchQuery.value.writer,
-      maneger: searchQuery.value.maneger,
-      sup: searchQuery.value.sup,
+      id: memberStore.id || "",
+      grade: memberStore.grade || "",
+      centerCode: memberStore.center || "",
+      writer: searchQuery.value.writer || "",
+      maneger: searchQuery.value.maneger || "",
+      sup: searchQuery.value.sup || "",
     },
   });
   list.value = result.data.result;
   console.log(result.data);
   return result;
 };
+//선택한 신청서 조회
 const getDocument = async (doc) => {
   modalType.value = "document";
   await getForm(doc.form_ver);
   await getResp(doc.doc_num);
   // console.log(formData.value);
-  // console.log(userAnswers.value);
+  console.log(userAnswers.value);
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
-
+//선택한 신청서의 계획 조회
 const getPlan = async (doc) => {
   modalType.value = "plan";
   const result = await axios
@@ -62,7 +64,7 @@ const getPlan = async (doc) => {
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
-
+//선택한 신청서의 결과 조회
 const getResult = async (doc) => {
   modalType.value = "result";
   const result = await axios
@@ -73,18 +75,24 @@ const getResult = async (doc) => {
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
-
+//모달닫기
 const closeModal = () => {
   isModalOpen.value = false;
 };
+//신청서작성으로 이동
 const moveRegister = () => {
   router.push("/document/write");
 };
+//문서 조회
 const selectDoc = (doc_num) => {
+  if (memberStore.grade == "a1") {
+    return;
+  }
   console.log(doc_num);
   docStore.setDoc(doc_num);
   router.push("/work");
 };
+//양식조회
 const getForm = async (form_ver) => {
   // console.log(doc.value);
   const result = await axios.get(
@@ -107,6 +115,7 @@ const getForm = async (form_ver) => {
   //   });
   // });
 };
+//응답 조회
 const getResp = async (doc_num) => {
   const result = await axios.get(
     `http://localhost:3000/document/getResp/${doc_num}`,
@@ -499,6 +508,13 @@ onBeforeMount(async () => {
           </div>
         </div>
         <div class="card-footer d-flex justify-content-end p-3">
+          <material-button
+            v-if="modalType == 'document'"
+            color="success"
+            variant="gradient"
+            @click="closeModal"
+            >수정</material-button
+          >
           <material-button
             color="secondary"
             variant="gradient"

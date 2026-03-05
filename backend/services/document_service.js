@@ -122,13 +122,23 @@ const service = {
   },
   //담당자변경
   handleManager: async (doc_num, manager_id) => {
+    const con = await pool.getConnection();
     try {
+      await con.beginTransaction();
       const query = `update documents set manager = ? , priority=if(priority="c1","c2",priority) where doc_num=?`;
-      const result = await pool.query(query, [manager_id, doc_num]);
+      const result = await con.query(query, [manager_id, doc_num]);
+      await con.query(
+        `UPDATE documents SET progress = 'b2' WHERE doc_num = ? and progress='b1'`,
+        [doc_num],
+      );
+      await con.commit();
       return result;
     } catch (error) {
       console.log(error);
+      await con.rollback();
       throw error;
+    } finally {
+      await con.release();
     }
   },
   //우선순위 셋팅
