@@ -20,7 +20,7 @@ const managerList = ref([
 
 const getNomanagerList = async () => {
   try {
-    const responese = await axios.get("http://localhost:3000/supported/list");
+    const responese = await axios.get("http://localhost:3000/support/list");
     if (responese.data.retCode === "OK") {
       // const filters = responese.data.result.filter(
       //   (item) =>

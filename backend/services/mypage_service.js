@@ -12,10 +12,11 @@ const service = {
     return false;
   },
   getUserInfo: async (user_id) => {
+    if (!user_id || user_id === "null") return null; // 아이디가 없으면 즉시 종료
     const query =
-      "select user_id, user_name, user_email, user_tel FROM member WHERE user_id = ?";
+      "SELECT user_id, user_name, user_email, user_tel FROM member WHERE user_id = ?";
     const rows = await pool.query(query, [user_id]);
-    return rows[0];
+    return rows.length > 0 ? rows[0] : null;
   },
   updateInfo: async (updateData) => {
     const { user_password, user_email, user_tel, user_id } = updateData;

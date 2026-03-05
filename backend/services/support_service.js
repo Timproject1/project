@@ -2,22 +2,37 @@ const pool = require("../db/mapper");
 
 const service = {
   // 지원자 목록 가져오기
-  getList: async function (managerId) {
+  getList: async function (filters) {
     try {
-      let query = `SELECT * FROM supported`;
+      // 중복 제거를 위해 DISTINCT 또는 GROUP BY를 사용합니다.
+      let query = `
+      SELECT S.*, D.priority, D.progress 
+      FROM supported S
+      LEFT JOIN documents D ON S.sup_num = D.sup_num
+      WHERE 1=1
+    `;
       const params = [];
 
-      if (managerId) {
-        query += ` WHERE manager = ?`; // manager 컬럼이 supported_test에 있는지 확인 필요
-        params.push(managerId);
+      if (filters) {
+        // 이름 검색 로직 추가
+        if (filters.sup_name) {
+          query += ` AND S.sup_name LIKE ?`;
+          params.push(`%${filters.sup_name}%`);
+        }
+        // 대기단계 검색 로직 추가
+        if (filters.priority && filters.priority !== "전체") {
+          query += ` AND D.priority = ?`;
+          params.push(filters.priority);
+        }
       }
 
-      query += ` ORDER BY sup_num DESC`;
+      // 데이터 중복 방지를 위해 번호로 그룹화
+      query += ` GROUP BY S.sup_num ORDER BY S.sup_num DESC`;
 
       const rows = await pool.query(query, params);
       return rows;
     } catch (err) {
-      console.error("지원자 목록 조회 실패:", err);
+      console.error("조회 실패:", err);
       throw err;
     }
   },
@@ -60,18 +75,15 @@ const service = {
     }
   },
   updataSupported: async function (memberData) {
-    const { sup_name, sup_tel, sup_address, disability_category, sup_file } =
-      memberData;
-    const query = `update supported set sup_name = ?, sup_tel = ?, sup_address = ?, disability_category =?, sup_file = ?
+    const { sup_num, sup_name, sup_tel, sup_address } = memberData;
+    const query = `update supported set sup_name = ?, sup_tel = ?, sup_address = ?
     where sup_num = ?`;
 
     try {
-      const [result] = await pool.query(query, [
+      const result = await pool.query(query, [
         sup_name,
         sup_tel,
         sup_address,
-        disability_category || null,
-        sup_file || null,
         sup_num,
       ]);
       return result;
@@ -80,7 +92,24 @@ const service = {
       throw error;
     }
   },
-};
+  assignManager: async function (data) {
+    const { sup_num, user_id } = data;
 
+    // user_id를 업데이트하고 배정 상태(예: d1)로 변경하는 쿼리
+    const query = `
+    UPDATE supported
+    SET user_id = ?, 
+        sup_approved = 'd1' 
+    WHERE sup_num = ?
+  `;
+
+    try {
+      const result = await pool.query(query, [user_id, sup_num]);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
 
 module.exports = service;

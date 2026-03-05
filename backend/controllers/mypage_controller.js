@@ -18,8 +18,19 @@ const ctrl = {
   getUserInfo: async (req, res) => {
     try {
       const { user_id } = req.query;
+      // user_id가 제대로 넘어왔는지 확인 로그 추가
+      console.log("요청된 user_id:", user_id);
+
       const userInfo = await MypageService.getUserInfo(user_id);
-      res.status(200).json(userInfo);
+
+      if (userInfo) {
+        res.status(200).json(userInfo);
+      } else {
+        // 데이터가 없을 때 빈 응답이 아닌 JSON 에러 메시지를 보냄
+        res
+          .status(404)
+          .json({ success: false, message: "사용자 정보를 찾을 수 없습니다." });
+      }
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

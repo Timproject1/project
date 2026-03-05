@@ -1,41 +1,50 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+import axios from "axios";
 
 const isOpen = ref(false);
 const currentTab = ref("list");
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
+const searchName = ref("");
 // 지원자 목록에 들어갈 정보
-const supported = ref([
-  {
-    sup_num: 1,
-    sup_name: "홍길동",
-    progress: "계획",
-    sup_req_date: "25.12.04",
-    documents: "",
-    plans: "",
-    results: "",
-  },
-  {
-    sup_num: 2,
-    sup_name: "김철수",
-    progress: "긴급",
-    sup_req_date: "24.02.16",
-    documents: "",
-    plans: "",
-    results: "",
-  },
-  {
-    sup_num: 3,
-    sup_name: "오영희",
-    progress: "중점",
-    sup_req_date: "24.10.16",
-    documents: "",
-    plans: "",
-    results: "",
-  },
-]);
+const supported = ref([]);
+
+const getList = async () => {
+  try {
+    const loginId = "user";
+    const response = await axios.get("http://localhost:3000/support/list", {
+      params: {
+        user_id: loginId,
+        sup_name: searchName.value, // 사용자가 입력한 검색어 추가!
+      },
+    });
+
+    if (response.data.retCode === "OK") {
+      supported.value = response.data.result;
+    }
+  } catch (err) {
+    console.error("데이터 로드 실패:", err);
+  }
+};
+
+// 검색 버튼 클릭 시 실행할 함수
+const handleSearch = () => {
+  getList(); // 현재 입력된 searchName으로 다시 조회합니다.
+};
+
+// 3. 페이지가 로드될 때 실행
+onMounted(() => {
+  getList();
+});
+const resetSearch = () => {
+  searchName.value = "";
+  // 검색 결과 초기화 로직 (전체 목록 다시 불러오기)
+  getList();
+};
 </script>
 <template>
   <!-- 기관 담당자의 페이지 이동 탭 -->
@@ -64,6 +73,8 @@ const supported = ref([
           </div>
           <div class="form-group">
             <label>성별</label>
+            <button>남성</button>
+            <button>여성</button>
             <div class="gender-btns">
               <label>대기단계</label>
               <button>전체</button>
@@ -76,12 +87,13 @@ const supported = ref([
             <label>장애유형</label>
             <input type="text" />
           </div>
-          <button class="search-btn" @click="resetSearch">검색</button>
+          <button class="search-btn" @click="handleSearch">검색</button>
+          <button class="reset-btn" @click="resetSearch">초기화</button>
         </div>
       </div>
     </aside>
   </div>
-  <h2>기관 담당자의 지원자 목록</h2>
+  <h2>지원자 목록(자기에게 배정받은)</h2>
   <table>
     <thead>
       <tr>
@@ -89,19 +101,16 @@ const supported = ref([
         <td>지원자 명</td>
         <td>대기단계</td>
         <td>지원신청일</td>
-        <td>신청서</td>
-        <td>계획서</td>
-        <td>결과서</td>
       </tr>
     </thead>
     <tbody>
       <tr v-for="member in supported" :key="member.sup_num">
         <td>{{ member.sup_num }}</td>
         <td>{{ member.sup_name }}</td>
-        <td>{{ member.progress || "-" }}</td>
-        <td><button>보기</button></td>
-        <td><button>보기</button></td>
-        <td><button>보기</button></td>
+        <td>{{ member.progress || "d2" }}</td>
+        <td>
+          {{ member.sup_reg_date ? member.sup_reg_date.split("T")[0] : "-" }}
+        </td>
       </tr>
     </tbody>
   </table>

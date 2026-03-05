@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import axios from "axios";
 
 const user_id = ref("");
 const user_pw = ref("");
@@ -7,23 +8,28 @@ const user_email = ref("");
 const user_tel = ref("");
 onMounted(async () => {
   const userId = sessionStorage.getItem("user_id");
-  if (userId) {
-    user_id.value = userId;
-    try {
-      const response = await fetch(
-        `http://localhost:3000/mypage/info?user_id=${userId}`,
-      );
-      if (response.ok) {
-        const text = await response.text(); // 텍스트로 먼저 받기
-        if (text) {
-          const data = JSON.parse(text); // 내용이 있을 때만 파싱
-          user_email.value = data.user_email || "";
-          user_tel.value = data.user_tel || "";
-        }
-      }
-    } catch (error) {
-      console.error("조회 에러:", error);
+
+  // 2번 내용 추가: 로그인 체크 방어 로직
+  if (!userId || userId === "null") {
+    alert("로그인 정보가 없습니다. 다시 로그인해주세요.");
+    return;
+  }
+
+  user_id.value = userId; // 값이 있을 때만 실행됨
+
+  try {
+    const response = await axios.get(`http://localhost:3000/mypage/info`, {
+      params: { user_id: userId },
+    });
+
+    const data = response.data;
+    if (data) {
+      const result = Array.isArray(data) ? data[0] : data;
+      user_email.value = result.user_email || "";
+      user_tel.value = result.user_tel || "";
     }
+  } catch (error) {
+    console.error("조회 에러:", error);
   }
 });
 
@@ -34,7 +40,7 @@ const saveInfo = async () => {
 
   try {
     const response = await fetch("http://localhost:3000/mypage/update", {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         user_id: user_id.value,

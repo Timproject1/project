@@ -24,5 +24,19 @@ const ctrl = {
       res.json({ retCode: "NG" });
     }
   },
+  updateCenter: async (req, res) => {
+    try {
+      const centerData = req.body;
+      const result = await service.updateCenter(centerData);
+
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "수정 성공" });
+      } else {
+        res.status(404).json({ error: "기관을 찾을 수 없습니다." });
+      }
+    } catch (err) {
+      res.status(500).json({ error: "서버 오류" });
+    }
+  },
 };
 module.exports = ctrl;
