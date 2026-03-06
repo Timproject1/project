@@ -57,7 +57,7 @@ const getDocument = async (doc) => {
 const getPlan = async (doc) => {
   modalType.value = "plan";
   const result = await axios
-    .get(`http://localhost:3000/document/planlist`)
+    .get(`http://localhost:3000/document/planlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
   console.log(result.data);
   plans.value = result.data.result;
@@ -68,7 +68,7 @@ const getPlan = async (doc) => {
 const getResult = async (doc) => {
   modalType.value = "result";
   const result = await axios
-    .get(`http://localhost:3000/document/resultlist`)
+    .get(`http://localhost:3000/document/resultlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
   console.log(result.data);
   results.value = result.data.result;
