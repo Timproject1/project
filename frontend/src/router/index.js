@@ -96,7 +96,7 @@ const routes = [
       {
         path: "info",
         component: () => import("../views/list/SupportedInfo.vue"),
-        meta: { requiredLevel: ["a1"] },
+        meta: { requiredLevel: ["a1", "a2"] },
       },
       {
         path: "document",
@@ -158,41 +158,6 @@ const routes = [
     ],
   },
 
-  // {
-  //   path: "/",
-  //   name: "/",
-  //   redirect: "/dashboard",
-  // },
-  // {
-  //   path: "/dashboard",
-  //   name: "Dashboard",
-  //   component: Dashboard,
-  // },
-  // {
-  //   path: "/tables",
-  //   name: "Tables",
-  //   component: Tables,
-  // },
-  // {
-  //   path: "/billing",
-  //   name: "Billing",
-  //   component: Billing,
-  // },
-  // {
-  //   path: "/rtl-page",
-  //   name: "RTL",
-  //   component: RTL,
-  // },
-  // {
-  //   path: "/notifications",
-  //   name: "Notifications",
-  //   component: Notifications,
-  // },
-  // {
-  //   path: "/profile",
-  //   name: "Profile",
-  //   component: Profile,
-  // },
   {
     path: "/sign-in",
     name: "SignIn",
@@ -223,13 +188,6 @@ const routes = [
       },
     ],
   },
-  /*
-  {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("../views/Profile.vue"),
-  },
-  */
 ];
 
 const router = createRouter({
