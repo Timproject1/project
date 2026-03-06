@@ -219,17 +219,5 @@ const router = createRouter({
   routes,
   linkActiveClass: "active",
 });
-// router.beforeEach((to, from, next) => {
-//   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
-//   const myLevel = memberStore.grade; // 내 실제 등급
-//   const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
 
-//   // 기준이 설정된 페이지인데, 내 등급이 기준보다 낮다면?
-//   if (requiredLevel && myLevel < requiredLevel) {
-//     alert("권한이 부족하여 이전 페이지로 돌아갑니다.");
-//     next(false); // ❌ 입장 거부 (이전 페이지 유지)
-//   } else {
-//     next(); // ✅ 입장 허가
-// }
-// });
 export default router;

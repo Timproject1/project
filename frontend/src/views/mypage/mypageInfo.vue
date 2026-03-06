@@ -1,13 +1,16 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { useMemberStore } from "@/store/member";
 
 const user_id = ref("");
 const user_pw = ref("");
 const user_email = ref("");
 const user_tel = ref("");
+const memberStore = useMemberStore();
+
 onMounted(async () => {
-  const userId = sessionStorage.getItem("user_id");
+  const userId = memberStore.id;
 
   // 2번 내용 추가: 로그인 체크 방어 로직
   if (!userId || userId === "null") {
