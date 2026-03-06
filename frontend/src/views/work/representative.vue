@@ -44,10 +44,10 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-  <div class="admin-panel">
-    <div class="sentence-area">
-      <span class="text-label"> 담당자는 </span>
-
+  <div class="card shadow-lg border-0 border-radius-xl p-4 representative-card">
+    <h4 class="mb-4 fw-bold text-dark">담당자 지정</h4>
+    <div class="sentence-area mb-4">
+      <span class="text-label">담당자는</span>
       <div class="select-container">
         <select v-model="selectedManager" class="standard-select">
           <option value="" disabled selected>담당자를 선택하세요</option>
@@ -59,21 +59,22 @@ onBeforeMount(async () => {
             {{ manager.user_name }}
           </option>
         </select>
-        <!-- <div class="arrow-indicator">▼</div> -->
       </div>
-
       <span class="text-label">입니다.</span>
     </div>
 
     <div class="button-area">
-      <button class="action-btn" @click="handleRegister">등 록</button>
-      <button class="action-btn" @click="handleCancel">취 소</button>
+      <button class="btn bg-gradient-success text-white px-4" @click="handleRegister">
+        등 록
+      </button>
+      <button class="btn btn-outline-secondary px-4" @click="handleCancel">
+        취 소
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 전체 패널 (화면 우측 절반 수준의 부피감) */
 .admin-panel {
   display: flex;
   flex-direction: column;
@@ -84,6 +85,11 @@ onBeforeMount(async () => {
   /* min-height: 400px; 부피감을 위해 최소 높이 설정 */
   gap: 50px; /* 문장과 버튼 사이 간격 */
   background-color: #ffffff;
+}
+
+.representative-card {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* 문장 가로 배치 */
@@ -118,8 +124,8 @@ onBeforeMount(async () => {
   height: 50px;
   padding: 0 15px;
   font-size: 18px;
-  border: 1px solid #333;
-  border-radius: 0;
+  border: 1px solid #d2d6da;
+  border-radius: 12px;
   appearance: none; /* 기본 화살표 숨김 */
   background-color: white;
   cursor: pointer;
