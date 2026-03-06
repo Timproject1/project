@@ -93,12 +93,13 @@ const returnPri = async () => {
 };
 </script>
 <template>
-  <div class="card shadow-lg border-0 border-radius-xl p-4 priority-card">
-    <h4 class="mb-3 fw-bold text-dark">우선순위 승인</h4>
-    <p class="text-sm text-secondary mb-4">
-      {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를 선택하세요.
-    </p>
-    <div class="text-center mb-4">
+  <div class="work-right-center">
+    <div class="priority-card card shadow-lg border-0 border-radius-xl">
+      <h4 class="mb-3 fw-bold text-dark">우선순위 승인</h4>
+      <p class="text-sm text-secondary mb-4">
+        {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를 선택하세요.
+      </p>
+      <div class="text-center mb-4">
       <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
         <div
           class="circle"
@@ -127,56 +128,74 @@ const returnPri = async () => {
         </div>
       </div>
     </div>
-    <div id="reasonbox" class="mb-3">
-      <p class="reason-view">{{ prioritydb.priority_reason }}</p>
-      <!-- 반려 사유 작성 모달창 -->
-      <div class="return" ref="box">
-        <h6 class="fw-bold mb-2">반려 사유</h6>
-        <textarea
-          name="return"
-          id="return"
-          placeholder="반려 사유를 작성하세요."
-          v-model="returnReason"
-        ></textarea>
-        <div class="mt-3 d-flex gap-2 justify-content-center">
-          <material-button type="button" class="app" @click="returnPri()"
-            >반려</material-button
+      <div id="reasonbox" class="mb-3">
+        <p class="reason-view">{{ prioritydb.priority_reason }}</p>
+        <!-- 반려 사유 작성 모달창 -->
+        <div class="return" ref="box">
+          <h6 class="fw-bold mb-2">반려 사유</h6>
+          <textarea
+            name="return"
+            id="return"
+            placeholder="반려 사유를 작성하세요."
+            v-model="returnReason"
+          ></textarea>
+          <div class="mt-3 d-flex gap-2 justify-content-center">
+            <material-button type="button" class="app" @click="returnPri()"
+              >반려</material-button
+            >
+            <material-button
+              type="button"
+              class="app"
+              @click="nonedisplay()"
+              color="danger"
+              >취소</material-button
+            >
+          </div>
+        </div>
+      </div>
+
+      <div v-if="prioritydb?.priority_approved === 'd3'" class="mb-2 text-center">
+        <material-button type="button" class="app" disabled>반려</material-button>
+      </div>
+      <div id="btnmargin" class="text-center mt-2">
+        <div v-if="prioritydb?.priority_approved === 'd2'">
+          <material-button type="button" class="app" disabled
+            >승인완료</material-button
+          >
+        </div>
+        <div v-else>
+          <material-button type="button" class="app" @click="appPri()"
+            >승인</material-button
           >
           <material-button
             type="button"
             class="app"
-            @click="nonedisplay()"
+            @click="display()"
             color="danger"
-            >취소</material-button
+            >반려</material-button
           >
-      </div>
-      </div>
-    </div>
-    <div v-if="prioritydb?.priority_approved === 'd3'" class="mb-2 text-center">
-      <material-button type="button" class="app" disabled>반려</material-button>
-    </div>
-    <div id="btnmargin" class="text-center mt-2">
-      <div v-if="prioritydb?.priority_approved === 'd2'">
-        <material-button type="button" class="app" disabled
-          >승인완료</material-button
-        >
-      </div>
-      <div v-else>
-        <material-button type="button" class="app" @click="appPri()"
-          >승인</material-button
-        >
-        <material-button
-          type="button"
-          class="app"
-          @click="display()"
-          color="danger"
-          >반려</material-button
-        >
+        </div>
       </div>
     </div>
   </div>
 </template>
 <style scoped>
+.work-right-center {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.priority-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  background-color: #ffffff;
+  padding: 18px 18px 20px;
+}
+
 .wrapper {
   display: flex;
   gap: 20px;
@@ -195,11 +214,6 @@ const returnPri = async () => {
   font-weight: bold;
   transition: all 0.3s ease;
   margin: 0 auto;
-}
-.priority-card {
-  max-width: 650px;
-  margin: 0 auto;
-  background-color: #ffffff;
 }
 .return {
   display: none;
