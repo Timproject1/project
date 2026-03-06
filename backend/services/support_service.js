@@ -1,4 +1,3 @@
-const { allowList } = require("../controllers/support_controller");
 const pool = require("../db/mapper");
 
 const service = {
@@ -106,6 +105,16 @@ const service = {
     try {
       const result = await pool.query(query, [sup_num]);
       return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+  updateManager: async (sup_num, user_id) => {
+    const query = "update supported set user_id = ? where sup_num = ?";
+
+    try {
+      const result = await pool.execute(query, [user_id, sup_num]);
+      return result.affectedRows > 0;
     } catch (error) {
       throw error;
     }

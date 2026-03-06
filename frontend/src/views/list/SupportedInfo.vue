@@ -34,13 +34,16 @@ const openEditModal = (member) => {
   Modifymember.value = { ...member };
   isEditModalOpen.value = true;
 };
-
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  Modifymember.value = null; // 수정 중이던 데이터 초기화
+};
 // 지원자 정보 수정부분 데이터 저장
 const updateMember = async () => {
   try {
     // 반드시 Modifymember.value를 두 번째 인자로 전달!
     const response = await axios.put(
-      "http://localhost:3000/supported/update",
+      "http://localhost:3000/support/update",
       Modifymember.value,
     );
 
@@ -60,7 +63,7 @@ const openDetailModal = async (member) => {
   selectMember.value = member;
   try {
     const response = await axios.get(
-      "http://localhost:3000/supported/disabilities",
+      "http://localhost:3000/support/disabilities",
       {
         params: { sup_num: member.sup_num },
       },
@@ -320,7 +323,7 @@ const addSupported = async () => {
           </tr>
         </tbody>
       </table>
-      <button @click="isEditModalOpen = false">닫기</button>
+      <button @click="closeDetailModal">닫기</button>
     </div>
   </div>
 
@@ -359,7 +362,7 @@ const addSupported = async () => {
       </div>
     </div>
     <button @click="updateMember">저장</button>
-    <button @click="closeDetailModal">닫기</button>
+    <button @click="closeEditModal">닫기</button>
   </div>
   <!-- 지원자 등록 부분 모달창 -->
   <div v-if="addModal" class="modal-overlay">
@@ -425,7 +428,7 @@ const addSupported = async () => {
       </div>
       <div class="modal-buttons">
         <button @click="addSupported">저장</button>
-        <button @click="closeModal">닫기</button>
+        <button @click="closeEditModal">닫기</button>
       </div>
     </div>
   </div>

@@ -127,20 +127,28 @@ const ctrl = {
       res.status(500).json({ error: "서버 오류" });
     }
   },
+
   assignManager: async (req, res) => {
     try {
-      const { sup_num, user_id } = req.body;
-      const result = await service.assignManager({ sup_num, user_id });
+      const { sup_num, manager_id } = req.body;
+      console.log("배정 요청 데이터:", sup_num, manager_id); // 데이터가 잘 들어오는지 확인
+      console.log(req.body);
+      const result = await service.updateManager(sup_num, manager_id);
 
-      if (result.affectedRows > 0) {
+      // DB 라이브러리에 따라 result가 [result] 형태일 수 있으므로 유연하게 체크
+      const affectedRows =
+        result?.affectedRows ||
+        (Array.isArray(result) && result[0]?.affectedRows);
+
+      if (affectedRows > 0) {
         res.status(200).json({ retCode: "OK", message: "배정 성공" });
       } else {
         res
           .status(400)
-          .json({ retCode: "FAIL", message: "배정 대상이 없습니다." });
+          .json({ retCode: "FAIL", message: "수정된 행이 없습니다." });
       }
     } catch (err) {
-      console.error("컨트롤러 에러:", err);
+      console.error("컨트롤러 내부 에러:", err);
       res.status(500).json({ error: err.message });
     }
   },

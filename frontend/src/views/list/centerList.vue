@@ -47,7 +47,7 @@ const addCenter = async () => {
   }
   try {
     const response = await axios.post(
-      "http://localhost:3000/center/list",
+      "http://localhost:3000/center/addCenter",
       newCenter.value,
     );
     if (response.data.retCode === "OK") {
@@ -111,8 +111,6 @@ const updateCenter = async () => {
             기관관리 <span class="arrow">{{ isOpen ? "▼" : "▶" }}</span>
           </div>
           <ul>
-            <li>기관담당자</li>
-            <li>기관관리자</li>
             <li>기관목록</li>
           </ul>
         </div>
