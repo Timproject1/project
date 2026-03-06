@@ -112,26 +112,39 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="layout">
-    <div class="container">
+  <div class="container-fluid pt-6 pb-5 work-layout">
+    <div class="work-container">
       <div class="left">
         <!-- <RouterView name="left" /> -->
         <div class="top-actions">
-          <button @click="gorepresentative()" class="btn-blue">
+          <button
+            @click="gorepresentative()"
+            class="btn btn-sm bg-gradient-success text-white px-3"
+          >
             담당자 변경
           </button>
-          <button @click="gopriority()" class="btn-blue">우선순위 선택</button>
+          <button
+            @click="gopriority()"
+            class="btn btn-sm bg-gradient-dark text-white px-3"
+          >
+            우선순위 선택
+          </button>
         </div>
 
         <div class="tab-menu">
-          <button @click="gorecord()" class="btn-tab">상담기록</button>
-          <button @click="goplan()" class="btn-tab">지원 계획서</button>
-          <button @click="goresult()" class="btn-tab">지원 결과서</button>
+          <button @click="gorecord()" class="tab-pill active">상담기록</button>
+          <button @click="goplan()" class="tab-pill">지원 계획서</button>
+          <button @click="goresult()" class="tab-pill">지원 결과서</button>
         </div>
 
-        <div class="application-card">
-          <div class="card-header">
-            <span class="title">지원신청서</span>
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex justify-content-between align-items-center"
+          >
+            <span class="title text-white fw-bold">지원신청서</span>
+            <span class="text-xs text-white opacity-8">
+              {{ formatDate(doc.write_date) }} 작성
+            </span>
           </div>
 
           <div class="info-grid">
@@ -143,9 +156,11 @@ onBeforeMount(async () => {
             <div class="info-item">생년월일:</div>
             <div class="info-item">담당자:{{ doc.manager_name }}</div>
           </div>
-          <div class="date-stamp">{{ formatDate(doc.write_date) }} 작성</div>
+          <div class="date-stamp text-xs text-secondary mt-2">
+            작성자: {{ doc.writer_name }} · 담당자: {{ doc.manager_name || "-" }}
+          </div>
 
-          <div class="content-area">
+          <div class="content-area mt-4">
             <!-- <p class="placeholder-text">지원신청서 내용</p> -->
             <div v-if="Object.keys(userAnswers).length">
               <section
@@ -203,11 +218,17 @@ onBeforeMount(async () => {
               </section>
             </div>
           </div>
-          <div class="bottom-actions">
-            <button class="btn-gray">수정기록</button>
+          <div class="bottom-actions mt-3">
+            <button class="btn btn-sm bg-gradient-dark text-white px-3">
+              수정기록
+            </button>
             <div class="right-group">
-              <button class="btn-blue">수정</button>
-              <button class="btn-orange">삭제</button>
+              <button class="btn btn-sm bg-gradient-info text-white px-3">
+                수정
+              </button>
+              <button class="btn btn-sm bg-gradient-danger text-white px-3">
+                삭제
+              </button>
             </div>
           </div>
         </div>
@@ -219,25 +240,21 @@ onBeforeMount(async () => {
   </div>
 </template>
 <style scoped>
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden; /* 전체 페이지 스크롤 제거 */
+.work-layout {
+  background-color: #f8f9fa;
+  min-height: 100vh;
 }
 
-.layout {
+.work-container {
   display: flex;
-  height: 100vh; /* 화면 전체 높이 */
+  gap: 24px;
 }
 
 .left,
 .right {
   flex: 1;
-  height: 100%; /* 패널 높이를 100vh에 맞춤 */
-  min-height: 0; /* 중요! flex 아이템 내부 스크롤용 */
-  overflow-y: auto; /* 패널 내부 스크롤만 */
+  min-height: 0;
+  overflow-y: auto;
 }
 .left-panel {
   flex: 1;
@@ -250,13 +267,44 @@ body {
 .top-actions,
 .tab-menu {
   display: flex;
-  gap: 5px;
+  gap: 8px;
 }
 
+.top-actions {
+  margin-bottom: 10px;
+}
+
+.tab-menu {
+  margin-bottom: 16px;
+}
+
+.tab-pill {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #d2d6da;
+  background-color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #67748e;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.tab-pill:hover {
+  border-color: var(--app-accent);
+  color: var(--app-accent);
+  background-color: rgba(var(--app-accent-rgb), 0.06);
+}
+
+.tab-pill.active {
+  border-color: var(--app-accent);
+  background-color: rgba(var(--app-accent-rgb), 0.12);
+  color: var(--app-accent);
+}
 .application-card {
-  border: 2px solid #999;
-  background: #fffef0; /* 연한 노란색 바탕 */
-  padding: 15px;
+  background: #ffffff;
+  padding: 18px 18px 20px;
   flex-grow: 1;
   position: relative;
 }
@@ -295,24 +343,7 @@ body {
 
 /* 공통 버튼 스타일 */
 button {
-  border: 1px solid #666;
   cursor: pointer;
-  padding: 5px 10px;
-}
-.btn-blue {
-  background-color: #8da9c4;
-  color: white;
-}
-.btn-tab {
-  background-color: #a3c1ad;
-  flex: 1;
-}
-.btn-orange {
-  background-color: #d88c51;
-  color: white;
-}
-.btn-gray {
-  background-color: #8da9c4;
 }
 
 .badge {
