@@ -21,8 +21,8 @@ const getPath = {
   plan: "planReqList",
 };
 const movePath = {
-  priority: "priority",
-  plan: "plan",
+  priority: "priority_manager",
+  plan: "plan_manager",
 };
 const getList = async () => {
   const result = await axios.get(
@@ -177,30 +177,46 @@ onBeforeMount(async () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(doc, index) in list"
-                    :key="doc.doc_num"
-                    @click="selectDoc(doc.doc_num)"
-                  >
-                    <td class="text-center text-sm">
-                      {{ list.length - index }}
-                    </td>
-                    <td class="ps-4 text-sm font-weight-bold">
-                      {{ doc.sup_name }}
-                    </td>
-                    <td class="text-center text-sm">{{ doc.writer_name }}</td>
-                    <td class="text-center text-sm">
-                      {{ formatDate(doc.write_date) }}
-                    </td>
+                  <template v-if="list && list.length > 0">
+                    <tr
+                      v-for="(doc, index) in list"
+                      :key="doc.doc_num"
+                      @click="selectDoc(doc.doc_num)"
+                    >
+                      <td class="text-center text-sm">
+                        {{ list.length - index }}
+                      </td>
+                      <td class="ps-4 text-sm font-weight-bold">
+                        {{ doc.sup_name }}
+                      </td>
+                      <td class="text-center text-sm">{{ doc.writer_name }}</td>
+                      <td class="text-center text-sm">
+                        {{ formatDate(doc.write_date) }}
+                      </td>
 
-                    <td class="text-center text-sm">
-                      {{ doc.manager_name }}
-                    </td>
+                      <td class="text-center text-sm">
+                        {{ doc.manager_name }}
+                      </td>
 
-                    <td class="text-center">
-                      <span class="badge badge-sm bg-gradient-success">{{
-                        doc.progress
-                      }}</span>
+                      <td class="text-center">
+                        <span class="badge badge-sm bg-gradient-success">{{
+                          doc.progress
+                        }}</span>
+                      </td>
+                    </tr>
+                  </template>
+                  <tr v-else>
+                    <td colspan="6" class="text-center py-5">
+                      <div class="d-flex flex-column align-items-center">
+                        <i
+                          class="material-icons text-secondary mb-2"
+                          style="font-size: 2rem"
+                          >info_outline</i
+                        >
+                        <p class="text-secondary mb-0">
+                          현재 표시할 신청 내역이 없습니다.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 </tbody>

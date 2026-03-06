@@ -93,9 +93,12 @@ const returnPri = async () => {
 };
 </script>
 <template>
-  <div id="rea_container">
-    <div id="rea">
-      <h3>{{ memberStore.id }}님의 대기단계</h3>
+  <div class="card shadow-lg border-0 border-radius-xl p-4 priority-card">
+    <h4 class="mb-3 fw-bold text-dark">우선순위 승인</h4>
+    <p class="text-sm text-secondary mb-4">
+      {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를 선택하세요.
+    </p>
+    <div class="text-center mb-4">
       <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
         <div
           class="circle"
@@ -123,19 +126,19 @@ const returnPri = async () => {
           {{ items[2].label }}
         </div>
       </div>
-      <br />
-      <div id="reasonbox">
-        <p>{{ prioritydb.priority_reason }}</p>
-        <!-- 반려 사유 작성 모달창 -->
-        <div class="return" ref="box">
-          <h5>반려 사유</h5>
-          <textarea
-            name="return"
-            id="return"
-            placeholder="반려사유작성"
-            v-model="returnReason"
-          ></textarea>
-          <br />
+    </div>
+    <div id="reasonbox" class="mb-3">
+      <p class="reason-view">{{ prioritydb.priority_reason }}</p>
+      <!-- 반려 사유 작성 모달창 -->
+      <div class="return" ref="box">
+        <h6 class="fw-bold mb-2">반려 사유</h6>
+        <textarea
+          name="return"
+          id="return"
+          placeholder="반려 사유를 작성하세요."
+          v-model="returnReason"
+        ></textarea>
+        <div class="mt-3 d-flex gap-2 justify-content-center">
           <material-button type="button" class="app" @click="returnPri()"
             >반려</material-button
           >
@@ -146,32 +149,29 @@ const returnPri = async () => {
             color="danger"
             >취소</material-button
           >
-        </div>
       </div>
-      <br />
-      <div v-if="prioritydb?.priority_approved === 'd3'">
+      </div>
+    </div>
+    <div v-if="prioritydb?.priority_approved === 'd3'" class="mb-2 text-center">
+      <material-button type="button" class="app" disabled>반려</material-button>
+    </div>
+    <div id="btnmargin" class="text-center mt-2">
+      <div v-if="prioritydb?.priority_approved === 'd2'">
         <material-button type="button" class="app" disabled
-          >반려</material-button
+          >승인완료</material-button
         >
       </div>
-      <div id="btnmargin">
-        <div v-if="prioritydb?.priority_approved === 'd2'">
-          <material-button type="button" class="app" disabled
-            >승인완료</material-button
-          >
-        </div>
-        <div v-else>
-          <material-button type="button" class="app" @click="appPri()"
-            >승인</material-button
-          >
-          <material-button
-            type="button"
-            class="app"
-            @click="display()"
-            color="danger"
-            >반려</material-button
-          >
-        </div>
+      <div v-else>
+        <material-button type="button" class="app" @click="appPri()"
+          >승인</material-button
+        >
+        <material-button
+          type="button"
+          class="app"
+          @click="display()"
+          color="danger"
+          >반려</material-button
+        >
       </div>
     </div>
   </div>
@@ -196,48 +196,32 @@ const returnPri = async () => {
   transition: all 0.3s ease;
   margin: 0 auto;
 }
-h3 {
-  text-align: center;
-}
-#rea_container {
-  border: 1px solid black;
-  padding: 10px;
-  margin: 5px auto;
-  background-color: bisque;
-  width: 100%;
-  height: 100%;
-  top: 50%;
-  left: 50%;
-}
-#rea {
-  border: 1px solid black;
-  padding: 10px;
-  background-color: beige;
+.priority-card {
+  max-width: 650px;
   margin: 0 auto;
-  text-align: center;
+  background-color: #ffffff;
 }
 .return {
   display: none;
   text-align: center;
-  background-color: white;
+  background-color: #ffffff;
   padding: 5px;
-  border: 1px solid black;
-  width: 70%;
-  text-align: center;
+  border-radius: 12px;
+  border: 1px solid #d2d6da;
+  width: 100%;
   margin: 0 auto;
 }
 #return {
   margin: 0 auto;
   width: 100%;
-  height: 150px;
+  min-height: 220px;
   vertical-align: top;
   resize: none;
   border: 1px solid black;
 }
 .app {
-  margin: 10px;
-  width: 25%;
-  height: 50px;
+  margin: 6px 8px;
+  min-width: 120px;
 }
 #btnmargin {
   margin: 10px;
@@ -248,13 +232,15 @@ h3 {
   color: black;
   text-align: left;
 }
-p {
-  margin: 0 auto;
-  width: 75%;
-  height: 200px;
-  font-size: 18px;
-  border: 1px solid black;
-  background-color: white;
+.reason-view {
+  margin: 0 auto 12px;
+  width: 100%;
+  min-height: 120px;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  border: 1px solid #d2d6da;
+  background-color: #f8f9fa;
+  padding: 10px 12px;
 }
 </style>
 <script>

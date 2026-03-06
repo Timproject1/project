@@ -54,14 +54,13 @@ const routes = [
         path: "priority",
         components: {
           right: () => import("../views/work/priority.vue"),
-          meta: { requiredLevel: ["a2"] },
         },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
-          meta: { requiredLevel: ["a3"] },
         },
         meta: { requiredLevel: ["a3"] },
       },
@@ -151,10 +150,12 @@ const routes = [
       {
         path: "write",
         component: () => import("../views/form/formWrite.vue"),
+        meta: { requiredLevel: ["a4"] },
       },
       {
         path: "view/:num",
         component: () => import("../views/form/formView.vue"),
+        meta: { requiredLevel: ["a4"] },
       },
     ],
   },
@@ -181,7 +182,7 @@ const routes = [
       {
         path: "supported", // 일반회원 가입승인
         component: () => import("../views/mypage/Approvalpage.vue"),
-        meta: { requiredLevel: ["a1"] },
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "info", // 내정보 수정
