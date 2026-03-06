@@ -92,12 +92,12 @@ const routes = [
       {
         path: "supported", // 등록된 지원자 목록
         component: () => import("../views/list/supportedList.vue"),
-        meta: { requiredLevel: "a1" },
+        meta: { requiredLevel: ["a1"] },
       },
       {
         path: "info", // 등록된 지원자 정보 보는 목록
         component: () => import("../views/list/SupportedInfo.vue"),
-        meta: { requiredLevel: "a1" },
+        meta: { requiredLevel: ["a1", "a2"] },
       },
       {
         path: "document",
@@ -111,7 +111,7 @@ const routes = [
       {
         path: "look", // 자기에게 배정받은 지원자 목록 (기관 담당자)
         component: () => import("../views/list/managementList.vue"),
-        meta: { requiredLevel: "a2" },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "center", // 센터 목록 부분 (기관 등록, 수정가능)
@@ -121,7 +121,7 @@ const routes = [
       {
         path: "allotment", // 미배정 담당자가 있는 지원자에게 담당자 배정
         component: () => import("../views/list/requestList.vue"),
-        meta: { requiredLevel: "a3" },
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "appreq",
@@ -159,41 +159,6 @@ const routes = [
     ],
   },
 
-  // {
-  //   path: "/",
-  //   name: "/",
-  //   redirect: "/dashboard",
-  // },
-  // {
-  //   path: "/dashboard",
-  //   name: "Dashboard",
-  //   component: Dashboard,
-  // },
-  // {
-  //   path: "/tables",
-  //   name: "Tables",
-  //   component: Tables,
-  // },
-  // {
-  //   path: "/billing",
-  //   name: "Billing",
-  //   component: Billing,
-  // },
-  // {
-  //   path: "/rtl-page",
-  //   name: "RTL",
-  //   component: RTL,
-  // },
-  // {
-  //   path: "/notifications",
-  //   name: "Notifications",
-  //   component: Notifications,
-  // },
-  // {
-  //   path: "/profile",
-  //   name: "Profile",
-  //   component: Profile,
-  // },
   {
     path: "/sign-in",
     name: "SignIn",
@@ -224,13 +189,6 @@ const routes = [
       },
     ],
   },
-  /*
-  {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("../views/Profile.vue"),
-  },
-  */
 ];
 
 const router = createRouter({
