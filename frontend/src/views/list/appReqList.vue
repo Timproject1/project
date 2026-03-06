@@ -21,8 +21,8 @@ const getPath = {
   plan: "planReqList",
 };
 const movePath = {
-  priority: "priority",
-  plan: "plan",
+  priority: "priority_manager",
+  plan: "plan_manager",
 };
 const getList = async () => {
   const result = await axios.get(
