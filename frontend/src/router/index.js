@@ -7,7 +7,7 @@ import Home from "../views/Home.vue";
 import FindId from "../views/FindId.vue";
 import findpw from "../views/findpw.vue";
 import Mypage from "../views/mypage/mypage.vue";
-// import { useMemberStore } from "../store/member";
+import { useMemberStore } from "../store/member";
 
 const routes = [
   {
@@ -33,7 +33,7 @@ const routes = [
     path: "/work",
     name: "work",
     component: work,
-    // meta: { requiredLevel: "a2" },
+    meta: { requiredLevel: ["a2", "a3"] },
     children: [
       {
         path: "plan",
@@ -42,6 +42,7 @@ const routes = [
       {
         path: "plan_manager",
         components: { right: () => import("../views/work/plan_manager.vue") },
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "priority",
@@ -54,6 +55,7 @@ const routes = [
         components: {
           right: () => import("../views/work/priority_manager.vue"),
         },
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "record",
@@ -90,6 +92,7 @@ const routes = [
       {
         path: "form",
         component: () => import("../views/form/formList.vue"),
+        meta: { requiredLevel: ["a4"] },
       },
       {
         path: "look",
@@ -98,6 +101,7 @@ const routes = [
       {
         path: "center",
         component: () => import("../views/list/centerList.vue"),
+        meta: { requiredLevel: ["a4"] },
       },
       {
         path: "allotment",
@@ -106,6 +110,7 @@ const routes = [
       {
         path: "appreq",
         component: () => import("../views/list/appReqList.vue"),
+        meta: { requiredLevel: ["a3"] },
       },
     ],
   },
@@ -117,6 +122,7 @@ const routes = [
       {
         path: "write",
         component: () => import("../views/document/write_document.vue"),
+        meta: { requiredLevel: ["a1"] },
       },
     ],
   },
@@ -124,6 +130,7 @@ const routes = [
     path: "/form",
     name: "Form",
     component: list,
+    meta: { requiredLevel: ["a4"] },
     children: [
       {
         path: "write",
@@ -193,6 +200,7 @@ const routes = [
       {
         path: "supported",
         component: () => import("../views/mypage/Approvalpage.vue"),
+        meta: { requiredLevel: ["a1"] },
       },
       {
         path: "info",
@@ -214,17 +222,28 @@ const router = createRouter({
   routes,
   linkActiveClass: "active",
 });
-// router.beforeEach((to, from, next) => {
-//   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
-//   const myLevel = memberStore.grade; // 내 실제 등급
-//   const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
+router.beforeEach((to, from, next) => {
+  const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
+  const myLevel = memberStore.grade; // 내 실제 등급
+  //로그인이 안되어 있으면 로그인 후 이용가능
+  if (["SignIn,SignIn,resetPW,FindPw,FindId"].includes(to.name.includes)) {
+    return next();
+  }
 
-//   // 기준이 설정된 페이지인데, 내 등급이 기준보다 낮다면?
-//   if (requiredLevel && myLevel < requiredLevel) {
-//     alert("권한이 부족하여 이전 페이지로 돌아갑니다.");
-//     next(false); // ❌ 입장 거부 (이전 페이지 유지)
-//   } else {
-//     next(); // ✅ 입장 허가
-// }
-// });
+  if (!myLevel) {
+    alert("로그인후 이용 가능합니다");
+    return next({ name: "sign-in" });
+  }
+
+  const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
+  if (!requiredLevel) {
+    return next();
+  }
+  // 기준이 설정된 페이지인데, 내 등급이 기준보다 낮다면?
+  if (requiredLevel && myLevel < requiredLevel) {
+    alert("접근이 금지된 페이지 입니다");
+    return next(false); // ❌ 입장 거부 (이전 페이지 유지)
+  }
+  return next(); // ✅ 입장 허가
+});
 export default router;
