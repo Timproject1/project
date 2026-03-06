@@ -175,15 +175,17 @@ const service = {
   },
   appPriority: async (id) => {
     const conn = await pool.getConnection();
+    console.log(id);
     try {
       await conn.beginTransaction();
       await conn.query(
-        `update documents set priority=? progress="b3" where doc_num = ?; `,
+        `update documents set priority=? ,progress="b3" where doc_num = ? `,
         [id.priority, id.doc_num],
       );
-      await conn.query(`delete from priority_req where priority_req_num = ?`, [
-        id.priority_req_num,
-      ]);
+      await conn.query(
+        `update priority_req set priority_approved="d2" where priority_req_num = ?`,
+        [id.priority_req_num],
+      );
       await conn.commit();
       return true;
     } catch (err) {

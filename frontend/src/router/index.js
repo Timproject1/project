@@ -43,6 +43,7 @@ const routes = [
       {
         path: "plan",
         components: { right: () => import("../views/work/plan.vue") },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "plan_manager",
@@ -53,26 +54,31 @@ const routes = [
         path: "priority",
         components: {
           right: () => import("../views/work/priority.vue"),
+          meta: { requiredLevel: ["a2"] },
         },
       },
       {
         path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
+          meta: { requiredLevel: ["a3"] },
         },
         meta: { requiredLevel: ["a3"] },
       },
       {
         path: "record",
         components: { right: () => import("../views/work/record.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "result",
         components: { right: () => import("../views/work/result.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
     ],
   },
@@ -234,22 +240,25 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
   const myLevel = memberStore.grade; // 내 실제 등급
-  //로그인이 안되어 있으면 로그인 후 이용가능
-  if (["SignIn,SignIn,resetPW,FindPw,FindId"].includes(to.name.includes)) {
+  console.log(to.name);
+  //로그인,회원가입,아이디 비밀번호 찾기는 로그인 없이도가능
+  if (["SignIn", "SignUp", "resetPW", "FindPw", "FindId"].includes(to.name)) {
     return next();
   }
 
+  //로그인이 안되어 있으면 로그인 후 이용가능
   if (!myLevel) {
     alert("로그인후 이용 가능합니다");
-    return next({ name: "sign-in" });
+    return next({ name: "SignIn" });
   }
 
   const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
+  console.log(requiredLevel);
   if (!requiredLevel) {
     return next();
   }
-  // 기준이 설정된 페이지인데, 내 등급이 기준보다 낮다면?
-  if (requiredLevel && myLevel < requiredLevel) {
+  //
+  if (requiredLevel && !requiredLevel.includes(myLevel)) {
     alert("접근이 금지된 페이지 입니다");
     return next(false); // ❌ 입장 거부 (이전 페이지 유지)
   }
