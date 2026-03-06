@@ -21,7 +21,13 @@ const managerList = ref([
   { user_id: "m2", user_name: "이영희", count: 2, status: "근무중" },
   { user_id: "m3", user_name: "박지성", count: 0, status: "휴가" },
 ]);
-
+const getManagerList = async (writer) => {
+  // console.log(docStore.writer);
+  const result = await axios.get(
+    `http://localhost:3000/user/getManager/${writer}`,
+  );
+  managerList.value = result.data.result;
+};
 const getNomanagerList = async () => {
   try {
     const responese = await axios.get("http://localhost:3000/support/list");
@@ -32,6 +38,7 @@ const getNomanagerList = async () => {
         display_status: item.user_id ? "d1" : "d2",
       }));
     }
+    // console.log(responese.data);
   } catch (err) {
     console.error("데이터 불러오기 실패", err);
   }
@@ -47,19 +54,26 @@ const resetSearch = () => {
 };
 
 // 배정하기 버튼 부분 내용
-const openModal = (member) => {
+const openModal = async (member) => {
   selectedMember.value = member;
+  await getManagerList(member.user_id);
   showModal.value = true;
 };
 // 지정버튼 클릭 시
 const assignManager = async (manager) => {
   if (!selectedMember.value) return;
-
+  // console.log(selectedMember.value);
   try {
-    const responese = await axios.post("http://localhost:3000/support/assign", {
-      sup_num: selectedMember.value.sup_num,
-      manager_id: manager.user_id,
-    });
+    const responese = await axios.post(
+      "http://localhost:3000/support/assign",
+      {
+        sup_num: selectedMember.value.sup_num,
+        manager_id: manager.user_id,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     if (responese.data.retCode === "OK") {
       alert(
         `${selectedMember.value.sup_name}님에게 ${manager.user_name} 담당자가 배정되었습니다.`,
@@ -122,7 +136,7 @@ const assignManager = async (manager) => {
         <td>{{ member.sup_name }}</td>
         <td>{{ member.sup_reg_date?.split("T")[0] }}</td>
         <td>{{ member.display_status }}</td>
-        <td><button @click="openModal">배정하기</button></td>
+        <td><button @click="openModal(member)">배정하기</button></td>
       </tr>
     </tbody>
   </table>

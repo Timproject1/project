@@ -130,10 +130,10 @@ const ctrl = {
 
   assignManager: async (req, res) => {
     try {
-      const { sup_num, user_id } = req.body;
-      console.log("배정 요청 데이터:", sup_num, user_id); // 데이터가 잘 들어오는지 확인
-
-      const result = await service.updateManager(sup_num, user_id);
+      const { sup_num, manager_id } = req.body;
+      console.log("배정 요청 데이터:", sup_num, manager_id); // 데이터가 잘 들어오는지 확인
+      console.log(req.body);
+      const result = await service.updateManager(sup_num, manager_id);
 
       // DB 라이브러리에 따라 result가 [result] 형태일 수 있으므로 유연하게 체크
       const affectedRows =
