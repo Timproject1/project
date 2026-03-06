@@ -82,6 +82,7 @@ const routes = [
       },
     ],
   },
+  // 목록
   {
     path: "/list",
     name: "List",
@@ -89,12 +90,12 @@ const routes = [
     redirect: "/list/supported",
     children: [
       {
-        path: "supported",
+        path: "supported", // 등록된 지원자 목록
         component: () => import("../views/list/supportedList.vue"),
         meta: { requiredLevel: ["a1"] },
       },
       {
-        path: "info",
+        path: "info", // 등록된 지원자 정보 보는 목록
         component: () => import("../views/list/SupportedInfo.vue"),
         meta: { requiredLevel: ["a1", "a2"] },
       },
@@ -108,17 +109,17 @@ const routes = [
         meta: { requiredLevel: ["a4"] },
       },
       {
-        path: "look",
+        path: "look", // 자기에게 배정받은 지원자 목록 (기관 담당자)
         component: () => import("../views/list/managementList.vue"),
         meta: { requiredLevel: ["a2"] },
       },
       {
-        path: "center",
+        path: "center", // 센터 목록 부분 (기관 등록, 수정가능)
         component: () => import("../views/list/centerList.vue"),
         meta: { requiredLevel: ["a4"] },
       },
       {
-        path: "allotment",
+        path: "allotment", // 미배정 담당자가 있는 지원자에게 담당자 배정
         component: () => import("../views/list/requestList.vue"),
         meta: { requiredLevel: ["a3"] },
       },
@@ -174,16 +175,16 @@ const routes = [
     component: () => import("../views/ResetPassword.vue"),
   },
   {
-    path: "/mypage",
+    path: "/mypage", // 마이페이지 메인 화면 (접속 시 본인확인을 위해 비밀번호 입력)
     component: Mypage,
     children: [
       {
-        path: "supported",
+        path: "supported", // 일반회원 가입승인
         component: () => import("../views/mypage/Approvalpage.vue"),
         meta: { requiredLevel: ["a1"] },
       },
       {
-        path: "info",
+        path: "info", // 내정보 수정
         component: () => import("../views/mypage/mypageInfo.vue"),
       },
     ],
