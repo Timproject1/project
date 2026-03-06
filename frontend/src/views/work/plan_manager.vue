@@ -30,6 +30,7 @@ const listPlan = async () => {
   console.log(result.data.result);
 };
 onBeforeMount(() => {
+  filelist();
   listPlan();
 });
 
@@ -97,6 +98,15 @@ const revisions = async (id) => {
     id.revision = [];
     id.showRevision = true;
   }
+};
+const filename = ref([]);
+console.log(filename);
+const filelist = async () => {
+  let result = await axios
+    .get(`http://localhost:3000/document/planFile`)
+    .catch((err) => console.log(err));
+  console.log(result.data.result);
+  filename.value = Array.isArray(result.data.result) ? result.data.result : [];
 };
 </script>
 <template>
