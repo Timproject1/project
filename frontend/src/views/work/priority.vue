@@ -61,10 +61,12 @@ const appSigncancel = async () => {
 };
 </script>
 <template>
-  <h2>우선순위 관련</h2>
-  <div id="rea_container">
-    <div id="rea">
-      <h3>{{ memberStore.id }}님의 대기단계</h3>
+  <div class="card shadow-lg border-0 border-radius-xl p-4 priority-card">
+    <h4 class="mb-4 fw-bold text-dark">우선순위 설정</h4>
+    <p class="text-sm text-secondary mb-4">
+      {{ memberStore.id }}님의 대기단계를 선택하고 사유를 입력하세요.
+    </p>
+    <div class="mb-4 text-center">
       <div class="wrapper">
         <div
           v-for="item in items"
@@ -76,27 +78,27 @@ const appSigncancel = async () => {
           {{ item.label }}
         </div>
       </div>
-      <br />
+    </div>
+    <div class="mb-3">
       <textarea
         name="reason"
         id="reason"
-        placeholder="사유"
+        placeholder="우선순위 요청 사유를 입력하세요."
         v-model="reason"
       ></textarea>
-      <br />
-      <div id="btnmargin">
-        <p v-if="count == 0">
-          <material-button type="button" @click="appSign()"
-            >승인 요청</material-button
-          >
-        </p>
-        <p v-else>
-          <material-button type="button" disabled>승인 요청 중</material-button>
-          <material-button type="button" @click="appSigncancel()" color="danger"
-            >승인 취소</material-button
-          >
-        </p>
-      </div>
+    </div>
+    <div class="text-center mt-3">
+      <p v-if="count == 0">
+        <material-button type="button" color="success" @click="appSign()"
+          >승인 요청</material-button
+        >
+      </p>
+      <p v-else>
+        <material-button type="button" disabled>승인 요청 중</material-button>
+        <material-button type="button" @click="appSigncancel()" color="danger"
+          >승인 취소</material-button
+        >
+      </p>
     </div>
   </div>
 </template>
@@ -117,44 +119,22 @@ const appSigncancel = async () => {
   cursor: pointer;
   background-color: white;
   font-weight: bold;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   margin: 0 auto;
 }
 
-h3 {
-  text-align: center;
-}
-#rea_container {
-  border: 1px solid black;
-  padding: 10px;
+.priority-card {
+  max-width: 650px;
   margin: 0 auto;
-  background-color: bisque;
-  width: 100%;
-  height: 100%;
-  top: 50%;
-  left: 50%;
-}
-#rea {
-  border: 1px solid black;
-  padding: 10px;
-  background-color: beige;
-  margin: 0 auto;
-  text-align: center;
+  background-color: #ffffff;
 }
 #reason {
-  margin: 0 auto;
-  width: 75%;
-  height: 200px;
+  width: 100%;
+  min-height: 180px;
   vertical-align: top;
-  resize: none;
-}
-.app {
-  margin: 0 auto;
-  width: 50%;
-  height: 50px;
-  background-color: rgb(103, 147, 241);
-}
-#btnmargin {
-  margin: 10px;
+  resize: vertical;
+  border-radius: 12px;
+  border: 1px solid #d2d6da;
+  padding: 12px 14px;
 }
 </style>
