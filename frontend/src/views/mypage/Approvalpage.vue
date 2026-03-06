@@ -1,11 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
-const isOpen = ref(true);
-const toggleMenu = () => {
-  isOpen.value = !isOpen.value;
-};
-
 // 실제 DB에서 가져온 데이터를 담을 배열 (초기값 빈 배열)
 const userInfo = ref([]);
 
@@ -14,7 +9,7 @@ const showInfo = ref(true);
 const Noapprove = ref(false);
 const Reason = ref("");
 
-// 1. 서버에서 승인 대기 목록 불러오기
+// DB에서 일반회원 승인신청목록 받아오기
 const fetchUsers = async () => {
   try {
     const response = await fetch(
@@ -34,7 +29,7 @@ onMounted(() => {
   fetchUsers();
 });
 
-// 등록 버튼 클릭 (상세보기)
+// 등록 버튼 클릭 시 일반회원 상세 정보를 보여주는 부분
 const viewInfo = (user) => {
   choiceUser.value = user;
   showInfo.value = false;
@@ -42,7 +37,7 @@ const viewInfo = (user) => {
   console.log(choiceUser.value);
 };
 
-// 2. 승인 버튼 클릭 (DB 업데이트)
+// 회원 가입승인버튼 눌렀을 때 (추가 + 승인을 누르면 목록에서 삭제)
 const Okapprove = async () => {
   try {
     const response = await fetch(
@@ -53,11 +48,13 @@ const Okapprove = async () => {
         body: JSON.stringify({ user_id: choiceUser.value.user_id }),
       },
     );
-
+    // 승인 완료 후 승인 안내 메세지, 목록에서 삭제
     if (response.ok) {
       alert(`${choiceUser.value.user_name} 님을 승인 하였습니다.`);
+      userInfo.value = userInfo.value.filter(
+        (user) => user.user_id !== choiceUser.value.user_id,
+      );
       showInfo.value = true;
-      fetchUsers(); // 목록 새로고침
     }
   } catch (error) {
     alert("승인 처리 실패");
@@ -85,20 +82,7 @@ const confirmReject = () => {
 </script>
 
 <template>
-  <h2>일반 회원 승인신청목록</h2>
-  <div class="layout-wrapper">
-    <aside class="sidebar-container">
-      <div class="management-box">
-        <div class="box-header" @click="toggleMenu">
-          마이페이지 <span class="arrow">{{ isOpen ? "▼" : "▶" }}</span>
-        </div>
-        <ul v-if="isOpen" class="menu-list">
-          <li>일반회원 관리</li>
-        </ul>
-      </div>
-    </aside>
-  </div>
-
+  <h3>일반회원 가입승인 요청 목록</h3>
   <table>
     <thead class="user_table">
       <tr>
@@ -116,7 +100,9 @@ const confirmReject = () => {
         <td>{{ user.user_id }}</td>
         <td>{{ user.user_name }}</td>
         <td>{{ user.user_email }}</td>
-        <td>{{ user.user_reg_date }}</td>
+        <td>
+          {{ user.user_reg_date ? user.user_reg_date.split("T")[0] : "" }}
+        </td>
         <td><button @click="viewInfo(user)">등록</button></td>
       </tr>
     </tbody>

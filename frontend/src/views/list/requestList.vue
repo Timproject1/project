@@ -10,34 +10,35 @@ const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
 
+// 미배정 지원자 목록
 const Notsupported = ref([]);
+// 모달표시 부분
 const showModal = ref(false);
+// 배정하기 버튼 부분
+const selectedMember = ref(null);
 const managerList = ref([
   { user_id: "m1", user_name: "김철수", count: 5, status: "근무중" },
   { user_id: "m2", user_name: "이영희", count: 2, status: "근무중" },
   { user_id: "m3", user_name: "박지성", count: 0, status: "휴가" },
 ]);
-
+const getManagerList = async (writer) => {
+  // console.log(docStore.writer);
+  const result = await axios.get(
+    `http://localhost:3000/user/getManager/${writer}`,
+  );
+  managerList.value = result.data.result;
+};
 const getNomanagerList = async () => {
   try {
     const responese = await axios.get("http://localhost:3000/support/list");
     if (responese.data.retCode === "OK") {
-      // const filters = responese.data.result.filter(
-      //   (item) =>
-      //     (item.sup_approved === "d1" || item.sup_approved === "d2") &&
-      //     (item.user_id === null || item.user_id === ""),
-      // );
-      // console.log("필터링 완료:", filters);
-      // Notsupported.value = filters.map((item) => ({
-      //   ...item,
-      //   display_status: "미배정",
-      // }));
       const allData = responese.data.result;
       Notsupported.value = allData.map((item) => ({
         ...item,
         display_status: item.user_id ? "d1" : "d2",
       }));
     }
+    // console.log(responese.data);
   } catch (err) {
     console.error("데이터 불러오기 실패", err);
   }
@@ -46,15 +47,48 @@ onMounted(() => {
   getNomanagerList();
 });
 
-// 검색창 부분
-
 // 지원자 명 검색
 const searchName = ref("");
 const resetSearch = () => {
   searchName.value = "";
 };
 
-// 담당자 배정 요청 버튼
+// 배정하기 버튼 부분 내용
+const openModal = async (member) => {
+  selectedMember.value = member;
+  await getManagerList(member.user_id);
+  showModal.value = true;
+};
+// 지정버튼 클릭 시
+const assignManager = async (manager) => {
+  if (!selectedMember.value) return;
+  // console.log(selectedMember.value);
+  try {
+    const responese = await axios.post(
+      "http://localhost:3000/support/assign",
+      {
+        sup_num: selectedMember.value.sup_num,
+        manager_id: manager.user_id,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+    if (responese.data.retCode === "OK") {
+      alert(
+        `${selectedMember.value.sup_name}님에게 ${manager.user_name} 담당자가 배정되었습니다.`,
+      );
+      Notsupported.value = Notsupported.value.filter(
+        (m) => m.sup_num !== selectedMember.value.sup_num,
+      );
+
+      showModal.value = false;
+      selectedMember.value = null;
+    }
+  } catch (err) {
+    alert("배정 처리중 오류 발생");
+  }
+};
 </script>
 <template>
   <h1>기관담당자 배정</h1>
@@ -85,7 +119,7 @@ const resetSearch = () => {
     </div>
   </aside>
 
-  <h2>담당자 미 배정 회원목록</h2>
+  <h2>담당자 미 배정 지원자 목록</h2>
   <table>
     <thead>
       <tr>
@@ -102,7 +136,7 @@ const resetSearch = () => {
         <td>{{ member.sup_name }}</td>
         <td>{{ member.sup_reg_date?.split("T")[0] }}</td>
         <td>{{ member.display_status }}</td>
-        <td><button @click="showModal = true">배정하기</button></td>
+        <td><button @click="openModal(member)">배정하기</button></td>
       </tr>
     </tbody>
   </table>
@@ -133,7 +167,7 @@ const resetSearch = () => {
             <td>{{ manager.user_name }}</td>
             <td>{{ manager.count }}명</td>
             <td>{{ manager.status }}</td>
-            <td><button @click="showModal = false">지정</button></td>
+            <td><button @click="assignManager(manager)">지정</button></td>
           </tr>
         </tbody>
       </table>
