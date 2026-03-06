@@ -43,6 +43,7 @@ const routes = [
       {
         path: "plan",
         components: { right: () => import("../views/work/plan.vue") },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "plan_manager",
@@ -53,26 +54,31 @@ const routes = [
         path: "priority",
         components: {
           right: () => import("../views/work/priority.vue"),
+          meta: { requiredLevel: ["a2"] },
         },
       },
       {
         path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
+          meta: { requiredLevel: ["a3"] },
         },
         meta: { requiredLevel: ["a3"] },
       },
       {
         path: "record",
         components: { right: () => import("../views/work/record.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "result",
         components: { right: () => import("../views/work/result.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
     ],
   },
