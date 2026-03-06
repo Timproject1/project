@@ -34,11 +34,11 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-
+import { useMemberStore } from "../store/member";
 const userName = ref("");
-
+const memberStore = useMemberStore();
 onMounted(() => {
-  userName.value = localStorage.getItem("userName") || "사용자";
+  userName.value = memberStore.name;
 });
 </script>
 
