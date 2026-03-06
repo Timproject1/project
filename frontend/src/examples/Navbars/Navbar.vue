@@ -44,6 +44,11 @@ const gomypage = () => {
 // const gorepresentative = () => {
 //   router.push("/work/representative");
 // };
+const handleLogout = () => {
+  memberStore.logout(); // 스토어 초기화
+  alert("로그아웃되었습니다");
+  router.push("/sign-in"); // 컴포넌트에서 이동 처리
+};
 </script>
 <template>
   <nav
@@ -133,7 +138,7 @@ const gomypage = () => {
           <li class="nav-item d-flex align-items-center">
             <button
               class="btn btn-sm btn-outline-primary mb-0"
-              @click="memberStore.logout()"
+              @click="handleLogout"
             >
               로그아웃
             </button>
