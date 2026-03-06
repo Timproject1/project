@@ -43,6 +43,7 @@ const routes = [
       {
         path: "plan",
         components: { right: () => import("../views/work/plan.vue") },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "plan_manager",
@@ -53,29 +54,35 @@ const routes = [
         path: "priority",
         components: {
           right: () => import("../views/work/priority.vue"),
+          meta: { requiredLevel: ["a2"] },
         },
       },
       {
         path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
+          meta: { requiredLevel: ["a3"] },
         },
         meta: { requiredLevel: ["a3"] },
       },
       {
         path: "record",
         components: { right: () => import("../views/work/record.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "result",
         components: { right: () => import("../views/work/result.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
     ],
   },
+  // 목록
   {
     path: "/list",
     name: "List",
@@ -83,12 +90,14 @@ const routes = [
     redirect: "/list/supported",
     children: [
       {
-        path: "supported",
+        path: "supported", // 등록된 지원자 목록
         component: () => import("../views/list/supportedList.vue"),
+        meta: { requiredLevel: ["a1"] },
       },
       {
-        path: "info",
+        path: "info", // 등록된 지원자 정보 보는 목록
         component: () => import("../views/list/SupportedInfo.vue"),
+        meta: { requiredLevel: ["a1", "a2"] },
       },
       {
         path: "document",
@@ -100,17 +109,19 @@ const routes = [
         meta: { requiredLevel: ["a4"] },
       },
       {
-        path: "look",
+        path: "look", // 자기에게 배정받은 지원자 목록 (기관 담당자)
         component: () => import("../views/list/managementList.vue"),
+        meta: { requiredLevel: ["a2"] },
       },
       {
-        path: "center",
+        path: "center", // 센터 목록 부분 (기관 등록, 수정가능)
         component: () => import("../views/list/centerList.vue"),
         meta: { requiredLevel: ["a4"] },
       },
       {
-        path: "allotment",
+        path: "allotment", // 미배정 담당자가 있는 지원자에게 담당자 배정
         component: () => import("../views/list/requestList.vue"),
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "appreq",
@@ -148,41 +159,6 @@ const routes = [
     ],
   },
 
-  // {
-  //   path: "/",
-  //   name: "/",
-  //   redirect: "/dashboard",
-  // },
-  // {
-  //   path: "/dashboard",
-  //   name: "Dashboard",
-  //   component: Dashboard,
-  // },
-  // {
-  //   path: "/tables",
-  //   name: "Tables",
-  //   component: Tables,
-  // },
-  // {
-  //   path: "/billing",
-  //   name: "Billing",
-  //   component: Billing,
-  // },
-  // {
-  //   path: "/rtl-page",
-  //   name: "RTL",
-  //   component: RTL,
-  // },
-  // {
-  //   path: "/notifications",
-  //   name: "Notifications",
-  //   component: Notifications,
-  // },
-  // {
-  //   path: "/profile",
-  //   name: "Profile",
-  //   component: Profile,
-  // },
   {
     path: "/sign-in",
     name: "SignIn",
@@ -199,27 +175,20 @@ const routes = [
     component: () => import("../views/ResetPassword.vue"),
   },
   {
-    path: "/mypage",
+    path: "/mypage", // 마이페이지 메인 화면 (접속 시 본인확인을 위해 비밀번호 입력)
     component: Mypage,
     children: [
       {
-        path: "supported",
+        path: "supported", // 일반회원 가입승인
         component: () => import("../views/mypage/Approvalpage.vue"),
         meta: { requiredLevel: ["a1"] },
       },
       {
-        path: "info",
+        path: "info", // 내정보 수정
         component: () => import("../views/mypage/mypageInfo.vue"),
       },
     ],
   },
-  /*
-  {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("../views/Profile.vue"),
-  },
-  */
 ];
 
 const router = createRouter({
@@ -230,22 +199,25 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
   const myLevel = memberStore.grade; // 내 실제 등급
-  //로그인이 안되어 있으면 로그인 후 이용가능
-  if (["SignIn,SignIn,resetPW,FindPw,FindId"].includes(to.name.includes)) {
+  console.log(to.name);
+  //로그인,회원가입,아이디 비밀번호 찾기는 로그인 없이도가능
+  if (["SignIn", "SignUp", "resetPW", "FindPw", "FindId"].includes(to.name)) {
     return next();
   }
 
+  //로그인이 안되어 있으면 로그인 후 이용가능
   if (!myLevel) {
     alert("로그인후 이용 가능합니다");
-    return next({ name: "sign-in" });
+    return next({ name: "SignIn" });
   }
 
   const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
+  console.log(requiredLevel);
   if (!requiredLevel) {
     return next();
   }
-  // 기준이 설정된 페이지인데, 내 등급이 기준보다 낮다면?
-  if (requiredLevel && myLevel < requiredLevel) {
+  //
+  if (requiredLevel && !requiredLevel.includes(myLevel)) {
     alert("접근이 금지된 페이지 입니다");
     return next(false); // ❌ 입장 거부 (이전 페이지 유지)
   }

@@ -86,7 +86,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <navbar btnBackground="bg-gradient-success" />
   <div
     class="page-header align-items-start min-vh-100"
     :style="{ backgroundImage: `url(${bgImage})` }"

@@ -10,19 +10,44 @@ const grades = {
   a3: "기관관리자",
   a4: "시스템관리자",
 };
-const goplan = () => {
-  router.push("/work/plan");
+
+const gohome = () => {
+  router.push("/home");
+};
+const govolunteer = () => {
+  router.push("/list/info");
+};
+const govol = () => {
+  router.push("/list/appreq");
+};
+const gocenter = () => {
+  router.push("/list/center");
+};
+const goform = () => {
+  router.push("/list/form");
+};
+const gomypage = () => {
+  router.push("/mypage");
 };
 
-const gopriority = () => {
-  router.push("/list/supported");
-};
+// const goplan = () => {
+//   router.push("/work/plan");
+// };
 
-const gorecord = () => {
-  router.push("/work/record");
-};
-const gorepresentative = () => {
-  router.push("/work/representative");
+// const gopriority = () => {
+//   router.push("/list/supported");
+// };
+
+// const gorecord = () => {
+//   router.push("/work/record");
+// };
+// const gorepresentative = () => {
+//   router.push("/work/representative");
+// };
+const handleLogout = () => {
+  memberStore.logout(); // 스토어 초기화
+  alert("로그아웃되었습니다");
+  router.push("/sign-in"); // 컴포넌트에서 이동 처리
 };
 </script>
 <template>
@@ -43,21 +68,56 @@ const gorepresentative = () => {
       <div
         class="collapse navbar-collapse d-flex justify-content-start"
         id="navbar"
+        v-if="`${memberStore.grade}` == 'a1'"
       >
         <div class="navbar-nav d-flex flex-row">
-          <material-button @click="gorepresentative" size="lg"
-            >Home</material-button
-          >
+          <material-button @click="gohome" size="lg">Home</material-button>
 
-          <material-button @click="gopriority" size="lg"
+          <material-button @click="govolunteer" size="lg"
             >지원자 관리</material-button
           >
-          <br />
-          <material-button @click="gorecord" size="lg"
-            >마이페이지</material-button
-          >
+        </div>
+      </div>
+      <div
+        class="collapse navbar-collapse d-flex justify-content-start"
+        id="navbar"
+        v-if="`${memberStore.grade}` == 'a2'"
+      >
+        <div class="navbar-nav d-flex flex-row">
+          <material-button @click="gohome" size="lg">Home</material-button>
 
-          <material-button @click="goplan" size="lg">로그아웃</material-button>
+          <material-button @click="govolunteer" size="lg"
+            >지원자 관리</material-button
+          >
+        </div>
+      </div>
+      <div
+        class="collapse navbar-collapse d-flex justify-content-start"
+        id="navbar"
+        v-if="`${memberStore.grade}` == 'a3'"
+      >
+        <div class="navbar-nav d-flex flex-row">
+          <material-button @click="gohome" size="lg">Home</material-button>
+
+          <material-button @click="govol" size="lg"
+            >지원자 관리</material-button
+          >
+          <material-button @click="govol" size="lg">회원 관리</material-button>
+        </div>
+      </div>
+      <div
+        class="collapse navbar-collapse d-flex justify-content-start"
+        id="navbar"
+        v-if="`${memberStore.grade}` == 'a4'"
+      >
+        <div class="navbar-nav d-flex flex-row">
+          <material-button @click="gohome" size="lg">Home</material-button>
+
+          <material-button @click="goform" size="lg">양식 관리</material-button>
+          <material-button @click="govol" size="lg">회원 관리</material-button>
+          <material-button @click="gocenter" size="lg"
+            >기관 관리</material-button
+          >
         </div>
       </div>
 
@@ -68,12 +128,18 @@ const gorepresentative = () => {
 
         <ul class="navbar-nav justify-content-end flex-row">
           <li class="nav-item d-flex align-items-center me-2">
-            <button class="btn btn-sm btn-outline-primary mb-0">
+            <button
+              class="btn btn-sm btn-outline-primary mb-0"
+              @click="gomypage"
+            >
               마이 페이지
             </button>
           </li>
           <li class="nav-item d-flex align-items-center">
-            <button class="btn btn-sm btn-outline-primary mb-0">
+            <button
+              class="btn btn-sm btn-outline-primary mb-0"
+              @click="handleLogout"
+            >
               로그아웃
             </button>
           </li>
