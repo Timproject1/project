@@ -83,10 +83,12 @@ const routes = [
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
+        meta: { requiredLevel: "a1" },
       },
       {
         path: "info",
         component: () => import("../views/list/SupportedInfo.vue"),
+        meta: { requiredLevel: "a1" },
       },
       {
         path: "document",
@@ -99,14 +101,17 @@ const routes = [
       {
         path: "look",
         component: () => import("../views/list/managementList.vue"),
+        meta: { requiredLevel: "a2" },
       },
       {
         path: "center",
         component: () => import("../views/list/centerList.vue"),
+        meta: { requiredLevel: "a4" },
       },
       {
         path: "allotment",
         component: () => import("../views/list/requestList.vue"),
+        meta: { requiredLevel: "a3" },
       },
       {
         path: "appreq",
@@ -198,6 +203,7 @@ const routes = [
       {
         path: "supported",
         component: () => import("../views/mypage/Approvalpage.vue"),
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "info",
