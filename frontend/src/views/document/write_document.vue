@@ -83,25 +83,33 @@ getList();
 getForm();
 </script>
 <template>
-  <div class="container-fluid py-4">
-    <div class="row">
-      <div class="col-12">
-        <div class="card my-4">
+  <div class="container-fluid py-6 document-write">
+    <div class="row justify-content-center">
+      <div class="col-12 col-xl-10">
+        <div class="card my-4 shadow-lg border-0 border-radius-xl animation-fade-in">
           <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
             <div
-              class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3"
+              class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3"
             >
-              <h6 class="text-white text-capitalize ps-3">
-                지원 신청서 작성 / 지원자 정보
-              </h6>
+              <div class="d-flex align-items-center justify-content-between px-4">
+                <div>
+                  <h5 class="text-white mb-0 font-weight-bolder">
+                    지원 신청서 작성
+                  </h5>
+                  <p class="text-white text-xs opacity-9 mb-0">
+                    지원자 선택 후 설문을 작성해 제출하세요.
+                  </p>
+                </div>
+                <i class="material-icons text-white opacity-9">description</i>
+              </div>
             </div>
           </div>
 
           <div class="card-body px-4 pb-2">
             <div class="row mb-4">
               <div class="col-md-3">
-                <label class="form-label">이름</label>
-                <select class="form-select border p-2" v-model="sup_num">
+                <label class="text-xs fw-bold text-success mb-2">지원자</label>
+                <select class="form-select" v-model="sup_num">
                   <option
                     v-for="sup in sups"
                     :value="sup.sup_num"
@@ -112,26 +120,27 @@ getForm();
                 </select>
               </div>
               <div class="col-md-2">
-                <label class="form-label">성별</label>
+                <label class="text-xs fw-bold text-dark mb-2">성별</label>
                 <material-input
                   v-if="selectedUser"
                   type="text"
-                  class="form-control border p-2"
+                  class="form-control"
                   v-model="selectedUser.gender"
+                  :readonly="true"
                 />
               </div>
 
               <div class="col-md-3">
-                <label class="form-label">생일</label>
+                <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
                 <material-input
                   v-if="selectedUser"
                   type="date"
-                  class="form-control border p-2"
+                  class="form-control"
                   :readonly="true"
                 />
               </div>
               <div class="col-md-2 d-flex align-items-end">
-                <material-button class="btn w-100 mb-0">
+                <material-button class="btn bg-gradient-success w-100 mb-0">
                   불러오기
                 </material-button>
               </div>
@@ -144,14 +153,14 @@ getForm();
                 :key="big.bcategory"
                 class="big-section"
               >
-                <h1 class="big-title">{{ big.bcategory }}</h1>
+                <h2 class="big-title">{{ big.bcategory }}</h2>
 
                 <div
                   v-for="small in big.scategory"
                   :key="small.scategory"
                   class="small-group"
                 >
-                  <h2 class="small-title">▣ {{ small.scategory }}</h2>
+                  <h3 class="small-title">▣ {{ small.scategory }}</h3>
 
                   <div
                     v-for="q in small.questions"
@@ -193,18 +202,18 @@ getForm();
             </div>
             <div class="d-flex justify-content-center gap-2 mt-4">
               <material-button
-                class="btn bg-gradient-secondary"
+                class="btn bg-gradient-dark"
                 @click="saveTemp"
               >
                 임시저장
               </material-button>
               <material-button
-                class="btn bg-gradient-primary"
+                class="btn bg-gradient-success"
                 @click="submitForm"
               >
                 제출
               </material-button>
-              <material-button class="btn btn-outline-danger" @click="cancel">
+              <material-button class="btn btn-outline-secondary" @click="cancel">
                 취소
               </material-button>
             </div>
@@ -228,11 +237,83 @@ export default {
 };
 </script>
 <style scoped>
-.form-control,
-.form-select {
-  border: 1px solid #d2d6da !important;
+.big-section {
+  padding: 8px 0 24px;
 }
-.bg-light {
-  background-color: #f8f9fa !important;
+
+.big-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #344767;
+  margin: 18px 0 10px;
+  padding-left: 2px;
+}
+
+.small-group {
+  padding: 14px 0 6px;
+}
+
+.small-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #4caf50;
+  margin: 0 0 12px;
+}
+
+.question-card {
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  border-radius: 14px;
+  padding: 18px 18px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.question-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #344767;
+  margin-bottom: 12px;
+}
+
+.answer-area {
+  background: #f8f9fa;
+  border: 1px dashed #d2d6da;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #495057;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.text-group textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border: 1px solid #d2d6da;
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  background: #ffffff;
+}
+
+.text-group textarea:focus {
+  border-color: var(--app-accent);
+  box-shadow: var(--app-focus-ring);
 }
 </style>
