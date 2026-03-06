@@ -30,6 +30,11 @@ const routes = [
     component: findpw,
   },
   {
+    path: "/wait-approval",
+    name: "WaitApproval",
+    component: () => import("@/views/WaitApproval.vue"),
+  },
+  {
     path: "/work",
     name: "work",
     component: work,
