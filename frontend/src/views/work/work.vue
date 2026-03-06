@@ -1,16 +1,27 @@
 <script setup>
 // import MaterialButton from "@/components/MaterialButton.vue";
-// import { useRouter } from "vue-router";
 import { ref, onBeforeMount } from "vue";
 import axios from "axios";
 import { useDocStore } from "@/store/doc";
 import { useMemberStore } from "@/store/member";
+import { useRoute, useRouter } from "vue-router";
 const docStore = useDocStore();
 const memberStore = useMemberStore();
 // console.log("----------------------");
 // console.log(docStore.doc_num);
 // console.log(memberStore.grade);
 const router = useRouter();
+const route = useRoute();
+
+const isActiveTab = (tab) => {
+  const path = route.path || "";
+  if (tab === "record") return path.startsWith("/work/record");
+  if (tab === "plan") return path.startsWith("/work/plan");
+  if (tab === "result") return path.startsWith("/work/result");
+  if (tab === "representative") return path.startsWith("/work/representative");
+  if (tab === "priority") return path.startsWith("/work/priority");
+  return false;
+};
 
 const goplan = () => {
   if (memberStore.grade == "a3") {
@@ -94,7 +105,6 @@ const getResp = async () => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
-import { useRouter } from "vue-router";
 // const gotodoc = async (docno) => {
 //   router.push({ path: "info", query: { no: docno } });
 // };
@@ -119,22 +129,42 @@ onBeforeMount(async () => {
         <div class="top-actions">
           <button
             @click="gorepresentative()"
-            class="btn btn-sm bg-gradient-success text-white px-3"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('representative') }"
           >
             담당자 변경
           </button>
           <button
             @click="gopriority()"
-            class="btn btn-sm bg-gradient-dark text-white px-3"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('priority') }"
           >
             우선순위 선택
           </button>
         </div>
 
         <div class="tab-menu">
-          <button @click="gorecord()" class="tab-pill active">상담기록</button>
-          <button @click="goplan()" class="tab-pill">지원 계획서</button>
-          <button @click="goresult()" class="tab-pill">지원 결과서</button>
+          <button
+            @click="gorecord()"
+            class="tab-pill"
+            :class="{ active: isActiveTab('record') }"
+          >
+            상담기록
+          </button>
+          <button
+            @click="goplan()"
+            class="tab-pill"
+            :class="{ active: isActiveTab('plan') }"
+          >
+            지원 계획서
+          </button>
+          <button
+            @click="goresult()"
+            class="tab-pill"
+            :class="{ active: isActiveTab('result') }"
+          >
+            지원 결과서
+          </button>
         </div>
 
         <div class="application-card card shadow-lg border-0 border-radius-xl">
@@ -242,16 +272,22 @@ onBeforeMount(async () => {
 <style scoped>
 .work-layout {
   background-color: #f8f9fa;
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .work-container {
   display: flex;
   gap: 24px;
+  flex: 1;
+  min-height: 0;
 }
 
 .left,
 .right {
+  
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -278,6 +314,11 @@ onBeforeMount(async () => {
   margin-bottom: 16px;
 }
 
+.action-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 .tab-pill {
   flex: 1;
   padding: 8px 12px;
@@ -288,6 +329,10 @@ onBeforeMount(async () => {
   font-weight: 600;
   color: #67748e;
   text-align: center;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 

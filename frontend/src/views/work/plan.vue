@@ -219,178 +219,227 @@ const filelist = async () => {
 };
 </script>
 <template>
-  <h4>지원계획서</h4>
-  <material-button type="button" @click="sevedate()"
-    >임시저장 내용</material-button
-  >
-  <material-button type="button" @click="newPlan = true"
-    >지원계획서 추가</material-button
-  >
-  <!-- 지원계획서 추가 모달 -->
-  <Modal v-if="newPlan" @close="newPlan = false">
-    <template #content>
-      <p>{{ timedate(new Date()) }}</p>
-      <material-button type="button" size="sm" @click="draft()"
-        >임시저장</material-button
-      >
-      <material-input id="text" placeholder="목표입력" v-model="addPlanName" />
-      <material-input
-        id="text"
-        placeholder="내용입력"
-        v-model="addPlanContent"
-      />
-      <material-button type="button">첨부파일 등록</material-button>
-      <p>파일이름</p>
-      <material-button type="button" @click="addPlan()"
-        >승인 요청</material-button
-      >
-    </template>
-    <template #actions="{ close }">
-      <material-button
-        type="button"
-        @click="
-          () => {
-            addPlanName = '';
-            addPlanContent = '';
-            close();
-          }
-        "
-        >취소</material-button
-      >
-    </template>
-  </Modal>
-  <!-- 지원계획서 출력 -->
-  <div v-for="Plan in Plans" :key="Plan.plan_num">
-    <p>{{ timedate(Plan.plan_date) }} 지원계획 {{ Plan.row_num }}</p>
-    <material-button type="button" size="sm" @click="openresmodal(Plan)"
-      >수정</material-button
-    >
-    <material-button type="button" size="sm" @click="Plan.showPlanDelete = true"
-      >삭제</material-button
-    >
-    <!-- 수정 모달 -->
-    <modal v-if="Plan.modifyPlan" @close="Plan.modifyPlan = false">
+  <div class="work-section-card card shadow-lg border-0 border-radius-xl">
+    <div class="work-section-header d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0 fw-bold text-dark">지원계획서</h4>
+      <div class="work-section-header-actions">
+        <material-button type="button" size="sm" @click="sevedate()"
+          >임시저장 내용</material-button
+        >
+        <material-button type="button" size="sm" color="info" @click="newPlan = true"
+          >지원계획서 추가</material-button
+        >
+      </div>
+    </div>
+
+    <!-- 지원계획서 추가 모달 -->
+    <Modal v-if="newPlan" @close="newPlan = false">
       <template #content>
-        <material-input
-          id="text"
-          placeholder="제목입력"
-          v-model="Plan.plan_title"
-        />
+        <p class="mb-2 text-sm text-secondary">
+          {{ timedate(new Date()) }}
+        </p>
+        <material-button type="button" size="sm" @click="draft()"
+          >임시저장</material-button
+        >
+        <material-input id="text" placeholder="목표입력" v-model="addPlanName" />
         <material-input
           id="text"
           placeholder="내용입력"
-          v-model="Plan.plan_content"
+          v-model="addPlanContent"
         />
-        <material-input
-          id="text"
-          placeholder="수정사유"
-          v-model="plancomment"
-        />
-        <!-- <material-button type="button">첨부파일 등록</material-button>
-        <div v-for="file in Plan.file" :key="file">
-          <p>첨부파일</p>
-        </div> -->
-        <material-button type="button" @click="Update(Plan)"
-          >수정 완료</material-button
+        <material-button type="button">첨부파일 등록</material-button>
+        <p>파일이름</p>
+        <material-button type="button" color="success" @click="addPlan()"
+          >승인 요청</material-button
         >
       </template>
       <template #actions="{ close }">
-        <material-button type="button" @click="close">취소</material-button>
-      </template>
-    </modal>
-    <!-- 삭제 모달 -->
-    <Modal v-if="Plan.showPlanDelete" @close="Plan.showPlanDelete = false">
-      <template #content>
-        <p>해당 지원계획서를 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger" @click="delplan(Plan)"
-          >예</material-button
+        <material-button
+          type="button"
+          @click="
+            () => {
+              addPlanName = '';
+              addPlanContent = '';
+              close();
+            }
+          "
+          >취소</material-button
         >
-      </template>
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">아니오</material-button>
       </template>
     </Modal>
-    <div>
-      <!-- 목표 및 내용 출력 -->
-      <h4>{{ Plan.plan_title }}</h4>
-      <br />
-      <p>{{ Plan.plan_content }}</p>
-      <br />
-    </div>
-    <!-- 첨부파일 -->
-    <p>첨부파일</p>
+
+    <!-- 지원계획서 출력 -->
     <div
-      v-for="file in filename.filter((f) => f.plan_num === Plan.plan_num)"
-      :key="file.file_num"
+      v-for="Plan in Plans"
+      :key="Plan.plan_num"
+      class="record-item border rounded-3 p-3 mb-3 bg-white"
     >
-      <p>{{ file.origin_name }}</p>
-    </div>
-    <!-- 수정내역 -->
-    <material-button type="button" size="sm" @click="revisions(Plan)"
-      >수정내역 확인</material-button
-    >
-    <Modal v-if="Plan.showRevision" @close="Plan.showRevision = false">
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">X</material-button>
-      </template>
-      <template #content>
-        <table>
-          <thead>
-            <tr>
-              <th>수정날짜</th>
-              <th>이름</th>
-              <th>수정내용</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="revisions in Plan.revision"
-              :key="revisions.plan_modifi_num"
-            >
-              <td>{{ timedate(revisions.plan_modified_date) }}</td>
-              <td>{{ revisions.plan_modified_by }}</td>
-              <td>{{ revisions.plan_modified_comment }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </template>
-    </Modal>
-    <p v-if="Plan.plan_approved == 'd2'">
-      <material-button type="button" color="warning" disabled
-        >승인 완료</material-button
-      >
-    </p>
-    <p v-else-if="Plan.plan_approved == 'd1'">
-      <material-button type="button" color="warning"
-        >승인 대기 중</material-button
-      ><material-button type="button" color="danger"
-        >승인 요청 취소</material-button
-      >
-    </p>
-    <p v-else-if="Plan.plan_approved == 'd3'">
-      <material-button
-        type="button"
-        color="warning"
-        @click="Plan.returnPlan = true"
-        >반려</material-button
-      >
-      <Modal v-if="Plan.returnPlan" @close="Plan.returnPlan = false">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <p class="mb-0 text-sm text-secondary">
+          {{ timedate(Plan.plan_date) }} · 지원계획 {{ Plan.row_num }}
+        </p>
+        <div class="d-flex gap-2">
+          <material-button type="button" size="sm" color="info" @click="openresmodal(Plan)"
+            >수정</material-button
+          >
+          <material-button
+            type="button"
+            size="sm"
+            color="danger"
+            @click="Plan.showPlanDelete = true"
+            >삭제</material-button
+          >
+        </div>
+      </div>
+
+      <!-- 수정 모달 -->
+      <modal v-if="Plan.modifyPlan" @close="Plan.modifyPlan = false">
         <template #content>
-          <h4>반려 사유</h4>
-          <p>{{ Plan.plan_return_reason }}</p>
+          <material-input
+            id="text"
+            placeholder="제목입력"
+            v-model="Plan.plan_title"
+          />
+          <material-input
+            id="text"
+            placeholder="내용입력"
+            v-model="Plan.plan_content"
+          />
+          <material-input
+            id="text"
+            placeholder="수정사유"
+            v-model="plancomment"
+          />
+          <material-button type="button" color="success" @click="Update(Plan)"
+            >수정 완료</material-button
+          >
         </template>
         <template #actions="{ close }">
-          <material-button type="button" @click="close">닫기</material-button>
+          <material-button type="button" @click="close">취소</material-button>
+        </template>
+      </modal>
+
+      <!-- 삭제 모달 -->
+      <Modal v-if="Plan.showPlanDelete" @close="Plan.showPlanDelete = false">
+        <template #content>
+          <p class="mb-3">
+            해당 지원계획서를 <br />삭제하시겠습니까?
+          </p>
+          <material-button type="button" color="danger" @click="delplan(Plan)"
+            >예</material-button
+          >
+        </template>
+        <template #actions="{ close }">
+          <material-button type="button" @click="close">아니오</material-button>
         </template>
       </Modal>
-    </p>
-    <p v-else>
-      <material-button
-        type="button"
-        color="warning"
-        @click="restart(Plan.plan_num)"
-        >승인 재요청</material-button
-      >
-    </p>
+
+      <div class="mt-2">
+        <!-- 목표 및 내용 출력 -->
+        <h5 class="fw-semibold mb-1">{{ Plan.plan_title }}</h5>
+        <p class="mb-2">{{ Plan.plan_content }}</p>
+      </div>
+
+      <!-- 첨부파일 -->
+      <div class="mt-2">
+        <p class="text-sm text-secondary mb-1">첨부파일</p>
+        <div
+          v-for="file in filename.filter((f) => f.plan_num === Plan.plan_num)"
+          :key="file.file_num"
+          class="text-sm"
+        >
+          <p class="mb-0">{{ file.origin_name }}</p>
+        </div>
+      </div>
+
+      <!-- 수정내역 -->
+      <div class="mt-2">
+        <material-button type="button" size="sm" @click="revisions(Plan)"
+          >수정내역 확인</material-button
+        >
+        <Modal v-if="Plan.showRevision" @close="Plan.showRevision = false">
+          <template #actions="{ close }">
+            <material-button type="button" @click="close">X</material-button>
+          </template>
+          <template #content>
+            <table class="table table-bordered table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>수정날짜</th>
+                  <th>이름</th>
+                  <th>수정내용</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="revisions in Plan.revision"
+                  :key="revisions.plan_modifi_num"
+                >
+                  <td>{{ timedate(revisions.plan_modified_date) }}</td>
+                  <td>{{ revisions.plan_modified_by }}</td>
+                  <td>{{ revisions.plan_modified_comment }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </template>
+        </Modal>
+      </div>
+
+      <div class="mt-2">
+        <p v-if="Plan.plan_approved == 'd2'">
+          <material-button type="button" color="warning" disabled
+            >승인 완료</material-button
+          >
+        </p>
+        <p v-else-if="Plan.plan_approved == 'd1'">
+          <material-button type="button" color="warning"
+            >승인 대기 중</material-button
+          >
+          <material-button type="button" color="danger"
+            >승인 요청 취소</material-button
+          >
+        </p>
+        <p v-else-if="Plan.plan_approved == 'd3'">
+          <material-button
+            type="button"
+            color="warning"
+            @click="Plan.returnPlan = true"
+            >반려</material-button
+          >
+          <Modal v-if="Plan.returnPlan" @close="Plan.returnPlan = false">
+            <template #content>
+              <h4>반려 사유</h4>
+              <p>{{ Plan.plan_return_reason }}</p>
+            </template>
+            <template #actions="{ close }">
+              <material-button type="button" @click="close">닫기</material-button>
+            </template>
+          </Modal>
+        </p>
+        <p v-else>
+          <material-button
+            type="button"
+            color="warning"
+            @click="restart(Plan.plan_num)"
+            >승인 재요청</material-button
+          >
+        </p>
+      </div>
+    </div>
   </div>
 </template>
+<style scoped>
+.work-section-card {
+  background: #ffffff;
+  padding: 18px 18px 20px;
+}
+
+.work-section-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.record-item {
+  border-color: #e9ecef;
+}
+</style>
