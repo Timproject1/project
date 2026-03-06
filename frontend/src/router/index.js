@@ -91,7 +91,7 @@ const routes = [
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
-        meta: { requiredLevel: "a1" },
+        meta: { requiredLevel: ["a1"] },
       },
       {
         path: "info",
@@ -110,7 +110,7 @@ const routes = [
       {
         path: "look",
         component: () => import("../views/list/managementList.vue"),
-        meta: { requiredLevel: "a2" },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "center",
@@ -120,7 +120,7 @@ const routes = [
       {
         path: "allotment",
         component: () => import("../views/list/requestList.vue"),
-        meta: { requiredLevel: "a3" },
+        meta: { requiredLevel: ["a3"] },
       },
       {
         path: "appreq",

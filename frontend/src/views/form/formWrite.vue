@@ -6,6 +6,7 @@ import { ref, onBeforeMount, computed } from "vue";
 import MaterialButton from "@/components/MaterialButton.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
+import router from "../../router";
 
 // export default {
 //   name: "tables",
@@ -167,13 +168,13 @@ const handleTypeChange = (q) => {
     q.option = [];
   }
 };
-onBeforeMount(() => {
-  getList();
+onBeforeMount(async () => {
+  await getList();
   addBcategory();
 });
 const submitForm = async () => {
   console.log(formData);
-  await axios.post(
+  const result = await axios.post(
     "http://localhost:3000/form/write",
     {
       form: formData.value,
@@ -183,6 +184,10 @@ const submitForm = async () => {
       headers: { "Content-Type": "application/json" },
     },
   );
+  if (result.data.retCode == "OK") {
+    alert("등록완료 되었습니다");
+    router.push(`/form/view/${result.data.form_ver}`);
+  }
 };
 
 //값 초기화

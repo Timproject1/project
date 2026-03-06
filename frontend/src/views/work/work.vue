@@ -100,6 +100,11 @@ import { useRouter } from "vue-router";
 // };
 
 onBeforeMount(async () => {
+  //비정상접근(서류번호를 안가져 온 경우)돌려보낸다
+  if (!docStore.doc_num) {
+    router.back();
+    return;
+  }
   await getDoc();
   await getForm();
   await getResp();
