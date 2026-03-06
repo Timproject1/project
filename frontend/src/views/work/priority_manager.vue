@@ -13,7 +13,7 @@ const docStore = useDocStore();
 const memberStore = useMemberStore();
 
 let prioritydb = ref({});
-console.log(prioritydb);
+// console.log(prioritydb);
 //get으로 데이터 당겨오기
 const priorityData = async () => {
   let doc = docStore.doc_num;
@@ -21,6 +21,8 @@ const priorityData = async () => {
     .get(`http://localhost:3000/document/priority/${doc}`)
     .catch((err) => console.log(err));
   prioritydb.value = result.data.result;
+  console.log(result.data.result);
+  console.log(prioritydb.value);
 };
 onBeforeMount(() => {
   priorityData();
@@ -51,6 +53,7 @@ const appPri = async () => {
     doc_num: docStore.doc_num,
     priority: prioritydb.value.priority,
   };
+  console.log(appcontent);
   const result = ref(null);
   try {
     const res = await axios.post(
@@ -59,6 +62,7 @@ const appPri = async () => {
     );
     console.log(res.data);
     result.value = res.data;
+    location.reload();
   } catch (err) {
     console.error(err);
     result.value = "서버 에러 발생";
@@ -145,22 +149,29 @@ const returnPri = async () => {
         </div>
       </div>
       <br />
-      <div v-if="prioritydb.value?.priority_approved === 'd3'">
+      <div v-if="prioritydb?.priority_approved === 'd3'">
         <material-button type="button" class="app" disabled
           >반려</material-button
         >
       </div>
       <div id="btnmargin">
-        <material-button type="button" class="app" @click="appPri()"
-          >승인</material-button
-        >
-        <material-button
-          type="button"
-          class="app"
-          @click="display()"
-          color="danger"
-          >반려</material-button
-        >
+        <div v-if="prioritydb?.priority_approved === 'd2'">
+          <material-button type="button" class="app" disabled
+            >승인완료</material-button
+          >
+        </div>
+        <div v-else>
+          <material-button type="button" class="app" @click="appPri()"
+            >승인</material-button
+          >
+          <material-button
+            type="button"
+            class="app"
+            @click="display()"
+            color="danger"
+            >반려</material-button
+          >
+        </div>
       </div>
     </div>
   </div>

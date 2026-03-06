@@ -43,6 +43,7 @@ const routes = [
       {
         path: "plan",
         components: { right: () => import("../views/work/plan.vue") },
+        meta: { requiredLevel: ["a2"] },
       },
       {
         path: "plan_manager",
@@ -53,26 +54,31 @@ const routes = [
         path: "priority",
         components: {
           right: () => import("../views/work/priority.vue"),
+          meta: { requiredLevel: ["a2"] },
         },
       },
       {
         path: "priority_manager",
         components: {
           right: () => import("../views/work/priority_manager.vue"),
+          meta: { requiredLevel: ["a3"] },
         },
         meta: { requiredLevel: ["a3"] },
       },
       {
         path: "record",
         components: { right: () => import("../views/work/record.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "result",
         components: { right: () => import("../views/work/result.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
       {
         path: "representative",
         components: { right: () => import("../views/work/representative.vue") },
+        meta: { requiredLevel: ["a2", "a3"] },
       },
     ],
   },
@@ -85,10 +91,12 @@ const routes = [
       {
         path: "supported",
         component: () => import("../views/list/supportedList.vue"),
+        meta: { requiredLevel: "a1" },
       },
       {
         path: "info",
         component: () => import("../views/list/SupportedInfo.vue"),
+        meta: { requiredLevel: "a1" },
       },
       {
         path: "document",
@@ -102,6 +110,7 @@ const routes = [
       {
         path: "look",
         component: () => import("../views/list/managementList.vue"),
+        meta: { requiredLevel: "a2" },
       },
       {
         path: "center",
@@ -111,6 +120,7 @@ const routes = [
       {
         path: "allotment",
         component: () => import("../views/list/requestList.vue"),
+        meta: { requiredLevel: "a3" },
       },
       {
         path: "appreq",
