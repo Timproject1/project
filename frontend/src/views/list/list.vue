@@ -27,7 +27,7 @@ const route = useRoute();
 // };
 </script>
 <template>
-  <div class="layout">
+  <div class="work-layout">
     <div class="container">
       <!-- <div class="left">
         <RouterView name="left" />
@@ -55,3 +55,21 @@ const route = useRoute();
     </div>
   </div>
 </template>
+<style scoped>
+.work-layout {
+  background-color: #f8f9fa;
+  
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1 1 auto;
+  min-height: min-content;
+}
+
+.right {
+  overflow: visible;
+}
+</style>

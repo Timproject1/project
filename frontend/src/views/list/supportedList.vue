@@ -9,11 +9,6 @@ const router = useRouter();
 const memberStore = useMemberStore();
 
 // --- 1. 상태 제어 변수 ---
-const isOpen = ref(true);
-const currentTab = ref("info"); // 지원자 정보관리 탭 활성화 상태
-const toggleMenu = () => {
-  isOpen.value = !isOpen.value;
-};
 
 // --- 2. 검색 필터 (Reactive) ---
 const search = reactive({
@@ -172,157 +167,241 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="layout-wrapper">
-    <aside class="sidebar-container">
-      <div class="sidebar-card shadow-sm">
-        <div class="box-header bg-gradient-success" @click="toggleMenu">
-          지원자 관리 <span class="arrow">{{ isOpen ? "▼" : "▶" }}</span>
+  <div class="container-fluid pt-6 pb-5 work-layout">
+    <div class="work-container">
+      <div class="left">
+        <div
+          class="filter-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+        >
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
+          >
+            <i class="material-icons opacity-10 me-2">search</i>
+            <span class="title text-white fw-bold">지원자 검색</span>
+          </div>
+          <div class="card-body p-3">
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >지원자 명</label
+              >
+              <input
+                v-model="search.sup_name"
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="지원자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >대기단계</label
+              >
+              <div class="d-flex gap-1 flex-wrap">
+                <button
+                  v-for="p in ['전체', '계획', '중점', '긴급']"
+                  :key="p"
+                  type="button"
+                  class="btn btn-sm flex-grow-1"
+                  :class="
+                    search.priority === p
+                      ? 'bg-gradient-success text-white'
+                      : 'btn-outline-secondary'
+                  "
+                  @click="putButton(p)"
+                >
+                  {{ p }}
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn btn-sm w-100 bg-gradient-success text-white"
+              @click="fetchData"
+            >
+              검색
+            </button>
+          </div>
         </div>
-        <ul v-if="isOpen" class="menu-list">
-          <li
-            :class="{ active: currentTab === 'list' }"
-            @click="
-              currentTab = 'list';
-              router.push('/list/supported');
-            "
-          >
-            지원자 현황
-          </li>
-          <li
-            :class="{ active: currentTab === 'info' }"
-            @click="
-              currentTab = 'info';
-              router.push('/list/info');
-            "
-          >
-            지원자 정보 관리
-          </li>
-        </ul>
       </div>
 
-      <div class="sidebar-card shadow-sm mt-4">
-        <h3 class="search-title bg-gradient-dark">지원자 검색</h3>
-        <div class="search-form p-4">
-          <div class="form-group mb-3">
-            <label class="text-xs fw-bold text-success">지원자 명</label>
-            <input
-              type="text"
-              v-model="search.sup_name"
-              class="form-control border p-2 w-100"
-            />
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex justify-content-between align-items-center"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">지원자 정보목록</h6>
+            <button
+              type="button"
+              class="btn btn-sm bg-gradient-dark text-white px-3"
+              @click="openAddModal"
+            >
+              지원자 추가
+            </button>
           </div>
-          <div class="form-group mb-4">
-            <label class="text-xs fw-bold text-success">대기단계</label>
-            <div class="gender-btns d-flex gap-1">
-              <button
-                v-for="p in ['전체', '계획', '중점', '긴급']"
-                :key="p"
-                @click="putButton(p)"
-                :class="{ active: search.priority === p }"
-                class="flex-fill"
-              >
-                {{ p }}
-              </button>
+
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr class="bg-gray-100">
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      번호
+                    </th>
+                    <th
+                      class="ps-4 text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      지원자명
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      성별
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      생년월일
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      휴대폰 번호
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      주소
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      서류상태
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      담당자
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      등록일
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      관리
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="member in supported" :key="member.sup_num">
+                    <td class="text-center text-sm">{{ member.sup_num }}</td>
+                    <td class="ps-4 text-sm font-weight-bold">
+                      {{ member.sup_name }}
+                    </td>
+                    <td class="text-center text-sm">
+                      {{
+                        member.gender === "m1" || member.gender === "남성"
+                          ? "남성"
+                          : "여성"
+                      }}
+                    </td>
+                    <td class="text-center text-sm">
+                      {{
+                        member.birthday ? member.birthday.split("T")[0] : "미정"
+                      }}
+                    </td>
+                    <td class="text-center text-sm">{{ member.sup_tel }}</td>
+                    <td
+                      class="text-center text-sm table-cell-ellipsis"
+                      style="max-width: 120px"
+                    >
+                      {{ member.sup_address }}
+                    </td>
+                    <td class="text-center text-sm">
+                      <span class="badge badge-sm bg-gradient-info">{{
+                        getlabel(member.sup_approved)
+                      }}</span>
+                    </td>
+                    <td class="text-center text-sm">
+                      <span v-if="member.user_id">{{ member.user_id }}</span>
+                      <button
+                        v-else
+                        type="button"
+                        class="btn btn-sm bg-gradient-warning text-white px-2"
+                        @click="requestManager(member.sup_name)"
+                      >
+                        배정요청
+                      </button>
+                    </td>
+                    <td class="text-center text-sm">
+                      {{ member.sup_reg_date?.split("T")[0] || "-" }}
+                    </td>
+                    <td class="text-center">
+                      <div class="d-flex gap-1 justify-content-center">
+                        <button
+                          type="button"
+                          class="btn btn-sm bg-gradient-info text-white px-2"
+                          @click="openEditModal(member)"
+                        >
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm bg-gradient-success text-white px-2"
+                          @click="openDetailModal(member)"
+                        >
+                          장애
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
+            >
+              <div class="pagination d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-sm btn-outline-secondary">
+                  이전
+                </button>
+                <span class="pages text-secondary text-sm">
+                  <span class="fw-bold">1</span> <span>2</span> <span>3</span>
+                </span>
+                <button type="button" class="btn btn-sm btn-outline-secondary">
+                  다음
+                </button>
+              </div>
             </div>
           </div>
-          <button class="search-btn w-100" @click="fetchData">검색</button>
         </div>
       </div>
-    </aside>
+    </div>
+  </div>
 
-    <main class="content-main shadow-lg">
-      <div
-        class="header-section bg-gradient-success d-flex justify-content-between align-items-center"
-      >
-        <h2 class="text-white mb-0">지원자 정보목록</h2>
-        <button class="btn-add-top" @click="openAddModal">지원자 추가</button>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="table-centered">
-          <thead>
-            <tr>
-              <th>번호</th>
-              <th>지원자명</th>
-              <th>성별</th>
-              <th>생년월일</th>
-              <th>휴대폰 번호</th>
-              <th>주소</th>
-              <th>서류상태</th>
-              <th>담당자</th>
-              <th>등록일</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="member in supported" :key="member.sup_num">
-              <td>{{ member.sup_num }}</td>
-              <td class="fw-bold">{{ member.sup_name }}</td>
-              <td>
-                {{
-                  member.gender === "m1" || member.gender === "남성"
-                    ? "남성"
-                    : "여성"
-                }}
-              </td>
-              <td>
-                {{ member.birthday ? member.birthday.split("T")[0] : "미정" }}
-              </td>
-              <td>{{ member.sup_tel }}</td>
-              <td class="text-truncate" style="max-width: 120px">
-                {{ member.sup_address }}
-              </td>
-              <td class="text-sm fw-bold text-info">
-                {{ getlabel(member.sup_approved) }}
-              </td>
-              <td>
-                <span v-if="member.user_id">{{ member.user_id }}</span>
-                <button
-                  v-else
-                  class="btn-req-xs"
-                  @click="requestManager(member.sup_name)"
-                >
-                  배정요청
-                </button>
-              </td>
-              <td class="text-xs">
-                {{ member.sup_reg_date?.split("T")[0] || "-" }}
-              </td>
-              <td>
-                <div class="d-flex gap-1 justify-content-center">
-                  <button class="btn-edit-sm" @click="openEditModal(member)">
-                    수정
-                  </button>
-                  <button class="btn-view-sm" @click="openDetailModal(member)">
-                    장애
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="pagination-center">
-        <button class="btn-pagination">이전</button>
-        <div class="page-nums mx-3">
-          <span class="active">1</span><span>2</span><span>3</span>
-        </div>
-        <button class="btn-pagination">다음</button>
-      </div>
-    </main>
-
-    <div v-if="detailModal" class="modal-overlay">
-      <div class="modal-card shadow-xl p-4">
-        <h4 class="text-success border-bottom pb-2">장애 상세 정보</h4>
-        <div class="mt-3 bg-light p-2 rounded text-sm">
+    <div v-if="detailModal" class="modal-overlay" @click.self="closeDetailModal">
+      <div class="modal-card shadow-lg p-4 border-radius-xl">
+        <h4 class="text-success border-bottom pb-2 fw-bold">장애 상세 정보</h4>
+        <div class="mt-3 bg-gray-100 p-2 rounded text-sm">
           대상자: <strong>{{ selectMember?.sup_name }}</strong>
         </div>
-        <table class="table mt-3 text-center border">
+        <table class="table mt-3 text-center align-items-center mb-0">
           <thead class="bg-gray-100">
             <tr class="text-xxs">
-              <th>유형</th>
-              <th>정도</th>
+              <th
+                class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+              >
+                유형
+              </th>
+              <th
+                class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+              >
+                정도
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -337,7 +416,8 @@ onMounted(() => {
           </tbody>
         </table>
         <button
-          class="btn bg-gradient-dark w-100 text-white mt-4"
+          type="button"
+          class="btn btn-sm bg-gradient-dark w-100 text-white mt-4"
           @click="closeDetailModal"
         >
           닫기
@@ -345,145 +425,179 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="isEditModalOpen && Modifymember" class="modal-overlay">
-      <div class="modal-card shadow-xl p-4">
-        <h4 class="text-dark border-bottom pb-2 text-center">
+    <div
+      v-if="isEditModalOpen && Modifymember"
+      class="modal-overlay"
+      @click.self="closeEditModal"
+    >
+      <div class="modal-card shadow-lg p-4 border-radius-xl">
+        <h4 class="text-dark border-bottom pb-2 text-center fw-bold">
           지원자 정보 수정
         </h4>
         <div class="modal-body mt-3">
-          <div class="mb-2">
-            <label class="text-xs text-success fw-bold">성함</label
-            ><input
-              type="text"
+          <div class="mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >성함</label
+            >
+            <input
               v-model="Modifymember.sup_name"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
-          <div class="mb-2">
-            <label class="text-xs text-success fw-bold">휴대폰</label
-            ><input
-              type="text"
+          <div class="mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >휴대폰</label
+            >
+            <input
               v-model="Modifymember.sup_tel"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
-          <div class="mb-2">
-            <label class="text-xs text-success fw-bold">주소</label
-            ><input
-              type="text"
+          <div class="mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >주소</label
+            >
+            <input
               v-model="Modifymember.sup_address"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
-          <div class="mb-2">
-            <label class="text-xs text-success fw-bold">장애유형 추가</label
-            ><input
-              type="text"
+          <div class="mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >장애유형 추가</label
+            >
+            <input
               v-model="Modifymember.disability_category"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
               placeholder="추가할 유형 입력"
             />
           </div>
           <div class="mb-4">
-            <label class="text-xs text-success fw-bold">첨부파일명</label
-            ><input type="text" v-model="sup_file" class="modal-input" />
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >첨부파일명</label
+            >
+            <input
+              v-model="sup_file"
+              type="text"
+              class="form-control form-control-sm"
+            />
           </div>
         </div>
         <div class="d-flex gap-2">
           <button
-            class="btn bg-gradient-success text-white flex-fill fw-bold"
+            type="button"
+            class="btn btn-sm bg-gradient-success text-white flex-fill"
             @click="updateMember"
           >
             저장
           </button>
           <button
-            class="btn btn-outline-secondary flex-fill"
+            type="button"
+            class="btn btn-sm btn-outline-secondary flex-fill"
             @click="closeEditModal"
           >
-            취on
+            취소
           </button>
         </div>
       </div>
     </div>
 
-    <div v-if="addModal" class="modal-overlay">
-      <div class="modal-card shadow-xl p-4">
-        <h4 class="text-success border-bottom pb-2 text-center">
+    <div v-if="addModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-card shadow-lg p-4 border-radius-xl">
+        <h4 class="text-success border-bottom pb-2 text-center fw-bold">
           지원자 신규 등록
         </h4>
         <div class="row mt-3">
-          <div class="col-6 mb-2">
-            <label class="text-xs fw-bold">성함</label
-            ><input
-              type="text"
+          <div class="col-6 mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >성함</label
+            >
+            <input
               v-model="newSupported.sup_name"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
-          <div class="col-6 mb-2">
-            <label class="text-xs fw-bold">생년월일</label
-            ><input
-              type="text"
+          <div class="col-6 mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >생년월일</label
+            >
+            <input
               v-model="newSupported.sup_birthday"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
               placeholder="YYYY-MM-DD"
             />
           </div>
-          <div class="col-12 mb-2">
-            <label class="text-xs fw-bold">성별</label>
-            <div class="d-flex gap-3 p-2 bg-light rounded text-sm">
-              <label class="mb-0"
-                ><input
-                  type="radio"
+          <div class="col-12 mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >성별</label
+            >
+            <div class="d-flex gap-3 p-2 bg-gray-100 rounded text-sm">
+              <label class="mb-0">
+                <input
                   v-model="newSupported.sup_gender"
+                  type="radio"
                   value="남성"
                 />
-                남성</label
-              >
-              <label class="mb-0"
-                ><input
-                  type="radio"
+                남성
+              </label>
+              <label class="mb-0">
+                <input
                   v-model="newSupported.sup_gender"
+                  type="radio"
                   value="여성"
                 />
-                여성</label
-              >
+                여성
+              </label>
             </div>
           </div>
-          <div class="col-12 mb-2">
-            <label class="text-xs fw-bold">휴대폰</label
-            ><input
-              type="text"
+          <div class="col-12 mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >휴대폰</label
+            >
+            <input
               v-model="newSupported.sup_tel"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
-          <div class="col-12 mb-2">
-            <label class="text-xs fw-bold">주소</label
-            ><input
-              type="text"
+          <div class="col-12 mb-3">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >주소</label
+            >
+            <input
               v-model="newSupported.sup_address"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
           <div class="col-12 mb-4">
-            <label class="text-xs fw-bold">첨부파일</label
-            ><input
-              type="text"
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >첨부파일</label
+            >
+            <input
               v-model="newSupported.sup_file"
-              class="modal-input"
+              type="text"
+              class="form-control form-control-sm"
             />
           </div>
         </div>
         <div class="d-flex gap-2">
           <button
-            class="btn bg-gradient-success text-white flex-fill fw-bold"
+            type="button"
+            class="btn btn-sm bg-gradient-success text-white flex-fill"
             @click="addSupported"
           >
             등록
           </button>
           <button
-            class="btn btn-outline-secondary flex-fill"
+            type="button"
+            class="btn btn-sm btn-outline-secondary flex-fill"
             @click="closeModal"
           >
             취소
@@ -491,168 +605,67 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </div>
+
 </template>
 
 <style scoped>
-/* 전체 레이아웃 */
-.layout-wrapper {
-  display: flex;
-  gap: 25px;
-  padding: 40px 30px;
+/* documentLIST.vue 동일 레이아웃 */
+.work-layout {
   background-color: #f8f9fa;
-  min-height: 100vh;
-  align-items: flex-start;
-}
-
-/* 사이드바 스타일 (삐져나옴 방지) */
-.sidebar-container {
-  width: 280px;
-  flex-shrink: 0;
-}
-.sidebar-card {
-  background: #fff;
-  border-radius: 15px;
+  height: 100dvh;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.box-header,
-.search-title {
-  padding: 15px 20px;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.menu-list li {
-  padding: 14px 25px;
-  font-size: 0.85rem;
-  color: #67748e;
-  cursor: pointer;
-  transition: 0.2s;
-  position: relative;
-}
-.menu-list li:hover {
-  background-color: rgba(76, 175, 80, 0.12) !important;
-  color: #4caf50;
-  font-weight: 600;
-}
-.menu-list li.active {
-  color: #4caf50;
-  font-weight: 700;
-}
-.menu-list li.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background: #4caf50;
-}
-
-/* 메인 콘텐츠 및 테이블 중앙 정렬 */
-.content-main {
-  flex: 1;
-  background: #fff;
-  border-radius: 20px;
-  margin-top: 20px;
-  min-height: 700px;
-  position: relative;
-}
-.header-section {
-  margin: -20px 20px 0;
-  padding: 22px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
-}
-.btn-add-top {
-  background: #fff;
-  color: #4caf50;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.table-centered {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center !important;
-}
-.table-centered th,
-.table-centered td {
-  padding: 15px 10px;
-  border-bottom: 1px solid #f0f2f5;
-  font-size: 0.85rem;
-  text-align: center !important;
-}
-.table-centered th {
-  background-color: #f8f9fa;
-  color: #7b809a;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-/* 버튼 디자인 */
-.btn-edit-sm {
-  background: #49a3f1;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.btn-view-sm {
-  background: #66bb6a;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.btn-req-xs {
-  background: #ffa726;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  cursor: pointer;
-}
-
-/* 페이지네이션 중앙 배치 */
-.pagination-center {
   display: flex;
-  justify-content: center !important;
-  align-items: center;
-  padding: 30px 0;
-}
-.btn-pagination {
-  background: white;
-  border: 1px solid #d2d6da;
-  padding: 8px 16px;
-  border-radius: 8px;
-  color: #67748e;
-  cursor: pointer;
-}
-.page-nums span.active {
-  color: #4caf50;
-  font-weight: 800;
-  border-bottom: 2px solid #4caf50;
+  flex-direction: column;
 }
 
-/* 모달 스타일 */
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.left,
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.left {
+  max-width: 320px;
+  flex: 0 0 auto;
+}
+
+.application-card,
+.filter-card {
+  background: #ffffff;
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+.filter-card .card-body {
+  padding: 18px;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.table-cell-ellipsis {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 모달 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -660,36 +673,25 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 999;
 }
+
 .modal-card {
   background: #fff;
   width: 100%;
   max-width: 500px;
-  border-radius: 20px;
+  border-radius: 0.75rem;
   overflow: hidden;
-  animation: slideUp 0.3s ease;
-}
-.modal-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d2d6da;
-  border-radius: 8px;
-  outline: none;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.border-radius-xl {
+  border-radius: 0.75rem;
+}
+
+.bg-gray-100 {
+  background-color: #f8f9fa;
 }
 </style>
