@@ -6,7 +6,9 @@ import { ref, onBeforeMount, computed } from "vue";
 import MaterialButton from "@/components/MaterialButton.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
-import router from "../../router";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // export default {
 //   name: "tables",

@@ -366,119 +366,126 @@ const requestManager = (name) =>
     </div>
   </div>
 
-    <div v-if="detailModal" class="modal-overlay" @click.self="closeDetailModal">
-      <div class="card modal-content shadow-lg p-4 border-radius-xl">
-        <h5 class="font-weight-bolder text-success mb-3 fw-bold">장애유형 상세</h5>
-        <div class="bg-gray-100 p-3 border-radius-lg mb-4 text-sm">
-          지원자:
-          <strong class="text-dark">{{ selectMember?.sup_name }}</strong>
-          <table class="table mb-0 mt-2 align-items-center">
-            <thead class="bg-gray-100">
-              <tr class="text-xxs font-weight-bolder">
-                <th class="text-center text-secondary text-xxs opacity-7">유형</th>
-                <th class="text-center text-secondary text-xxs opacity-7">정도</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, idx) in selectMember?.disabilities" :key="idx">
-                <td class="text-xs">{{ item.type }}</td>
-                <td class="text-xs">{{ item.level }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+  <div v-if="detailModal" class="modal-overlay" @click.self="closeDetailModal">
+    <div class="card modal-content shadow-lg p-4 border-radius-xl">
+      <h5 class="font-weight-bolder text-success mb-3 fw-bold">
+        장애유형 상세
+      </h5>
+      <div class="bg-gray-100 p-3 border-radius-lg mb-4 text-sm">
+        지원자:
+        <strong class="text-dark">{{ selectMember?.sup_name }}</strong>
+        <table class="table mb-0 mt-2 align-items-center">
+          <thead class="bg-gray-100">
+            <tr class="text-xxs font-weight-bolder">
+              <th class="text-center text-secondary text-xxs opacity-7">
+                유형
+              </th>
+              <th class="text-center text-secondary text-xxs opacity-7">
+                정도
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, idx) in selectMember?.disabilities" :key="idx">
+              <td class="text-xs">{{ item.type }}</td>
+              <td class="text-xs">{{ item.level }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button
+        type="button"
+        class="btn btn-sm bg-gradient-dark w-100 text-white mb-0"
+        @click="closeDetailModal"
+      >
+        창 닫기
+      </button>
+    </div>
+  </div>
+
+  <div
+    v-if="isEditModalOpen && Modifymember"
+    class="modal-overlay"
+    @click.self="closeEditModal"
+  >
+    <div class="card modal-content shadow-lg p-4 border-radius-xl">
+      <h5 class="font-weight-bolder text-dark mb-4 border-bottom pb-2 fw-bold">
+        지원자 상세 정보 수정
+      </h5>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >이름</label
+        >
+        <input
+          v-model="Modifymember.sup_name"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >첨부파일명</label
+        >
+        <input
+          v-model="sup_file"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="d-flex gap-2">
         <button
           type="button"
-          class="btn btn-sm bg-gradient-dark w-100 text-white mb-0"
-          @click="closeDetailModal"
+          class="btn btn-sm bg-gradient-success text-white flex-fill"
+          @click="updateMember"
         >
-          창 닫기
+          저장하기
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary flex-fill"
+          @click="closeEditModal"
+        >
+          취소
         </button>
       </div>
     </div>
+  </div>
 
-    <div
-      v-if="isEditModalOpen && Modifymember"
-      class="modal-overlay"
-      @click.self="closeEditModal"
-    >
-      <div class="card modal-content shadow-lg p-4 border-radius-xl">
-        <h5 class="font-weight-bolder text-dark mb-4 border-bottom pb-2 fw-bold">
-          지원자 상세 정보 수정
-        </h5>
-        <div class="mb-3">
-          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-            >이름</label
-          >
-          <input
-            v-model="Modifymember.sup_name"
-            type="text"
-            class="form-control form-control-sm"
-          />
-        </div>
-        <div class="mb-4">
-          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-            >첨부파일명</label
-          >
-          <input
-            v-model="sup_file"
-            type="text"
-            class="form-control form-control-sm"
-          />
-        </div>
-        <div class="d-flex gap-2">
-          <button
-            type="button"
-            class="btn btn-sm bg-gradient-success text-white flex-fill"
-            @click="updateMember"
-          >
-            저장하기
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary flex-fill"
-            @click="closeEditModal"
-          >
-            취소
-          </button>
-        </div>
+  <div v-if="addModal" class="modal-overlay" @click.self="closeModal">
+    <div class="card modal-content shadow-lg p-4 border-radius-xl">
+      <h5
+        class="font-weight-bolder text-success mb-4 border-bottom pb-2 fw-bold"
+      >
+        신규 지원자 등록
+      </h5>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >지원자명</label
+        >
+        <input
+          v-model="newSupported.sup_name"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="d-flex gap-2">
+        <button
+          type="button"
+          class="btn btn-sm bg-gradient-success text-white flex-fill"
+          @click="addSupported"
+        >
+          등록 완료
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary flex-fill"
+          @click="closeModal"
+        >
+          닫기
+        </button>
       </div>
     </div>
-
-    <div v-if="addModal" class="modal-overlay" @click.self="closeModal">
-      <div class="card modal-content shadow-lg p-4 border-radius-xl">
-        <h5 class="font-weight-bolder text-success mb-4 border-bottom pb-2 fw-bold">
-          신규 지원자 등록
-        </h5>
-        <div class="mb-3">
-          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-            >지원자명</label
-          >
-          <input
-            v-model="newSupported.sup_name"
-            type="text"
-            class="form-control form-control-sm"
-          />
-        </div>
-        <div class="d-flex gap-2">
-          <button
-            type="button"
-            class="btn btn-sm bg-gradient-success text-white flex-fill"
-            @click="addSupported"
-          >
-            등록 완료
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary flex-fill"
-            @click="closeModal"
-          >
-            닫기
-          </button>
-        </div>
-      </div>
-    </div>
-
+  </div>
 </template>
 
 <style scoped>
