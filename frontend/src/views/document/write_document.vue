@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed,onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -67,7 +67,7 @@ const submitForm = async () => {
   console.log(result);
   if (result.data.retCode == "OK") {
     alert("작성완료");
-    router.push("/list/document");
+    router.push("/document");
   } else {
     alert("작성실패");
   }
@@ -79,11 +79,13 @@ const cancel = () => {
     userAnswers.value[key].response = "";
   }
 };
-getList();
-getForm();
+onBeforeMount(()=>{
+  getList();
+  getForm();
+})
 </script>
 <template>
-  <div class="container-fluid py-6 document-write">
+  <div class="container-fluid pt-2 pb-2 document-write">
     <div class="row justify-content-center">
       <div class="col-12 col-xl-10">
         <div class="card my-4 shadow-lg border-0 border-radius-xl animation-fade-in">

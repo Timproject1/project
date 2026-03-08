@@ -122,7 +122,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-3 pb-3 work-layout">
     <div class="work-container">
       <div class="left">
         <!-- <RouterView name="left" /> -->

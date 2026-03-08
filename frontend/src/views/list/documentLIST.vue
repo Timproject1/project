@@ -127,12 +127,21 @@ const getResp = async (doc_num) => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
+const delDoc = async (doc_num)=>{
+  const result = await axios.delete(
+    `http://localhost:3000/document/delDoc/${doc_num}`,
+  )
+  if(result.data.retCode=="OK"){
+    alert("삭제완료");
+    router.go(0);
+  }
+}
 onBeforeMount(async () => {
   await getList();
 });
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -511,7 +520,7 @@ onBeforeMount(async () => {
             v-if="modalType == 'document'"
             color="success"
             variant="gradient"
-            @click="closeModal"
+            @click="delDoc(selectedDocData.doc_num)"
             >삭제</material-button
           >
           <material-button
@@ -573,13 +582,10 @@ export default {
 .application-card,
 .filter-card {
   background: #ffffff;
-  padding: 18px 18px 20px;
+
   position: relative;
 }
 
-.filter-card .card-body {
-  padding: 18px;
-}
 
 .bottom-actions {
   display: flex;

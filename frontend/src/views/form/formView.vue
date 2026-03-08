@@ -64,13 +64,13 @@ const use = async () => {
   );
   if (result.data.retCode == "OK") {
     alert("사용등록 완료");
-    router.push("/list/form");
+    router.push("/form");
   }
 };
 //값 초기화
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-2 pb-2 work-layout">
     <div class="work-container">
       <div class="right">
         <div class="application-card card shadow-lg border-0 border-radius-xl">
@@ -137,6 +137,7 @@ const use = async () => {
                       <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
                       {{ small.scategory }}
                     </h3>
+
 
                     <div
                       v-for="(q, qIdx) in small.questions"
@@ -234,6 +235,145 @@ const use = async () => {
 .content-area {
   max-height: 70vh;
   overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  background: #fafbfc;
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 섹션 */
+.big-section {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* 소분류 그룹 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.small-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d3748;
+  background: #e8f5e9;
+  border-left: 4px solid #17c653;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #17c653;
+  background: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* 질문 카드 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  border-left: 4px solid #adb5bd;
+}
+
+.question-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #495057;
+  line-height: 1.5;
+}
+
+.q-num {
+  display: inline-block;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: #17c653;
+}
+
+.answer-area {
+  margin-left: 0.25rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #495057;
+  cursor: default;
+}
+
+.radio-item input {
+  margin: 0;
+  accent-color: #17c653;
+}
+
+.radio-label {
+  user-select: none;
+}
+
+.text-group .answer-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid #dee2e6;
   padding: 1rem;
   border: 1px solid #e9ecef;
   border-radius: 12px;

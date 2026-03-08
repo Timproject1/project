@@ -2,10 +2,10 @@
 // 최종 완결본: getlabel 미사용 에러 해결 + 모든 모달 필드 복구 + 스타일 최적화
 import { ref, onMounted, reactive } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import { useMemberStore } from "../../store/member";
 
-const router = useRouter();
+// const router = useRouter();
 const memberStore = useMemberStore();
 
 // --- 1. 상태 제어 변수 ---
