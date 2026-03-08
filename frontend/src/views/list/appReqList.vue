@@ -51,93 +51,97 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-  <div class="container-fluid py-4">
-    <div class="d-flex gap-4 align-items-start">
-      <aside
-        class="rounded-3 shadow-dark p-3 text-white"
-        style="
-          min-width: 240px;
-          background-color: #344767;
-          border-radius: 0.75rem;
-        "
-      >
-        <div class="d-flex align-items-center mb-4 ps-2">
-          <i class="material-icons opacity-10 me-2">search</i>
-          <span class="fw-bold">검색 필터</span>
-        </div>
-
-        <div class="px-2">
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >지원자</label
-            >
-            <material-input
-              id="sup"
-              v-model="searchQuery.sup"
-              variant="static"
-              color="white"
-              placeholder="지원자명 입력"
-              class="text-white"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >보호자</label
-            >
-            <material-input
-              id="writer"
-              v-model="searchQuery.writer"
-              variant="static"
-              color="white"
-              placeholder="보호자명 입력"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >담당자</label
-            >
-            <material-input
-              id="maneger"
-              v-model="searchQuery.maneger"
-              variant="static"
-              color="white"
-              placeholder="담당자명 입력"
-            />
-          </div>
-
-          <material-button
-            color="success"
-            variant="gradient"
-            class="w-100 mt-3 mb-2"
-            @click="getList()"
-            >검색</material-button
+  <div class="container-fluid pt-2 pb-2 work-layout">
+    <div class="work-container">
+      <div class="left">
+        <div
+          class="filter-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+        >
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
           >
-        </div>
-      </aside>
-
-      <main class="flex-grow-1">
-        <div class="card shadow-sm">
-          <div class="card-header p-3">
-            <h6 class="mb-0 font-weight-bolder">지원 신청 내역</h6>
+            <i class="material-icons opacity-10 me-2">search</i>
+            <span class="title text-white fw-bold">검색 필터</span>
           </div>
-          <div class="px-3 d-flex gap-2">
-            <material-button
-              @click="fetchTableData('priority')"
-              :active="currentTab == 'priority'"
+          <div class="card-body p-3">
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >지원자</label
+              >
+              <material-input
+                id="sup"
+                v-model="searchQuery.sup"
+                variant="static"
+                placeholder="지원자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >보호자</label
+              >
+              <material-input
+                id="writer"
+                v-model="searchQuery.writer"
+                variant="static"
+                placeholder="보호자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >담당자</label
+              >
+              <material-input
+                id="maneger"
+                v-model="searchQuery.maneger"
+                variant="static"
+                placeholder="담당자명 입력"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-sm w-100 bg-gradient-success text-white"
+              @click="getList()"
             >
-              우선순위
-            </material-button>
+              검색
+            </button>
+          </div>
+        </div>
+      </div>
 
-            <material-button
-              @click="fetchTableData('plan')"
-              :active="currentTab == 'plan'"
-            >
-              지원계획
-            </material-button>
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">지원 신청 내역</h6>
           </div>
           <div class="card-body px-0 pb-2">
+            <div class="px-3 pt-2 d-flex gap-2 mb-2">
+              <button
+                type="button"
+                class="btn btn-sm"
+                :class="
+                  currentTab === 'priority'
+                    ? 'bg-gradient-success text-white'
+                    : 'btn-outline-secondary'
+                "
+                @click="fetchTableData('priority')"
+              >
+                우선순위
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm"
+                :class="
+                  currentTab === 'plan'
+                    ? 'bg-gradient-success text-white'
+                    : 'btn-outline-secondary'
+                "
+                @click="fetchTableData('plan')"
+              >
+                지원계획
+              </button>
+            </div>
             <div class="table-responsive">
               <table class="table align-items-center mb-0">
                 <thead>
@@ -224,7 +228,7 @@ onBeforeMount(async () => {
             </div>
 
             <div
-              class="d-flex justify-content-between align-items-center p-3 mt-2"
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
               <material-pagination>
                 <material-pagination-item prev />
@@ -235,12 +239,12 @@ onBeforeMount(async () => {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import MaterialButton from "@/components/MaterialButton.vue";
+
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
@@ -248,10 +252,59 @@ import MaterialInput from "@/components/MaterialInput.vue";
 export default {
   name: "tables",
   components: {
-    MaterialButton,
     MaterialPagination,
     MaterialPaginationItem,
     MaterialInput,
   },
 };
 </script>
+<style scoped>
+/* documentLIST.vue 동일 레이아웃 */
+.work-layout {
+  background-color: #f8f9fa;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.left,
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.left {
+  max-width: 320px;
+  flex: 0 0 auto;
+}
+
+.application-card,
+.filter-card {
+  background: #ffffff;
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+.filter-card .card-body {
+  padding: 18px;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+</style>

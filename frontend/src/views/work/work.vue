@@ -1,16 +1,27 @@
 <script setup>
 // import MaterialButton from "@/components/MaterialButton.vue";
-// import { useRouter } from "vue-router";
 import { ref, onBeforeMount } from "vue";
 import axios from "axios";
 import { useDocStore } from "@/store/doc";
 import { useMemberStore } from "@/store/member";
+import { useRoute, useRouter } from "vue-router";
 const docStore = useDocStore();
 const memberStore = useMemberStore();
 // console.log("----------------------");
 // console.log(docStore.doc_num);
 // console.log(memberStore.grade);
 const router = useRouter();
+const route = useRoute();
+
+const isActiveTab = (tab) => {
+  const path = route.path || "";
+  if (tab === "record") return path.startsWith("/work/record");
+  if (tab === "plan") return path.startsWith("/work/plan");
+  if (tab === "result") return path.startsWith("/work/result");
+  if (tab === "representative") return path.startsWith("/work/representative");
+  if (tab === "priority") return path.startsWith("/work/priority");
+  return false;
+};
 
 const goplan = () => {
   if (memberStore.grade == "a3") {
@@ -94,7 +105,6 @@ const getResp = async () => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
-import { useRouter } from "vue-router";
 // const gotodoc = async (docno) => {
 //   router.push({ path: "info", query: { no: docno } });
 // };
@@ -112,29 +122,49 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-3 pb-3 work-layout">
     <div class="work-container">
       <div class="left">
         <!-- <RouterView name="left" /> -->
         <div class="top-actions">
           <button
             @click="gorepresentative()"
-            class="btn btn-sm bg-gradient-success text-white px-3"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('representative') }"
           >
             담당자 변경
           </button>
           <button
             @click="gopriority()"
-            class="btn btn-sm bg-gradient-dark text-white px-3"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('priority') }"
           >
             우선순위 선택
           </button>
         </div>
 
         <div class="tab-menu">
-          <button @click="gorecord()" class="tab-pill active">상담기록</button>
-          <button @click="goplan()" class="tab-pill">지원 계획서</button>
-          <button @click="goresult()" class="tab-pill">지원 결과서</button>
+          <button
+            @click="gorecord()"
+            class="tab-pill"
+            :class="{ active: isActiveTab('record') }"
+          >
+            상담기록
+          </button>
+          <button
+            @click="goplan()"
+            class="tab-pill"
+            :class="{ active: isActiveTab('plan') }"
+          >
+            지원 계획서
+          </button>
+          <button
+            @click="goresult()"
+            class="tab-pill"
+            :class="{ active: isActiveTab('result') }"
+          >
+            지원 결과서
+          </button>
         </div>
 
         <div class="application-card card shadow-lg border-0 border-radius-xl">
@@ -161,29 +191,34 @@ onBeforeMount(async () => {
           </div>
 
           <div class="content-area mt-4">
-            <!-- <p class="placeholder-text">지원신청서 내용</p> -->
-            <div v-if="Object.keys(userAnswers).length">
+            <div v-if="Object.keys(userAnswers).length" class="form-sections">
               <section
-                v-for="big in formData"
+                v-for="(big, bIdx) in formData"
                 :key="big.bcategory"
                 class="big-section"
               >
-                <h1 class="big-title">{{ big.bcategory }}</h1>
+                <h2 class="big-title">
+                  <span class="big-title-num">{{ bIdx + 1 }}</span>
+                  {{ big.bcategory }}
+                </h2>
 
                 <div
-                  v-for="small in big.scategory"
+                  v-for="(small, sIdx) in big.scategory"
                   :key="small.scategory"
                   class="small-group"
                 >
-                  <h2 class="small-title">▣ {{ small.scategory }}</h2>
+                  <h3 class="small-title">
+                    <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
+                    {{ small.scategory }}
+                  </h3>
 
                   <div
-                    v-for="q in small.questions"
+                    v-for="(q, qIdx) in small.questions"
                     :key="q.question_num"
                     class="question-card"
                   >
                     <p class="question-text">
-                      <span class="q-num"></span>
+                      <span class="q-num">{{ qIdx + 1 }}.</span>
                       {{ q.question }}
                     </p>
 
@@ -196,12 +231,12 @@ onBeforeMount(async () => {
                         >
                           <input
                             type="radio"
-                            :name="q.question_num"
+                            :name="'q-' + q.question_num"
                             :value="opt.exam_num"
                             v-model="userAnswers[q.question_num]"
                             :disabled="true"
                           />
-                          {{ opt.value }}
+                          <span class="radio-label">{{ opt.value }}</span>
                         </label>
                       </div>
 
@@ -209,7 +244,8 @@ onBeforeMount(async () => {
                         <textarea
                           v-model="userAnswers[q.question_num]"
                           placeholder="답변을 입력해주세요."
-                          :readonly="true"
+                          readonly
+                          class="answer-textarea"
                         ></textarea>
                       </div>
                     </div>
@@ -242,16 +278,22 @@ onBeforeMount(async () => {
 <style scoped>
 .work-layout {
   background-color: #f8f9fa;
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .work-container {
   display: flex;
   gap: 24px;
+  flex: 1;
+  min-height: 0;
 }
 
 .left,
 .right {
+  
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -278,6 +320,11 @@ onBeforeMount(async () => {
   margin-bottom: 16px;
 }
 
+.action-pill {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 .tab-pill {
   flex: 1;
   padding: 8px 12px;
@@ -288,6 +335,10 @@ onBeforeMount(async () => {
   font-weight: 600;
   color: #67748e;
   text-align: center;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 
@@ -318,13 +369,167 @@ onBeforeMount(async () => {
 }
 
 .content-area {
-  margin-top: 40px;
-  text-align: center;
-  border: 1px solid #ccc;
-  min-height: 200px;
+  padding: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  background: #fafbfc;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 섹션 */
+.big-section {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* 소분류 그룹 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.small-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d3748;
+  background: #e8f5e9;
+  border-left: 4px solid #17c653;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #17c653;
+  background: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* 질문 카드 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  border-left: 4px solid #adb5bd;
+}
+
+.question-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #495057;
+  line-height: 1.5;
+}
+
+.q-num {
+  display: inline-block;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: #17c653;
+}
+
+.answer-area {
+  margin-left: 0.25rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #495057;
+  cursor: default;
+}
+
+.radio-item input {
+  margin: 0;
+  accent-color: #17c653;
+}
+
+.radio-label {
+  user-select: none;
+}
+
+.text-group .answer-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  resize: vertical;
+}
+
+.text-group .answer-textarea:focus {
+  outline: none;
+  border-color: #17c653;
+  box-shadow: 0 0 0 2px rgba(23, 198, 83, 0.2);
+}
+
+.content-area::-webkit-scrollbar {
+  width: 6px;
+}
+.content-area::-webkit-scrollbar-thumb {
+  background-color: #cccccc;
+  border-radius: 10px;
+}
+.content-area::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
 }
 
 .bottom-actions {

@@ -215,158 +215,196 @@ const filelist = async () => {
 };
 </script>
 <template>
-  <h4>상담기록</h4>
-  <material-button type="button" @click="sevedate()"
-    >임시저장 내용</material-button
-  >
-  <material-button type="button" @click="newrecord = true"
-    >상담기록 추가</material-button
-  >
-  <!-- 상담기록 추가 모달 -->
-  <Modal v-if="newrecord" @close="closeModal()">
-    <template #content>
-      <material-input
-        id="date"
-        type="date"
-        placeholder="내용입력"
-        v-model="today"
-      />
-      <material-button type="button" size="sm" @click="draft()"
-        >임시저장</material-button
-      >
-      <material-input
-        id="text"
-        placeholder="제목입력"
-        v-model="addRecordName"
-      />
-      <material-input
-        id="text"
-        placeholder="내용입력"
-        v-model="addRecordContent"
-      />
-      <material-button type="button">첨부파일 등록</material-button>
-      <p>파일이름</p>
-      <material-button type="button" @click="addrecord()">등록</material-button>
-    </template>
-    <template #actions="{ close }">
-      <material-button
-        type="button"
-        @click="
-          () => {
-            addRecordName = '';
-            addRecordContent = '';
-            close();
-          }
-        "
-        >취소</material-button
-      >
-    </template>
-  </Modal>
-  <!-- 상담기록 내역 -->
-  <div v-for="record in records" :key="record.counsel_num">
-    <p>{{ timedate(record.counsel_date) }} {{ record.row_num }}번째 상담기록</p>
-    <material-button type="button" size="sm" @click="openresmodal(record)"
-      >수정</material-button
-    >
-    <material-button
-      type="button"
-      size="sm"
-      @click="record.showrecordDelete = true"
-      >삭제</material-button
-    >
-    <!-- 수정 모달 -->
-    <Modal v-if="record.modifyrecord" @close="record.modifyrecord = false">
+  <div class="work-section-card card shadow-lg border-0 border-radius-xl">
+    <div class="work-section-header d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0 fw-bold text-dark">상담기록</h4>
+      <div class="work-section-header-actions">
+        <material-button type="button" size="sm" @click="sevedate()"
+          >임시저장 내용</material-button
+        >
+        <material-button type="button" size="sm" color="info" @click="newrecord = true"
+          >상담기록 추가</material-button
+        >
+      </div>
+    </div>
+
+    <!-- 상담기록 추가 모달 -->
+    <Modal v-if="newrecord" @close="closeModal()">
       <template #content>
+        <material-input
+          id="date"
+          type="date"
+          placeholder="내용입력"
+          v-model="today"
+        />
+        <material-button type="button" size="sm" @click="draft()"
+          >임시저장</material-button
+        >
         <material-input
           id="text"
           placeholder="제목입력"
-          v-model="record.counsel_title"
+          v-model="addRecordName"
         />
         <material-input
           id="text"
           placeholder="내용입력"
-          v-model="record.counsel_content"
+          v-model="addRecordContent"
         />
-        <material-input
-          id="text"
-          placeholder="수정사유"
-          v-model="recordcomment"
-        />
-        <!-- <material-button type="button">첨부파일 등록</material-button>
-        <div v-if="record.file && record.file.length">
-          <div v-for="file in record.file" :key="file">
-            <p>첨부파일</p>
-            <p>첨부파일이름</p>
-          </div>
-        </div> -->
-        <material-button type="button" @click="Update(record)"
-          >수정 완료</material-button
+        <material-button type="button">첨부파일 등록</material-button>
+        <p>파일이름</p>
+        <material-button type="button" color="success" @click="addrecord()"
+          >등록</material-button
         >
       </template>
       <template #actions="{ close }">
-        <material-button type="button" @click="close">취소</material-button>
-      </template>
-    </Modal>
-    <!-- 삭제 모달 -->
-    <Modal
-      v-if="record.showrecordDelete"
-      @close="record.showrecordDelete = false"
-    >
-      <template #content>
-        <p>해당 상담내용을 <br />삭제하시겠습니까?</p>
-        <material-button type="button" color="danger" @click="delRecord(record)"
-          >예</material-button
+        <material-button
+          type="button"
+          @click="
+            () => {
+              addRecordName = '';
+              addRecordContent = '';
+              close();
+            }
+          "
+          >취소</material-button
         >
       </template>
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">아니오</material-button>
-      </template>
     </Modal>
-    <div>
-      <p>{{ record.counsel_title }}</p>
-      <br />
-      <p>{{ record.counsel_content }}</p>
-      <br />
-    </div>
-    <!-- 첨부파일 -->
-    <p>첨부파일</p>
+
+    <!-- 상담기록 내역 -->
     <div
-      v-for="file in filename.filter(
-        (f) => f.counsel_num === record.counsel_num,
-      )"
-      :key="file.file_num"
+      v-for="record in records"
+      :key="record.counsel_num"
+      class="record-item border rounded-3 p-3 mb-3 bg-white"
     >
-      <p>{{ file.origin_name }}</p>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <p class="mb-0 text-sm text-secondary">
+          {{ timedate(record.counsel_date) }} · {{ record.row_num }}번째 상담기록
+        </p>
+        <div class="d-flex gap-2">
+          <material-button type="button" size="sm" color="info" @click="openresmodal(record)"
+            >수정</material-button
+          >
+          <material-button
+            type="button"
+            size="sm"
+            color="danger"
+            @click="record.showrecordDelete = true"
+            >삭제</material-button
+          >
+        </div>
+      </div>
+
+      <!-- 수정 모달 -->
+      <Modal v-if="record.modifyrecord" @close="record.modifyrecord = false">
+        <template #content>
+          <material-input
+            id="text"
+            placeholder="제목입력"
+            v-model="record.counsel_title"
+          />
+          <material-input
+            id="text"
+            placeholder="내용입력"
+            v-model="record.counsel_content"
+          />
+          <material-input
+            id="text"
+            placeholder="수정사유"
+            v-model="recordcomment"
+          />
+          <material-button type="button" color="success" @click="Update(record)"
+            >수정 완료</material-button
+          >
+        </template>
+        <template #actions="{ close }">
+          <material-button type="button" @click="close">취소</material-button>
+        </template>
+      </Modal>
+
+      <!-- 삭제 모달 -->
+      <Modal
+        v-if="record.showrecordDelete"
+        @close="record.showrecordDelete = false"
+      >
+        <template #content>
+          <p class="mb-3">
+            해당 상담내용을 <br />삭제하시겠습니까?
+          </p>
+          <material-button type="button" color="danger" @click="delRecord(record)"
+            >예</material-button
+          >
+        </template>
+        <template #actions="{ close }">
+          <material-button type="button" @click="close">아니오</material-button>
+        </template>
+      </Modal>
+
+      <div class="mt-2">
+        <p class="fw-semibold mb-1">{{ record.counsel_title }}</p>
+        <p class="mb-2">{{ record.counsel_content }}</p>
+      </div>
+
+      <!-- 첨부파일 -->
+      <div class="mt-2">
+        <p class="text-sm text-secondary mb-1">첨부파일</p>
+        <div
+          v-for="file in filename.filter(
+            (f) => f.counsel_num === record.counsel_num,
+          )"
+          :key="file.file_num"
+          class="text-sm"
+        >
+          <p class="mb-0">{{ file.origin_name }}</p>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <material-button type="button" size="sm" @click="revisions(record)"
+          >수정내역 확인</material-button
+        >
+        <Modal v-if="record.showRevision" @close="record.showRevision = false">
+          <template #actions="{ close }">
+            <material-button type="button" @click="close">X</material-button>
+          </template>
+          <template #content>
+            <table class="table table-bordered table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>수정날짜</th>
+                  <th>이름</th>
+                  <th>수정내용</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="revisions in record.revision"
+                  :key="revisions.counsel_modifi_num"
+                >
+                  <td>{{ timedate(revisions.counsel_modified_date) }}</td>
+                  <td>{{ revisions.counsel_modified_by }}</td>
+                  <td>{{ revisions.counsel_modified_comment }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </template>
+        </Modal>
+      </div>
     </div>
-    <material-button type="button" size="sm" @click="revisions(record)"
-      >수정내역 확인</material-button
-    >
-    <Modal v-if="record.showRevision" @close="record.showRevision = false">
-      <template #actions="{ close }">
-        <material-button type="button" @click="close">X</material-button>
-      </template>
-      <template #content>
-        <table border="1px">
-          <thead>
-            <tr>
-              <th>수정날짜</th>
-              <th>이름</th>
-              <th>수정내용</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="revisions in record.revision"
-              :key="revisions.counsel_modifi_num"
-            >
-              <td>{{ timedate(revisions.counsel_modified_date) }}</td>
-              <td>{{ revisions.counsel_modified_by }}</td>
-              <td>{{ revisions.counsel_modified_comment }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </template>
-    </Modal>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+.work-section-card {
+  background: #ffffff;
+  padding: 18px 18px 20px;
+}
+
+.work-section-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.record-item {
+  border-color: #e9ecef;
+}
+</style>
