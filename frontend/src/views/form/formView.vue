@@ -118,9 +118,7 @@ const use = async () => {
           <div class="card-body px-4 pb-2">
             <div class="content-area">
               <div v-if="Object.keys(formData).length" class="form-sections">
-              <div v-if="Object.keys(formData).length" class="form-sections">
                 <section
-                  v-for="(big, bIdx) in formData"
                   v-for="(big, bIdx) in formData"
                   :key="big.bcategory"
                   class="big-section"
@@ -129,13 +127,8 @@ const use = async () => {
                     <span class="big-title-num">{{ bIdx + 1 }}</span>
                     {{ big.bcategory }}
                   </h2>
-                  <h2 class="big-title">
-                    <span class="big-title-num">{{ bIdx + 1 }}</span>
-                    {{ big.bcategory }}
-                  </h2>
 
                   <div
-                    v-for="(small, sIdx) in big.scategory"
                     v-for="(small, sIdx) in big.scategory"
                     :key="small.scategory"
                     class="small-group"
@@ -144,19 +137,14 @@ const use = async () => {
                       <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
                       {{ small.scategory }}
                     </h3>
-                    <h3 class="small-title">
-                      <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
-                      {{ small.scategory }}
-                    </h3>
+
 
                     <div
-                      v-for="(q, qIdx) in small.questions"
                       v-for="(q, qIdx) in small.questions"
                       :key="q.question_num"
                       class="question-card"
                     >
                       <p class="question-text">
-                        <span class="q-num">{{ qIdx + 1 }}.</span>
                         <span class="q-num">{{ qIdx + 1 }}.</span>
                         {{ q.question }}
                       </p>
@@ -171,11 +159,9 @@ const use = async () => {
                             <input
                               type="radio"
                               :name="'q-' + q.question_num"
-                              :name="'q-' + q.question_num"
                               :value="opt.exam_num"
                               disabled="true"
                             />
-                            <span class="radio-label">{{ opt.value }}</span>
                             <span class="radio-label">{{ opt.value }}</span>
                           </label>
                         </div>
@@ -183,8 +169,6 @@ const use = async () => {
                         <div v-else class="text-group">
                           <textarea
                             placeholder="답변을 입력해주세요."
-                            readonly
-                            class="answer-textarea"
                             readonly
                             class="answer-textarea"
                           ></textarea>
@@ -196,11 +180,7 @@ const use = async () => {
               </div>
             </div>
             <div class="d-flex justify-content-end gap-2 mt-4">
-            <div class="d-flex justify-content-end gap-2 mt-4">
               <material-button
-                color="success"
-                variant="gradient"
-                class="mb-0"
                 color="success"
                 variant="gradient"
                 class="mb-0"
