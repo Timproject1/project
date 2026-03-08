@@ -197,6 +197,7 @@ const router = createRouter({
   routes,
   linkActiveClass: "active",
 });
+
 router.beforeEach((to, from, next) => {
   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
   const myLevel = memberStore.grade; // 내 실제 등급
