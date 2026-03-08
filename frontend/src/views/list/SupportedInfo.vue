@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import axios from "axios";
 
-const router = useRouter();
+// const router = useRouter();
 
 // --- 1. 검색 필터 변수 (성별, 유형, 담당자 보강) ---
 const searchName = ref("");

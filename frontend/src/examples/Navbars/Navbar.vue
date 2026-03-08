@@ -75,10 +75,10 @@ const grades = {
 
 /* 페이지 이동 함수들 */
 const gohome = () => router.push("/home");
-const govolunteer = () => router.push("/list/info");
-const govol = () => router.push("/list/appreq");
-const gocenter = () => router.push("/list/center");
-const goform = () => router.push("/list/form");
+const govolunteer = () => router.push("/support/info");
+const govol = () => router.push("/support/appreq");
+const gocenter = () => router.push("/center");
+const goform = () => router.push("/form");
 const gomypage = () => router.push("/mypage");
 
 const handleLogout = () => {
