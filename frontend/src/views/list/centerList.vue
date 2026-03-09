@@ -3,9 +3,9 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const searchName = ref("");
-const resetSearch = () => {
-  searchName.value = "";
-};
+// const resetSearch = () => {
+//   searchName.value = "";
+// };
 const centerList = ref([]);
 const getCenterList = async () => {
   try {

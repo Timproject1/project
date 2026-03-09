@@ -66,8 +66,9 @@ onBeforeMount(async () => {
   await getList();
 });
 </script>
+
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid  work-layout">
     <div class="work-container">
       <div class="right">
         <div class="application-card card shadow-lg border-0 border-radius-xl">
@@ -185,18 +186,17 @@ onBeforeMount(async () => {
           </div>
         </div>
       </div>
+      </div>
     </div>
-  </div>
+
 </template>
 <script>
-import MaterialButton from "@/components/MaterialButton.vue";
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 
 export default {
   name: "formList",
   components: {
-    MaterialButton,
     MaterialPagination,
     MaterialPaginationItem,
   },

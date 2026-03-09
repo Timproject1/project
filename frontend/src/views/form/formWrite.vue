@@ -195,7 +195,7 @@ const submitForm = async () => {
 //값 초기화
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-2 pb-2 work-layout">
     <div class="work-container">
       <div class="right">
         <div class="application-card card shadow-lg border-0 border-radius-xl">

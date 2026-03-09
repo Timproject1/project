@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import axios from "axios";
 
-const router = useRouter();
+// const router = useRouter();
 
 // 미배정 지원자 목록
 const Notsupported = ref([]);
@@ -44,9 +44,9 @@ onMounted(() => {
 
 // 지원자 명 검색
 const searchName = ref("");
-const resetSearch = () => {
-  searchName.value = "";
-};
+// const resetSearch = () => {
+//   searchName.value = "";
+// };
 
 // 배정하기 버튼 부분 내용
 const openModal = async (member) => {

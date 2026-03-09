@@ -51,7 +51,7 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-2 pb-2 work-layout">
     <div class="work-container">
       <div class="left">
         <div

@@ -83,6 +83,25 @@ const service = {
       con.release();
     }
   },
+  delDoc :async (num) =>{
+    const con= await pool.getConnection();
+    try {
+      await con.beginTransaction();
+      let query =`delete from responce where doc_ver LIKE CONCAT(?, '-%') `;
+      await con.query(query,[num]);
+      query = `delete from doc_version where doc_num =? `;
+      await con.query(query,[num]);
+      query = `delete from documents where doc_num = ?;`
+      await con.query(query,[num]);
+      await con.commit();
+    } catch (error) {
+      await con.rollback();
+      console.log(error);
+      throw error;
+    }finally{
+      await con.release();
+    }
+  },
   //정보 받아오기
   getDoc: async (num) => {
     try {
