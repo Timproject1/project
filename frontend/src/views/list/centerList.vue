@@ -205,17 +205,25 @@ const updateCenter = async () => {
                 </thead>
                 <tbody>
                   <tr v-for="center in centerList" :key="center.registernum">
-                    <td class="text-center text-sm">{{ center.registernum }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.registernum }}
+                    </td>
                     <td class="ps-4 text-sm font-weight-bold">
                       {{ center.repname }}
                     </td>
-                    <td class="text-center text-sm">{{ center.center_name }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.center_name }}
+                    </td>
                     <td class="text-center text-sm">{{ center.center_tel }}</td>
                     <td class="text-center text-sm table-cell-ellipsis">
                       {{ center.center_addr }}
                     </td>
-                    <td class="text-center text-sm">{{ center.center_email }}</td>
-                    <td class="text-center text-sm">{{ center.reg_date }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.center_email }}
+                    </td>
+                    <td class="text-center text-sm">
+                      {{ center.reg_date.split("T")[0] }}
+                    </td>
                     <td class="text-center">
                       <span class="badge badge-sm bg-gradient-success">{{
                         center.runed
@@ -257,7 +265,11 @@ const updateCenter = async () => {
   </div>
 
   <!-- 기관 등록 모달 -->
-  <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
+  <div
+    v-if="showAddModal"
+    class="modal-overlay"
+    @click.self="showAddModal = false"
+  >
     <div class="modal-content">
       <h3 class="mb-3 fw-bold">기관 등록</h3>
       <hr class="dark horizontal my-2" />
@@ -360,15 +372,49 @@ const updateCenter = async () => {
       <hr class="dark horizontal my-2" />
       <div class="form-group mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표명</label
+        >
+        <input
+          v-model="modifyCenter.repname"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="대표명"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >기관명</label
         >
         <input
           v-model="modifyCenter.center_name"
           type="text"
           class="form-control form-control-sm"
-          placeholder="기관명"
+          placeholder="기관주소"
         />
       </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관주소</label
+        >
+        <input
+          v-model="modifyCenter.center_addr"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="기관주소"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >사업자번호</label
+        >
+        <input
+          v-model="modifyCenter.registernum"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="사업자번호"
+        />
+      </div>
+
       <div class="form-group mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >대표번호</label
@@ -401,6 +447,15 @@ const updateCenter = async () => {
           class="form-control form-control-sm"
           placeholder="이메일"
         />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관 운영여부</label
+        >
+        <select v-model="newCenter.runed" class="form-control form-control-sm">
+          <option value="운영">운영</option>
+          <option value="휴업">휴업</option>
+        </select>
       </div>
       <div class="d-flex justify-content-end gap-2">
         <button
