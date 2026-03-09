@@ -24,6 +24,9 @@
           <button class="nav-link-custom active" @click="gohome">Home</button>
 
           <template v-if="['a1', 'a2'].includes(memberStore.grade)">
+            <button class="nav-link-custom" @click="godocument">
+              신청서 관리
+            </button>
             <button class="nav-link-custom" @click="govolunteer">
               지원자 관리
             </button>
@@ -80,7 +83,7 @@ const govol = () => router.push("/support/appreq");
 const gocenter = () => router.push("/center");
 const goform = () => router.push("/form");
 const gomypage = () => router.push("/mypage");
-
+const godocument = () => router.push("/document");
 const handleLogout = () => {
   if (confirm("로그아웃 하시겠습니까?")) {
     memberStore.logout();

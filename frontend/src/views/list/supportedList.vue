@@ -167,7 +167,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -383,229 +383,228 @@ onMounted(() => {
     </div>
   </div>
 
-    <div v-if="detailModal" class="modal-overlay" @click.self="closeDetailModal">
-      <div class="modal-card shadow-lg p-4 border-radius-xl">
-        <h4 class="text-success border-bottom pb-2 fw-bold">장애 상세 정보</h4>
-        <div class="mt-3 bg-gray-100 p-2 rounded text-sm">
-          대상자: <strong>{{ selectMember?.sup_name }}</strong>
-        </div>
-        <table class="table mt-3 text-center align-items-center mb-0">
-          <thead class="bg-gray-100">
-            <tr class="text-xxs">
-              <th
-                class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                유형
-              </th>
-              <th
-                class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                정도
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(d, i) in selectMember?.disabilities"
-              :key="i"
-              class="text-xs"
+  <div v-if="detailModal" class="modal-overlay" @click.self="closeDetailModal">
+    <div class="modal-card shadow-lg p-4 border-radius-xl">
+      <h4 class="text-success border-bottom pb-2 fw-bold">장애 상세 정보</h4>
+      <div class="mt-3 bg-gray-100 p-2 rounded text-sm">
+        대상자: <strong>{{ selectMember?.sup_name }}</strong>
+      </div>
+      <table class="table mt-3 text-center align-items-center mb-0">
+        <thead class="bg-gray-100">
+          <tr class="text-xxs">
+            <th
+              class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
             >
-              <td>{{ d.type }}</td>
-              <td>{{ d.level }}</td>
-            </tr>
-          </tbody>
-        </table>
+              유형
+            </th>
+            <th
+              class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+            >
+              정도
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(d, i) in selectMember?.disabilities"
+            :key="i"
+            class="text-xs"
+          >
+            <td>{{ d.type }}</td>
+            <td>{{ d.level }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button
+        type="button"
+        class="btn btn-sm bg-gradient-dark w-100 text-white mt-4"
+        @click="closeDetailModal"
+      >
+        닫기
+      </button>
+    </div>
+  </div>
+
+  <div
+    v-if="isEditModalOpen && Modifymember"
+    class="modal-overlay"
+    @click.self="closeEditModal"
+  >
+    <div class="modal-card shadow-lg p-4 border-radius-xl">
+      <h4 class="text-dark border-bottom pb-2 text-center fw-bold">
+        지원자 정보 수정
+      </h4>
+      <div class="modal-body mt-3">
+        <div class="mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >성함</label
+          >
+          <input
+            v-model="Modifymember.sup_name"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >휴대폰</label
+          >
+          <input
+            v-model="Modifymember.sup_tel"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >주소</label
+          >
+          <input
+            v-model="Modifymember.sup_address"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >장애유형 추가</label
+          >
+          <input
+            v-model="Modifymember.disability_category"
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="추가할 유형 입력"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >첨부파일명</label
+          >
+          <input
+            v-model="sup_file"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+      </div>
+      <div class="d-flex gap-2">
         <button
           type="button"
-          class="btn btn-sm bg-gradient-dark w-100 text-white mt-4"
-          @click="closeDetailModal"
+          class="btn btn-sm bg-gradient-success text-white flex-fill"
+          @click="updateMember"
         >
-          닫기
+          저장
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary flex-fill"
+          @click="closeEditModal"
+        >
+          취소
         </button>
       </div>
     </div>
+  </div>
 
-    <div
-      v-if="isEditModalOpen && Modifymember"
-      class="modal-overlay"
-      @click.self="closeEditModal"
-    >
-      <div class="modal-card shadow-lg p-4 border-radius-xl">
-        <h4 class="text-dark border-bottom pb-2 text-center fw-bold">
-          지원자 정보 수정
-        </h4>
-        <div class="modal-body mt-3">
-          <div class="mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >성함</label
-            >
-            <input
-              v-model="Modifymember.sup_name"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >휴대폰</label
-            >
-            <input
-              v-model="Modifymember.sup_tel"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >주소</label
-            >
-            <input
-              v-model="Modifymember.sup_address"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >장애유형 추가</label
-            >
-            <input
-              v-model="Modifymember.disability_category"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="추가할 유형 입력"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >첨부파일명</label
-            >
-            <input
-              v-model="sup_file"
-              type="text"
-              class="form-control form-control-sm"
-            />
+  <div v-if="addModal" class="modal-overlay" @click.self="closeModal">
+    <div class="modal-card shadow-lg p-4 border-radius-xl">
+      <h4 class="text-success border-bottom pb-2 text-center fw-bold">
+        지원자 신규 등록
+      </h4>
+      <div class="row mt-3">
+        <div class="col-6 mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >성함</label
+          >
+          <input
+            v-model="newSupported.sup_name"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+        <div class="col-6 mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >생년월일</label
+          >
+          <input
+            v-model="newSupported.sup_birthday"
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="YYYY-MM-DD"
+          />
+        </div>
+        <div class="col-12 mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >성별</label
+          >
+          <div class="d-flex gap-3 p-2 bg-gray-100 rounded text-sm">
+            <label class="mb-0">
+              <input
+                v-model="newSupported.sup_gender"
+                type="radio"
+                value="남성"
+              />
+              남성
+            </label>
+            <label class="mb-0">
+              <input
+                v-model="newSupported.sup_gender"
+                type="radio"
+                value="여성"
+              />
+              여성
+            </label>
           </div>
         </div>
-        <div class="d-flex gap-2">
-          <button
-            type="button"
-            class="btn btn-sm bg-gradient-success text-white flex-fill"
-            @click="updateMember"
+        <div class="col-12 mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >휴대폰</label
           >
-            저장
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary flex-fill"
-            @click="closeEditModal"
+          <input
+            v-model="newSupported.sup_tel"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+        <div class="col-12 mb-3">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >주소</label
           >
-            취소
-          </button>
+          <input
+            v-model="newSupported.sup_address"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+        <div class="col-12 mb-4">
+          <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+            >첨부파일</label
+          >
+          <input
+            v-model="newSupported.sup_file"
+            type="text"
+            class="form-control form-control-sm"
+          />
         </div>
       </div>
-    </div>
-
-    <div v-if="addModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-card shadow-lg p-4 border-radius-xl">
-        <h4 class="text-success border-bottom pb-2 text-center fw-bold">
-          지원자 신규 등록
-        </h4>
-        <div class="row mt-3">
-          <div class="col-6 mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >성함</label
-            >
-            <input
-              v-model="newSupported.sup_name"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-          <div class="col-6 mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >생년월일</label
-            >
-            <input
-              v-model="newSupported.sup_birthday"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="YYYY-MM-DD"
-            />
-          </div>
-          <div class="col-12 mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >성별</label
-            >
-            <div class="d-flex gap-3 p-2 bg-gray-100 rounded text-sm">
-              <label class="mb-0">
-                <input
-                  v-model="newSupported.sup_gender"
-                  type="radio"
-                  value="남성"
-                />
-                남성
-              </label>
-              <label class="mb-0">
-                <input
-                  v-model="newSupported.sup_gender"
-                  type="radio"
-                  value="여성"
-                />
-                여성
-              </label>
-            </div>
-          </div>
-          <div class="col-12 mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >휴대폰</label
-            >
-            <input
-              v-model="newSupported.sup_tel"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-          <div class="col-12 mb-3">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >주소</label
-            >
-            <input
-              v-model="newSupported.sup_address"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-          <div class="col-12 mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-              >첨부파일</label
-            >
-            <input
-              v-model="newSupported.sup_file"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
-        </div>
-        <div class="d-flex gap-2">
-          <button
-            type="button"
-            class="btn btn-sm bg-gradient-success text-white flex-fill"
-            @click="addSupported"
-          >
-            등록
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary flex-fill"
-            @click="closeModal"
-          >
-            취소
-          </button>
-        </div>
+      <div class="d-flex gap-2">
+        <button
+          type="button"
+          class="btn btn-sm bg-gradient-success text-white flex-fill"
+          @click="addSupported"
+        >
+          등록
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary flex-fill"
+          @click="closeModal"
+        >
+          취소
+        </button>
       </div>
     </div>
-
+  </div>
 </template>
 
 <style scoped>

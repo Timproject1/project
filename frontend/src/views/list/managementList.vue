@@ -42,7 +42,7 @@ const resetSearch = () => {
 };
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div

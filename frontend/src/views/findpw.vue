@@ -1,7 +1,9 @@
 <template>
-  <div class="findpw-layout">
+  <div class="findpw-layout" :style="{ backgroundImage: `url(${bgImage})` }">
     <div class="findpw-container">
-      <div class="findpw-card card shadow-lg border-0 border-radius-xl overflow-hidden">
+      <div
+        class="findpw-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+      >
         <div
           class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
         >
@@ -12,7 +14,9 @@
         <div class="card-body p-4">
           <form @submit.prevent="handleSendAuthEmail">
             <div class="mb-4">
-              <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="findpw-userid"
+              <label
+                class="form-label text-xs fw-bolder mb-1 text-secondary"
+                for="findpw-userid"
                 >아이디</label
               >
               <material-input
@@ -24,7 +28,9 @@
             </div>
 
             <div class="mb-4">
-              <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="findpw-email"
+              <label
+                class="form-label text-xs fw-bolder mb-1 text-secondary"
+                for="findpw-email"
                 >이메일</label
               >
               <material-input
@@ -46,7 +52,11 @@
 
             <div class="pt-3 border-top border-light">
               <router-link to="/find-id" class="findpw-link">
-                <i class="material-icons align-middle me-1" style="font-size: 1rem">search</i>
+                <i
+                  class="material-icons align-middle me-1"
+                  style="font-size: 1rem"
+                  >search</i
+                >
                 아이디 찾으러 가기
               </router-link>
             </div>
@@ -62,6 +72,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import MaterialInput from "@/components/MaterialInput.vue";
+import bgImage from "@/assets/img2.png";
 
 const router = useRouter();
 const userId = ref("");
@@ -96,7 +107,8 @@ const handleSendAuthEmail = async () => {
     const errorMessage =
       error.response?.status === 404
         ? "서버 경로를 찾을 수 없습니다. (주소: /user/forgot-password 확인 필요)"
-        : error.response?.data?.message || "오류가 발생했습니다. 다시 시도해주세요.";
+        : error.response?.data?.message ||
+          "오류가 발생했습니다. 다시 시도해주세요.";
     alert(errorMessage);
   } finally {
     isSending.value = false;
@@ -113,6 +125,9 @@ const handleSendAuthEmail = async () => {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-size: cover; /* 이미지가 요소에 꽉 차도록 비율 조정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
 }
 
 .findpw-container {

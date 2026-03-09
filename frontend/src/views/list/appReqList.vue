@@ -51,7 +51,7 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-  <div class="container-fluid pt-2 pb-2 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -113,7 +113,7 @@ onBeforeMount(async () => {
           <div
             class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
           >
-            <h6 class="mb-0 text-white font-weight-bolder">지원 신청 내역</h6>
+            <h6 class="mb-0 text-white font-weight-bolder">승인 요청 목록</h6>
           </div>
           <div class="card-body px-0 pb-2">
             <div class="px-3 pt-2 d-flex gap-2 mb-2">
@@ -218,7 +218,7 @@ onBeforeMount(async () => {
                           >info_outline</i
                         >
                         <p class="text-secondary mb-0">
-                          현재 표시할 신청 내역이 없습니다.
+                          현재 표시할 내역이 없습니다.
                         </p>
                       </div>
                     </td>
@@ -244,7 +244,6 @@ onBeforeMount(async () => {
   </div>
 </template>
 <script>
-
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 import MaterialInput from "@/components/MaterialInput.vue";

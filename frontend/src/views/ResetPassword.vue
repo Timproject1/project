@@ -1,5 +1,8 @@
 <template>
-  <div class="page-header align-items-start min-vh-100 reset-bg">
+  <div
+    class="page-header align-items-start min-vh-100 reset-bg"
+    :style="{ backgroundImage: `url(${bgImage})` }"
+  >
     <span class="mask bg-gradient-dark opacity-6"></span>
     <div
       class="container d-flex justify-content-center align-items-center min-vh-100"
@@ -53,6 +56,7 @@
 import { ref, onMounted } from "vue"; // Vue의 반응형 데이터와 마운트 시점 기능을 가져옵니다.
 import { useRoute, useRouter } from "vue-router"; // 현재 주소 정보와 페이지 이동 기능을 가져옵니다.
 import axios from "axios"; // 서버와 통신하기 위한 라이브러리를 가져옵니다.
+import bgImage from "@/assets/img2.png";
 
 const route = useRoute(); // 현재 URL의 쿼리(token 등)를 읽기 위해 생성합니다.
 const router = useRouter(); // 가입 후 이동 등을 처리하기 위해 생성합니다.
@@ -113,9 +117,11 @@ const handleResetPassword = async () => {
 <style scoped>
 /* 배경 이미지 및 레이아웃 설정입니다. */
 .reset-bg {
-  background-image: url("https://images.unsplash.com/photo-1497294815431-9365093b7331?auto=format&fit=crop&w=1950&q=80");
   background-size: cover;
   position: relative;
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-size: cover; /* 이미지가 요소에 꽉 차도록 비율 조정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
 }
 
 /* 카드 상자의 모양과 그림자 설정입니다. */

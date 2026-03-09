@@ -99,7 +99,7 @@ const updateCenter = async () => {
 };
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-2 pb-2 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -205,16 +205,22 @@ const updateCenter = async () => {
                 </thead>
                 <tbody>
                   <tr v-for="center in centerList" :key="center.registernum">
-                    <td class="text-center text-sm">{{ center.registernum }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.registernum }}
+                    </td>
                     <td class="ps-4 text-sm font-weight-bold">
                       {{ center.repname }}
                     </td>
-                    <td class="text-center text-sm">{{ center.center_name }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.center_name }}
+                    </td>
                     <td class="text-center text-sm">{{ center.center_tel }}</td>
                     <td class="text-center text-sm table-cell-ellipsis">
                       {{ center.center_addr }}
                     </td>
-                    <td class="text-center text-sm">{{ center.center_email }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.center_email }}
+                    </td>
                     <td class="text-center text-sm">{{ center.reg_date }}</td>
                     <td class="text-center">
                       <span class="badge badge-sm bg-gradient-success">{{
@@ -257,7 +263,11 @@ const updateCenter = async () => {
   </div>
 
   <!-- 기관 등록 모달 -->
-  <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
+  <div
+    v-if="showAddModal"
+    class="modal-overlay"
+    @click.self="showAddModal = false"
+  >
     <div class="modal-content">
       <h3 class="mb-3 fw-bold">기관 등록</h3>
       <hr class="dark horizontal my-2" />

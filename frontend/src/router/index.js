@@ -23,11 +23,13 @@ const routes = [
     path: "/find-id",
     name: "FindId",
     component: FindId,
+    meta: { hideHeader: true },
   },
   {
     path: "/find-pw",
     name: "FindPw",
     component: findpw,
+    meta: { hideHeader: true },
   },
   {
     path: "/wait-approval",
@@ -38,12 +40,14 @@ const routes = [
     path: "/work",
     name: "work",
     component: work,
+    description: "서류관련 페이지들",
     meta: { requiredLevel: ["a2", "a3"] },
     children: [
       {
         path: "plan",
         components: { right: () => import("../views/work/plan.vue") },
         meta: { requiredLevel: ["a2"] },
+        description: "계획조회",
       },
       {
         path: "plan_manager",
@@ -165,11 +169,13 @@ const routes = [
     path: "/sign-in",
     name: "SignIn",
     component: SignIn,
+    meta: { hideHeader: true },
   },
   {
     path: "/sign-up",
     name: "SignUp",
     component: SignUp,
+    meta: { hideHeader: true },
   },
   {
     path: "/reset-password",
@@ -198,31 +204,31 @@ const router = createRouter({
   routes,
   linkActiveClass: "active",
 });
-// router.beforeEach((to, from, next) => {
-//   const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
-//   const myLevel = memberStore.grade; // 내 실제 등급
-//   console.log(to.name);
-//   //로그인,회원가입,아이디 비밀번호 찾기는 로그인 없이도가능
-//   if (["SignIn", "SignUp", "resetPW", "FindPw", "FindId"].includes(to.name)) {
-//     return next();
-//   }
+router.beforeEach((to, from, next) => {
+  const memberStore = useMemberStore(); // 2단계에서 만든 내 권한 가져오기
+  const myLevel = memberStore.grade; // 내 실제 등급
+  console.log(to.name);
+  //로그인,회원가입,아이디 비밀번호 찾기는 로그인 없이도가능
+  if (["SignIn", "SignUp", "resetPW", "FindPw", "FindId"].includes(to.name)) {
+    return next();
+  }
 
-//   //로그인이 안되어 있으면 로그인 후 이용가능
-//   if (!myLevel) {
-//     alert("로그인후 이용 가능합니다");
-//     return next({ name: "SignIn" });
-//   }
+  //로그인이 안되어 있으면 로그인 후 이용가능
+  if (!myLevel) {
+    alert("로그인후 이용 가능합니다");
+    return next({ name: "SignIn" });
+  }
 
-//   const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
-//   console.log(requiredLevel);
-//   if (!requiredLevel) {
-//     return next();
-//   }
-//   //
-//   if (requiredLevel && !requiredLevel.includes(myLevel)) {
-//     alert("접근이 금지된 페이지 입니다");
-//     return next(false); // ❌ 입장 거부 (이전 페이지 유지)
-//   }
-//   return next(); // ✅ 입장 허가
-// });
+  const requiredLevel = to.meta.requiredLevel; // 1단계에서 정한 합격 기준
+  console.log(requiredLevel);
+  if (!requiredLevel) {
+    return next();
+  }
+  //
+  if (requiredLevel && !requiredLevel.includes(myLevel)) {
+    alert("접근이 금지된 페이지 입니다");
+    return next(false); // ❌ 입장 거부 (이전 페이지 유지)
+  }
+  return next(); // ✅ 입장 허가
+});
 export default router;

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import MaterialInput from "@/components/MaterialInput.vue";
+import bgImage from "@/assets/img2.png";
 
 const router = useRouter();
 
@@ -36,9 +37,11 @@ const handleFindId = async () => {
 </script>
 
 <template>
-  <div class="findid-layout">
+  <div class="findid-layout" :style="{ backgroundImage: `url(${bgImage})` }">
     <div class="findid-container">
-      <div class="findid-card card shadow-lg border-0 border-radius-xl overflow-hidden">
+      <div
+        class="findid-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+      >
         <div
           class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
         >
@@ -49,7 +52,9 @@ const handleFindId = async () => {
         <div class="card-body p-4">
           <div v-if="!isSearchDone">
             <div class="mb-4">
-              <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="find-name"
+              <label
+                class="form-label text-xs fw-bolder mb-1 text-secondary"
+                for="find-name"
                 >성함</label
               >
               <material-input
@@ -60,7 +65,9 @@ const handleFindId = async () => {
               />
             </div>
             <div class="mb-4">
-              <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="find-email"
+              <label
+                class="form-label text-xs fw-bolder mb-1 text-secondary"
+                for="find-email"
                 >이메일 주소</label
               >
               <material-input
@@ -89,13 +96,17 @@ const handleFindId = async () => {
 
           <div v-else class="text-center">
             <div class="result-icon mb-3">
-              <i v-if="foundId !== 'none'" class="material-icons text-success">check_circle</i>
+              <i v-if="foundId !== 'none'" class="material-icons text-success"
+                >check_circle</i
+              >
               <i v-else class="material-icons text-warning">error_outline</i>
             </div>
 
             <div class="result-box mb-4">
               <div v-if="foundId !== 'none'">
-                <p class="text-secondary text-sm mb-1">요청하신 아이디 정보입니다.</p>
+                <p class="text-secondary text-sm mb-1">
+                  요청하신 아이디 정보입니다.
+                </p>
                 <p class="found-id-text mb-0">{{ foundId }}</p>
               </div>
               <div v-else>
@@ -122,9 +133,14 @@ const handleFindId = async () => {
                 비밀번호 찾기
               </button>
             </div>
-            <p v-if="foundId === 'none'" class="mt-4 text-xs text-secondary mb-0">
+            <p
+              v-if="foundId === 'none'"
+              class="mt-4 text-xs text-secondary mb-0"
+            >
               아직 회원이 아니신가요?
-              <router-link :to="{ name: 'SignUp' }" class="findid-link">회원가입</router-link>
+              <router-link :to="{ name: 'SignUp' }" class="findid-link"
+                >회원가입</router-link
+              >
             </p>
           </div>
         </div>
@@ -142,6 +158,9 @@ const handleFindId = async () => {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-size: cover; /* 이미지가 요소에 꽉 차도록 비율 조정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
 }
 
 .findid-container {

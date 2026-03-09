@@ -86,7 +86,7 @@ const assignManager = async (manager) => {
 };
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -212,11 +212,7 @@ const assignManager = async (manager) => {
     </div>
   </div>
 
-  <div
-    v-if="showModal"
-    class="modal-overlay"
-    @click.self="showModal = false"
-  >
+  <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
     <div class="modal-content card shadow-lg p-4 border-radius-xl">
       <h5 class="font-weight-bolder text-dark mb-3 fw-bold">담당자 목록</h5>
       <div class="table-responsive">

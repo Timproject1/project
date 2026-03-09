@@ -3,6 +3,7 @@ import { ref, reactive, computed } from "vue"; // Vue의 반응형 상태 관리
 import { useRouter } from "vue-router"; // 페이지 이동을 위한 라우터 도구 임포트
 import axios from "axios"; // API 통신을 위한 axios 라이브러리 임포트
 import MaterialInput from "@/components/MaterialInput.vue"; // 커스텀 입력창 컴포넌트 임포트
+import bgImage from "@/assets/img2.png";
 
 const router = useRouter(); // 라우터 인스턴스 생성
 
@@ -95,9 +96,11 @@ const handleSignup = async () => {
 </script>
 
 <template>
-  <div class="signup-layout">
+  <div class="signup-layout" :style="{ backgroundImage: `url(${bgImage})` }">
     <div class="signup-container">
-      <div class="signup-card card shadow-lg border-0 border-radius-xl overflow-hidden">
+      <div
+        class="signup-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+      >
         <div
           class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
         >
@@ -124,7 +127,9 @@ const handleSignup = async () => {
 
           <!-- 아이디 -->
           <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="user_id"
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_id"
               >아이디 <span class="text-danger">(필수)</span></label
             >
             <div class="d-flex gap-2 align-items-center">
@@ -147,7 +152,9 @@ const handleSignup = async () => {
 
           <!-- 비밀번호 -->
           <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="user_password"
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_password"
               >비밀번호 <span class="text-danger">(필수)</span></label
             >
             <material-input
@@ -161,7 +168,9 @@ const handleSignup = async () => {
 
           <!-- 비밀번호 확인 -->
           <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="user_pw_check"
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_pw_check"
               >비밀번호 확인 <span class="text-danger">(필수)</span></label
             >
             <material-input
@@ -178,7 +187,9 @@ const handleSignup = async () => {
 
           <!-- 이름 -->
           <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="user_name"
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_name"
               >이름 <span class="text-danger">(필수)</span></label
             >
             <material-input
@@ -191,7 +202,9 @@ const handleSignup = async () => {
 
           <!-- 연락처 -->
           <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="user_tel"
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_tel"
               >연락처 <span class="text-danger">(필수)</span></label
             >
             <material-input
@@ -204,7 +217,9 @@ const handleSignup = async () => {
 
           <!-- 이메일 -->
           <div class="mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary" for="user_email"
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_email"
               >이메일 <span class="text-danger">(필수)</span></label
             >
             <material-input
@@ -304,16 +319,24 @@ const handleSignup = async () => {
               <table class="table align-items-center mb-0 org-table">
                 <thead>
                   <tr class="bg-gray-100">
-                    <th class="text-secondary text-xxs font-weight-bolder opacity-7 ps-3">
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7 ps-3"
+                    >
                       기관명
                     </th>
-                    <th class="text-secondary text-xxs font-weight-bolder opacity-7">
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
                       주소
                     </th>
-                    <th class="text-secondary text-xxs font-weight-bolder opacity-7">
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
                       연락처
                     </th>
-                    <th class="text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                    >
                       선택
                     </th>
                   </tr>
@@ -362,6 +385,9 @@ const handleSignup = async () => {
   align-items: center;
   padding: 2rem 1rem;
   position: relative;
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-size: cover; /* 이미지가 요소에 꽉 차도록 비율 조정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
 }
 
 .signup-container {
