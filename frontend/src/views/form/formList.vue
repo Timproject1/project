@@ -66,13 +66,16 @@ onBeforeMount(async () => {
   await getList();
 });
 </script>
+
 <template>
-  <div class="container-fluid py-4">
-    <div class="d-flex gap-4 align-items-start">
-      <main class="flex-grow-1">
-        <div class="card shadow-sm">
-          <div class="card-header p-3">
-            <h6 class="mb-0 font-weight-bolder">양식 목록</h6>
+  <div class="container-fluid  work-layout">
+    <div class="work-container">
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">양식 목록</h6>
           </div>
 
           <div class="card-body px-0 pb-2">
@@ -81,7 +84,7 @@ onBeforeMount(async () => {
                 <thead>
                   <tr class="bg-gray-100">
                     <th
-                      class="ps-4 text-secondary text-xxs font-weight-bolder opacity-7"
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
                       번호
                     </th>
@@ -90,7 +93,6 @@ onBeforeMount(async () => {
                     >
                       버전명
                     </th>
-
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
@@ -124,7 +126,7 @@ onBeforeMount(async () => {
                     :key="form.form_ver"
                     @click="getForm(form.form_ver)"
                   >
-                    <td class="ps-4 text-sm font-weight-bold">
+                    <td class="text-center text-sm">
                       {{ totalCount - (idx + (currentPage - 1) * perPage) }}
                     </td>
                     <td class="ps-4 text-sm font-weight-bold">
@@ -136,10 +138,10 @@ onBeforeMount(async () => {
                     <td class="text-center text-sm">
                       {{ form.begindate }}
                     </td>
-                    <td class="text-center">
+                    <td class="text-center text-sm">
                       {{ form.enddate }}
                     </td>
-                    <td class="text-center">
+                    <td class="text-center text-sm">
                       {{ form.comment }}
                     </td>
                     <td class="text-center text-sm">
@@ -151,7 +153,7 @@ onBeforeMount(async () => {
             </div>
 
             <div
-              class="d-flex justify-content-between align-items-center p-3 mt-2"
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
               <material-pagination color="success" size="sm">
                 <material-pagination-item
@@ -159,7 +161,6 @@ onBeforeMount(async () => {
                   @click="changePage(currentPage - 1)"
                   :disabled="currentPage === 1"
                 />
-
                 <material-pagination-item
                   v-for="page in displayedPages"
                   :key="page"
@@ -167,7 +168,6 @@ onBeforeMount(async () => {
                   :active="currentPage === page"
                   @click="changePage(page)"
                 />
-
                 <material-pagination-item
                   next
                   @click="changePage(currentPage + 1)"
@@ -175,34 +175,68 @@ onBeforeMount(async () => {
                 />
               </material-pagination>
 
-              <material-button
-                color="success"
-                variant="gradient"
-                class="mb-0"
+              <button
+                type="button"
+                class="btn btn-sm bg-gradient-success text-white mb-0"
                 @click="moveRegister()"
               >
-                <i class="material-icons text-sm me-2">edit</i>신청서작성
-              </material-button>
+                <i class="material-icons text-sm me-2">edit</i>양식 작성
+              </button>
             </div>
           </div>
         </div>
-      </main>
+      </div>
+      </div>
     </div>
-  </div>
+
 </template>
 <script>
-import MaterialButton from "@/components/MaterialButton.vue";
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
-// import MaterialInput from "@/components/MaterialInput.vue";
 
 export default {
-  name: "tables",
+  name: "formList",
   components: {
-    MaterialButton,
     MaterialPagination,
     MaterialPaginationItem,
-    // MaterialInput,
   },
 };
 </script>
+<style scoped>
+.work-layout {
+  background-color: #f8f9fa;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.application-card {
+  background: #ffffff;
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+</style>

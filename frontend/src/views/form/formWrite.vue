@@ -6,7 +6,9 @@ import { ref, onBeforeMount, computed } from "vue";
 import MaterialButton from "@/components/MaterialButton.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
 import axios from "axios";
-import router from "../../router";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // export default {
 //   name: "tables",
@@ -193,27 +195,26 @@ const submitForm = async () => {
 //값 초기화
 </script>
 <template>
-  <div class="container-fluid py-4">
-    <div class="row">
-      <div class="col-12">
-        <div class="card my-4">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <div
-              class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3"
-            >
-              <h6 class="text-white text-capitalize ps-3">신청서 양식 작성</h6>
-            </div>
+  <div class="container-fluid pt-2 pb-2 work-layout">
+    <div class="work-container">
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">신청서 양식 작성</h6>
           </div>
           <div class="card-body px-4 pb-2">
             <div class="row mb-4 border-bottom pb-4">
               <div class="col-md-4">
-                <label class="form-label fw-bold">양식 버전 불러오기</label>
+                <label class="form-label fw-bold text-secondary text-xs"
+                  >양식 버전 불러오기</label
+                >
                 <div class="d-flex gap-2">
                   <select
                     v-model="selectedVersion"
-                    class="form-select border p-2"
+                    class="form-select border p-2 border-radius-lg"
                   >
-                    <!-- <option value="">새 양식 작성</option> -->
                     <option
                       v-for="ver in list"
                       :key="ver.id"
@@ -225,6 +226,7 @@ const submitForm = async () => {
                   <material-button
                     size="sm"
                     variant="outline"
+                    color="success"
                     class="mb-0 text-nowrap"
                     @click="getForm"
                     >불러오기</material-button
@@ -232,142 +234,165 @@ const submitForm = async () => {
                 </div>
               </div>
               <div class="col-md-8">
-                <label class="form-label fw-bold">양식 설명 (코멘트)</label>
+                <label class="form-label fw-bold text-secondary text-xs"
+                  >양식 설명 (코멘트)</label
+                >
                 <material-input
                   v-model="comment"
+                  variant="static"
                   placeholder="이 신청서 양식에 대한 설명을 입력하세요 (예: 2026년 상반기 정기 신청용)"
-                  :type="text"
                 />
               </div>
             </div>
           </div>
           <div class="card-body px-4 pb-2">
-            <div v-if="Object.keys(formData).length">
+            <div v-if="Object.keys(formData).length" class="form-sections">
               <section
                 v-for="(big, bIdx) in formData"
-                :key="big.bcategory"
+                :key="'big-' + bIdx"
                 class="big-section"
               >
-                <h1 class="big-title">대분류명</h1>
-                <button
-                  type="button"
-                  @click="delBigcategory(bIdx)"
-                  :disabled="formData.length <= 1"
-                >
-                  지우기
-                </button>
-                <material-input
-                  :type="text"
-                  placeholder="대분류"
-                  v-model="big.name"
-                  >대분류</material-input
-                >
-
-                <button @click="addScategory(big)">소분류 추가</button>
+                <h2 class="big-title">
+                  <span class="big-title-num">{{ bIdx + 1 }}</span>
+                  대분류
+                </h2>
+                <div class="big-section-body">
+                  <div class="big-section-actions">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-secondary"
+                      @click="delBigcategory(bIdx)"
+                      :disabled="formData.length <= 1"
+                    >
+                      지우기
+                    </button>
+                  </div>
+                  <material-input
+                    variant="static"
+                    placeholder="대분류명을 입력하세요"
+                    v-model="big.name"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-add-sub"
+                    @click="addScategory(big)"
+                  >
+                    소분류 추가
+                  </button>
+                </div>
 
                 <div
                   v-for="(small, sIdx) in big.scategory"
-                  :key="small.scategory"
+                  :key="'small-' + bIdx + '-' + sIdx"
                   class="small-group"
                 >
-                  <h2 class="small-title">소분류명</h2>
-                  <button
-                    type="button"
-                    :disabled="big.scategory.length <= 1"
-                    @click="delScategory(big, sIdx)"
-                  >
-                    지우기
-                  </button>
-                  <material-input
-                    :type="text"
-                    placeholder="소분류"
-                    v-model="small.name"
-                    >소분류</material-input
-                  >
-                  <button type="button" @click="addQuestion(small)">
-                    질문추가
-                  </button>
+                  <h3 class="small-title">
+                    <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
+                    소분류
+                  </h3>
+                  <div class="small-group-body">
+                    <div class="small-group-actions">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        :disabled="big.scategory.length <= 1"
+                        @click="delScategory(big, sIdx)"
+                      >
+                        지우기
+                      </button>
+                    </div>
+                    <material-input
+                      variant="static"
+                      placeholder="소분류명을 입력하세요"
+                      v-model="small.name"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-add-question"
+                      @click="addQuestion(small)"
+                    >
+                      질문 추가
+                    </button>
+                  </div>
                   <div
                     v-for="(q, qIdx) in small.questions"
-                    :key="q.question_num"
+                    :key="'q-' + qIdx"
                     class="question-card"
                   >
-                    <div class="question-card">
+                    <div class="question-card-inner">
                       <div class="type-select-area">
-                        <label>응답 타입: </label>
-                        <select v-model="q.type" @change="handleTypeChange(q)">
+                        <span class="q-num">{{ qIdx + 1 }}.</span>
+                        <label class="form-label fw-bold text-secondary text-xs mb-0"
+                          >응답 타입</label
+                        >
+                        <select
+                          v-model="q.type"
+                          @change="handleTypeChange(q)"
+                          class="form-select form-select-sm type-select"
+                        >
                           <option value="l1">자유 응답형</option>
                           <option value="l2">2지선다형</option>
-                          <option value="l3">5지선다형</option></select
-                        ><button
+                          <option value="l3">5지선다형</option>
+                        </select>
+                        <button
                           type="button"
+                          class="btn btn-sm btn-outline-secondary"
                           :disabled="small.questions.length <= 1"
                           @click="delQuestion(small, qIdx)"
                         >
                           지우기
                         </button>
                       </div>
-                      <material-input
-                        v-model="q.question"
-                        placeholder="질문을 입력하세요"
-                      />
-
+                      <div class="question-input-wrap">
+                        <material-input
+                          v-model="q.question"
+                          variant="static"
+                          placeholder="질문을 입력하세요"
+                        />
+                      </div>
                       <div v-if="q.type != 'l1'" class="options-container">
                         <div
                           v-for="(opt, oIdx) in q.options"
                           :key="oIdx"
                           class="option-input-group"
                         >
-                          <span>{{ oIdx + 1 }}번 선택지: </span>
+                          <span class="option-label">{{ oIdx + 1 }}번 선택지</span>
                           <input
                             v-model="q.options[oIdx]"
                             type="text"
-                            :placeholder="oIdx + 1 + '번 내용을 입력하세요'"
+                            class="form-control form-control-sm option-input"
+                            :placeholder="(oIdx + 1) + '번 내용을 입력하세요'"
                           />
                         </div>
                       </div>
-                    </div>
-
-                    <div class="answer-area">
-                      <!-- <div v-if="q.options.length > 0" class="radio-group">
-                        <label
-                          v-for="opt in q.options"
-                          :key="opt.exam_num"
-                          class="radio-item"
-                        >
-                          <input
-                            type="radio"
-                            :name="q.question_num"
-                            :value="opt.exam_num"
-                          />
-                          {{ opt.value }}
-                        </label>
-                      </div> -->
-
-                      <!-- <div v-else class="text-group">
-                        <textarea placeholder="답변을 입력해주세요."></textarea>
-                      </div> -->
                     </div>
                   </div>
                 </div>
               </section>
             </div>
-            <button @click="addBcategory">대분류 추가</button>
-            <div class="d-flex justify-content-center gap-2 mt-4">
+            <button
+              type="button"
+              class="btn btn-sm btn-add-big mb-3"
+              @click="addBcategory"
+            >
+              대분류 추가
+            </button>
+            <div class="bottom-actions d-flex justify-content-end gap-2 mt-4">
               <material-button
-                class="btn bg-gradient-secondary"
-                @click="saveTemp"
-              >
-                임시저장
-              </material-button>
-              <material-button
-                class="btn bg-gradient-primary"
+                color="success"
+                variant="gradient"
+                class="mb-0"
                 @click="submitForm"
                 :disabled="check"
               >
                 제출
               </material-button>
-              <material-button class="btn btn-outline-danger" @click="cancel">
+              <material-button
+                color="secondary"
+                variant="outline"
+                class="mb-0"
+                @click="router.push('/list/form')"
+              >
                 취소
               </material-button>
             </div>
@@ -379,6 +404,257 @@ const submitForm = async () => {
 </template>
 
 <style scoped>
+.work-layout {
+  background-color: #f8f9fa;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.application-card {
+  background: #ffffff;
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 섹션 */
+.big-section {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+.big-section-body {
+  padding: 1rem 1.25rem;
+}
+
+.big-section-actions {
+  margin-bottom: 0.75rem;
+}
+
+.btn-add-sub {
+  margin-top: 0.75rem;
+  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-add-sub:hover {
+  opacity: 0.9;
+}
+
+/* 소분류 그룹 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.small-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d3748;
+  background: #e8f5e9;
+  border-left: 4px solid #17c653;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #17c653;
+  background: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.small-group-body {
+  margin-bottom: 0.5rem;
+}
+
+.small-group-actions {
+  margin-bottom: 0.5rem;
+}
+
+.btn-add-question {
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-add-question:hover {
+  opacity: 0.9;
+}
+
+/* 질문 카드 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  border-left: 4px solid #adb5bd;
+}
+
+.question-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.type-select-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.type-select-area .q-num {
+  font-weight: 700;
+  color: #17c653;
+  min-width: 1.5em;
+}
+
+.type-select-area .form-label {
+  margin: 0 0.25rem 0 0;
+}
+
+.type-select {
+  width: auto;
+  min-width: 120px;
+  border: 1px solid #d2d6da;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.question-input-wrap {
+  margin-left: 0.25rem;
+}
+
+.options-container {
+  margin-left: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.option-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.option-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  min-width: 5rem;
+}
+
+.option-input {
+  flex: 1;
+  min-width: 180px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+}
+
+.option-input:focus {
+  border-color: #17c653;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(23, 198, 83, 0.2);
+}
+
+.btn-add-big {
+  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-add-big:hover {
+  opacity: 0.9;
+}
+
 .form-control,
 .form-select {
   border: 1px solid #d2d6da !important;

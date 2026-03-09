@@ -24,7 +24,7 @@
 //     grade: result.info.grade,
 //   });
 //   if (result.info.approve == "k1") {
-//     router.push("/list/document");
+//     router.push("/document");
 //   }
 // }
 // };

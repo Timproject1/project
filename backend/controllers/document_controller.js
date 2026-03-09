@@ -78,6 +78,16 @@ const ctrl = {
       res.json({ retCode: "NG", error });
     }
   },
+  delDoc: async(req,res)=>{
+    try {
+      const num=req.params.num;
+      const result = await service.delDoc(num);
+      res.json({retCode:"OK"});
+    } catch (error) {
+      console.log(error);
+      res.json({retCode:"NG",error})  
+    }
+  },
   writeDoc: async (req, res) => {
     try {
       const form_ver = req.body.formVer;

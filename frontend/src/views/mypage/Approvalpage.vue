@@ -188,7 +188,7 @@ const addSupported = async () => {
                 :class="{ active: currentTab === 'list' }"
                 @click="
                   currentTab = 'list';
-                  router.push('/list/supported');
+                  router.push('/support/supported');
                 "
               >
                 지원자 현황
@@ -197,7 +197,7 @@ const addSupported = async () => {
                 :class="{ active: currentTab === 'info' }"
                 @click="
                   currentTab = 'info';
-                  router.push('/list/info');
+                  router.push('/support/info');
                 "
               >
                 지원자 정보관리

@@ -127,81 +127,83 @@ const getResp = async (doc_num) => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
+const delDoc = async (doc_num)=>{
+  const result = await axios.delete(
+    `http://localhost:3000/document/delDoc/${doc_num}`,
+  )
+  if(result.data.retCode=="OK"){
+    alert("삭제완료");
+    router.go(0);
+  }
+}
 onBeforeMount(async () => {
   await getList();
 });
 </script>
 <template>
-  <div class="container-fluid py-4">
-    <div class="d-flex gap-4 align-items-start">
-      <aside
-        class="rounded-3 shadow-dark p-3 text-white"
-        style="
-          min-width: 240px;
-          background-color: #adb5bd;
-          border-radius: 0.75rem;
-        "
-      >
-        <div class="d-flex align-items-center mb-4 ps-2">
-          <i class="material-icons opacity-10 me-2">search</i>
-          <span class="fw-bold">검색 필터</span>
-        </div>
-
-        <div class="px-2">
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >지원자</label
-            >
-            <material-input
-              id="sup"
-              v-model="searchQuery.sup"
-              variant="static"
-              color="white"
-              placeholder="지원자명 입력"
-              class="text-white"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >보호자</label
-            >
-            <material-input
-              id="writer"
-              v-model="searchQuery.writer"
-              variant="static"
-              color="white"
-              placeholder="보호자명 입력"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >담당자</label
-            >
-            <material-input
-              id="maneger"
-              v-model="searchQuery.maneger"
-              variant="static"
-              color="white"
-              placeholder="담당자명 입력"
-            />
-          </div>
-
-          <material-button
-            color="success"
-            variant="gradient"
-            class="w-100 mt-3 mb-2"
-            @click="getList()"
-            >검색</material-button
+  <div class="container-fluid work-layout">
+    <div class="work-container">
+      <div class="left">
+        <div
+          class="filter-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+        >
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
           >
+            <i class="material-icons opacity-10 me-2">search</i>
+            <span class="title text-white fw-bold">검색 필터</span>
+          </div>
+          <div class="card-body p-3">
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >지원자</label
+              >
+              <material-input
+                id="sup"
+                v-model="searchQuery.sup"
+                variant="static"
+                placeholder="지원자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >보호자</label
+              >
+              <material-input
+                id="writer"
+                v-model="searchQuery.writer"
+                variant="static"
+                placeholder="보호자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >담당자</label
+              >
+              <material-input
+                id="maneger"
+                v-model="searchQuery.maneger"
+                variant="static"
+                placeholder="담당자명 입력"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-sm w-100 bg-gradient-success text-white"
+              @click="getList()"
+            >
+              검색
+            </button>
+          </div>
         </div>
-      </aside>
+      </div>
 
-      <main class="flex-grow-1">
-        <div class="card shadow-sm">
-          <div class="card-header p-3">
-            <h6 class="mb-0 font-weight-bolder">지원 신청 내역</h6>
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">지원 신청 내역</h6>
           </div>
 
           <div class="card-body px-0 pb-2">
@@ -316,7 +318,7 @@ onBeforeMount(async () => {
             </div>
 
             <div
-              class="d-flex justify-content-between align-items-center p-3 mt-2"
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
               <material-pagination>
                 <material-pagination-item prev />
@@ -325,18 +327,17 @@ onBeforeMount(async () => {
                 <material-pagination-item next />
               </material-pagination>
 
-              <material-button
-                color="success"
-                variant="gradient"
-                class="mb-0"
+              <button
+                type="button"
+                class="btn btn-sm bg-gradient-success text-white mb-0"
                 @click="moveRegister()"
               >
                 <i class="material-icons text-sm me-2">edit</i>신청서작성
-              </material-button>
+              </button>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </div>
 
@@ -519,7 +520,7 @@ onBeforeMount(async () => {
             v-if="modalType == 'document'"
             color="success"
             variant="gradient"
-            @click="closeModal"
+            @click="delDoc(selectedDocData.doc_num)"
             >삭제</material-button
           >
           <material-button
@@ -550,6 +551,52 @@ export default {
 };
 </script>
 <style scoped>
+/* work.vue / list.vue 동일 레이아웃 */
+.work-layout {
+  background-color: #f8f9fa;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.left,
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.left {
+  max-width: 320px;
+  flex: 0 0 auto;
+}
+
+.application-card,
+.filter-card {
+  background: #ffffff;
+
+  position: relative;
+}
+
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+
 /* 1. 모달 전체 영역에서 포인터 이벤트가 투명하게 본문으로 전달되도록 설정 */
 .modal {
   pointer-events: none;
