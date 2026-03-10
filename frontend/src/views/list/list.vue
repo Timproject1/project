@@ -57,7 +57,7 @@ const route = useRoute();
 </template>
 <style scoped>
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   
   overflow-y: auto;
   display: flex;

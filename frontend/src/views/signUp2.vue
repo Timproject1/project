@@ -266,7 +266,7 @@ watch(id, () => {
 
 <style scoped>
 .address-wrap {
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   width: 100%;
@@ -279,7 +279,7 @@ watch(id, () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--app-backdrop);
   z-index: 1050;
   display: flex;
   justify-content: center;

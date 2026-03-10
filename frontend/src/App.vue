@@ -30,7 +30,7 @@ Coded by www.creative-tim.com
       :class="[isNavFixed ? navbarFixed : '', isAbsolute ? absolute : '']"
       :color="isAbsolute ? 'text-white opacity-8' : ''"
       :minNav="navbarMinimize"
-      v-if="showNavbar"
+      v-if="!$route.meta.hideHeader"
     />
     <router-view />
     <!-- <div class="container">
