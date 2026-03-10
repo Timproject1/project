@@ -161,6 +161,16 @@ const service = {
       await con.release();
     }
   },
+  pri: async (id) => {
+    try {
+      const query = `select doc_num,priority_approved from priority_req where doc_num=?`;
+      const result = await pool.query(query, [id]);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
   //우선순위 셋팅
   prioritySetting: async (id) => {
     try {
@@ -510,7 +520,7 @@ const service = {
   //계획 승인요청
   restartPlan: async (id) => {
     try {
-      const query = `update plans set plan_approved="d1" where plan_num=?`;
+      const query = `update plan_req set plan_approved="d1" where plan_num=?`;
       const result = await pool.query(query, [id.plan_num]);
       return result[0];
     } catch (err) {
@@ -825,6 +835,16 @@ const service = {
                     from result_file`;
       const result = await pool.query(query);
       return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  cancelPlan: async (id) => {
+    try {
+      const query = `update plan_req set plan_approved="d4" where plan_num=?`;
+      const result = await pool.query(query, [id.plan_num]);
+      return result[0];
     } catch (err) {
       console.log(err);
       return;
