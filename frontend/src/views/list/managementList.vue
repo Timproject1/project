@@ -91,9 +91,7 @@ const resetSearch = () => {
           <div
             class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
           >
-            <h6 class="mb-0 text-white font-weight-bolder">
-              지원자 목록(자기에게 배정받은)
-            </h6>
+            <h6 class="mb-0 text-white font-weight-bolder">지원자 목록</h6>
           </div>
 
           <div class="card-body px-0 pb-2">
