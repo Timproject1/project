@@ -18,7 +18,7 @@ let prioritydb = ref({});
 const priorityData = async () => {
   let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/priority/${doc}`)
+    .get(`/api/document/priority/${doc}`)
     .catch((err) => console.log(err));
   prioritydb.value = result.data.result;
   console.log(result.data.result);
@@ -56,10 +56,7 @@ const appPri = async () => {
   console.log(appcontent);
   const result = ref(null);
   try {
-    const res = await axios.post(
-      "http://localhost:3000/document/priority_manager",
-      appcontent,
-    );
+    const res = await axios.post("/api/document/priority_manager", appcontent);
     console.log(res.data);
     result.value = res.data;
     location.reload();
@@ -81,7 +78,7 @@ const returnPri = async () => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/returnPriority_manager",
+      "/api/document/returnPriority_manager",
       returncontent,
     );
     console.log(res.data);
@@ -97,37 +94,38 @@ const returnPri = async () => {
     <div class="priority-card card shadow-lg border-0 border-radius-xl">
       <h4 class="mb-3 fw-bold text-dark">우선순위 승인</h4>
       <p class="text-sm text-secondary mb-4">
-        {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를 선택하세요.
+        {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를
+        선택하세요.
       </p>
       <div class="text-center mb-4">
-      <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
-        <div
-          class="circle"
-          :style="{ backgroundColor: items[0].color, color: '#fff' }"
-          disabled
-        >
-          {{ items[0].label }}
+        <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
+          <div
+            class="circle"
+            :style="{ backgroundColor: items[0].color, color: '#fff' }"
+            disabled
+          >
+            {{ items[0].label }}
+          </div>
+        </div>
+        <div class="wrapper" v-else-if="prioritydb?.priority == 'c4'">
+          <div
+            class="circle"
+            :style="{ backgroundColor: items[1].color, color: '#fff' }"
+            disabled
+          >
+            {{ items[1].label }}
+          </div>
+        </div>
+        <div class="wrapper" v-else>
+          <div
+            class="circle"
+            :style="{ backgroundColor: items[2].color, color: '#fff' }"
+            disabled
+          >
+            {{ items[2].label }}
+          </div>
         </div>
       </div>
-      <div class="wrapper" v-else-if="prioritydb?.priority == 'c4'">
-        <div
-          class="circle"
-          :style="{ backgroundColor: items[1].color, color: '#fff' }"
-          disabled
-        >
-          {{ items[1].label }}
-        </div>
-      </div>
-      <div class="wrapper" v-else>
-        <div
-          class="circle"
-          :style="{ backgroundColor: items[2].color, color: '#fff' }"
-          disabled
-        >
-          {{ items[2].label }}
-        </div>
-      </div>
-    </div>
       <div id="reasonbox" class="mb-3">
         <p class="reason-view">{{ prioritydb.priority_reason }}</p>
         <!-- 반려 사유 작성 모달창 -->
@@ -154,8 +152,13 @@ const returnPri = async () => {
         </div>
       </div>
 
-      <div v-if="prioritydb?.priority_approved === 'd3'" class="mb-2 text-center">
-        <material-button type="button" class="app" disabled>반려</material-button>
+      <div
+        v-if="prioritydb?.priority_approved === 'd3'"
+        class="mb-2 text-center"
+      >
+        <material-button type="button" class="app" disabled
+          >반려</material-button
+        >
       </div>
       <div id="btnmargin" class="text-center mt-2">
         <div v-if="prioritydb?.priority_approved === 'd2'">

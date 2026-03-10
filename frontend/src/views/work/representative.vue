@@ -12,7 +12,7 @@ const handleRegister = async () => {
     return;
   }
   const result = await axios.patch(
-    `http://localhost:3000/document/manager/${docStore.doc_num}/${selectedManager.value}`,
+    `/api/document/manager/${docStore.doc_num}/${selectedManager.value}`,
   );
   if (result.data.retCode == "OK") {
     alert(`${selectedManager.value} 담당자로 등록되었습니다.`);
@@ -23,15 +23,11 @@ const handleRegister = async () => {
 //작성자의 센터의 기관담당자 또는 관리자 가져오기
 const getManagerList = async () => {
   console.log(docStore.writer);
-  const result = await axios.get(
-    `http://localhost:3000/user/getManager/${docStore.writer}`,
-  );
+  const result = await axios.get(`/api/user/getManager/${docStore.writer}`);
   managers.value = result.data.result;
 };
 const getManager = async () => {
-  const result = await axios.get(
-    `http://localhost:3000/document/manager/${docStore.doc_num}`,
-  );
+  const result = await axios.get(`/api/document/manager/${docStore.doc_num}`);
   console.log(result.data);
   selectedManager.value = result.data.result.manager || "";
 };
