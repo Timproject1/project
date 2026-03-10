@@ -527,16 +527,6 @@ const requestManager = (name) =>
       </div>
       <div class="mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >지원자명</label
-        >
-        <input
-          v-model="newSupported.sup_name"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >생년월일</label
         >
         <input
