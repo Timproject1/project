@@ -5,6 +5,7 @@ require("dotenv").config();
 const express = require("express");
 const pool = require("./db/mapper.js"); // DB 연결을 위한 마이바티스(또는 커스텀) 매퍼
 const cors = require("cors"); // 교차 출처 리소스 공유(CORS) 허용을 위한 미들웨어
+const path = require("path");
 const app = express();
 
 // 각 기능별 라우터 모듈들을 불러옵니다.
@@ -33,26 +34,15 @@ app.use("/api/form", form_route); // /form 경로 처리
 app.use("/api/support", sup_route); // /support 경로 처리
 app.use("/api/mypage", mypage_route); // /mypage 경로 처리
 
-// 루트 경로("/") 접속 시 DB 연결 테스트
-app.get("/", async (req, res) => {
-  // 환경 변수가 정상적으로 로드되었는지 콘솔에 출력 (디버깅용)
-  console.log(process.env.DB_HOST);
-  console.log(process.env.DB_USER);
-  console.log(process.env.DB_PASSWORD);
+const publicPath = path.join(__dirname, "public");
+app.use(express.static(publicPath));
 
-  try {
-    const query = "show tables"; // DB의 테이블 목록을 가져오는 쿼리
-    const result = await pool.query(query); // 쿼리 실행
-    res.json(result); // 결과를 JSON 형태로 응답
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: error.message }); // 에러 발생 시 500 에러 응답
-  }
+app.get("/", function (req, res, next) {
+  res.sendFile(path.join(__dirname, "./public", "index.html"));
 });
 
-// 서버 작동 여부를 확인하기 위한 단순 테스트용 경로
-app.get("/test", (req, res) => {
-  res.send("test server is running!");
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "./public", "index.html"));
 });
 
 // 서버를 3000번 포트에서 실행합니다.
