@@ -128,9 +128,9 @@ const handleResetPassword = async () => {
 .login-card-box {
   width: 100%;
   max-width: 500px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: var(--app-surface);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-modal);
   position: relative;
   z-index: 5;
 }
@@ -141,7 +141,7 @@ const handleResetPassword = async () => {
   padding: 20px 0;
   border-radius: 10px;
   text-align: center;
-  background: linear-gradient(87deg, #00a000 0, #00a000);
+  background: var(--app-gradient-success);
 }
 
 /* 내부 콘텐츠 여백입니다. */
@@ -159,7 +159,7 @@ const handleResetPassword = async () => {
 .row-label {
   width: 120px;
   font-weight: bold;
-  color: #344767;
+  color: var(--app-text);
   margin-bottom: 0;
 }
 
@@ -167,19 +167,19 @@ const handleResetPassword = async () => {
 .custom-input {
   flex: 1;
   padding: 10px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   border-radius: 5px;
   outline: none;
 }
 
 /* 입력창을 클릭했을 때 강조 색상입니다. */
 .custom-input:focus {
-  border-color: #00a000;
+  border-color: var(--app-accent);
 }
 
 /* 하단 버튼의 그라데이션 및 글자 스타일입니다. */
 .btn-success-gradient {
-  background: linear-gradient(87deg, #00a000 0, #00a000);
+  background: var(--app-gradient-success);
   color: white;
   border: none;
   padding: 12px;

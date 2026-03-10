@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
 <style scoped>
 /* documentLIST.vue work-layout와 동일한 배경/레이아웃 */
 .signin-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -183,7 +183,7 @@ onBeforeUnmount(() => {
 
 /* documentLIST filter-card / application-card 동일 스타일 */
 .login-card {
-  background: #ffffff;
+  background: var(--app-surface);
   position: relative;
 }
 
@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
 }
 
 .find-options {
-  border-top-color: #e9ecef !important;
+  border-top-color: var(--app-border-muted) !important;
 }
 
 .find-link {
@@ -207,12 +207,12 @@ onBeforeUnmount(() => {
 }
 
 .find-link:hover {
-  color: #17c653;
+  color: var(--app-accent);
 }
 
 .divider {
   margin: 0 0.75rem;
-  color: #dee2e6;
+  color: var(--app-border-muted);
   font-size: 0.75rem;
 }
 

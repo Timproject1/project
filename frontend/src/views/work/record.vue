@@ -395,7 +395,7 @@ const filelist = async () => {
 </template>
 <style scoped>
 .work-section-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
 }
 
@@ -405,6 +405,6 @@ const filelist = async () => {
 }
 
 .record-item {
-  border-color: #e9ecef;
+  border-color: var(--app-border-muted);
 }
 </style>

@@ -99,7 +99,7 @@ const updateCenter = async () => {
 };
 </script>
 <template>
-  <div class="container-fluid pt-2 pb-2 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -434,7 +434,7 @@ const updateCenter = async () => {
 <style scoped>
 /* documentLIST.vue 동일 레이아웃 - list.vue 안에서 테이블 한 번에 표시(스크롤 없음) */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: auto;
   min-height: 0;
   overflow: visible;
@@ -473,7 +473,7 @@ const updateCenter = async () => {
 
 .application-card,
 .filter-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }
@@ -506,7 +506,7 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--app-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -519,7 +519,7 @@ button {
   border-radius: 0.75rem;
   width: 500px;
   max-width: 90%;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: var(--app-shadow-modal);
 }
 
 .modal-content input,

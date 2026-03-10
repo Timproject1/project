@@ -118,7 +118,7 @@ const handleSendAuthEmail = async () => {
 
 <style scoped>
 .findpw-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -136,7 +136,7 @@ const handleSendAuthEmail = async () => {
 }
 
 .findpw-card {
-  background: #ffffff;
+  background: var(--app-surface);
   position: relative;
 }
 
@@ -153,7 +153,7 @@ const handleSendAuthEmail = async () => {
 }
 
 .findpw-link:hover {
-  color: #17c653;
+  color: var(--app-accent);
   text-decoration: underline;
 }
 

@@ -151,7 +151,7 @@ const handleFindId = async () => {
 
 <style scoped>
 .findid-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -169,7 +169,7 @@ const handleFindId = async () => {
 }
 
 .findid-card {
-  background: #ffffff;
+  background: var(--app-surface);
   position: relative;
 }
 
@@ -182,20 +182,20 @@ const handleFindId = async () => {
 }
 
 .result-box {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
   padding: 1.5rem 1.25rem;
 }
 
 .found-id-text {
-  color: #17c653;
+  color: var(--app-accent);
   font-weight: 700;
   font-size: 1.1rem;
 }
 
 .findid-link {
-  color: #17c653;
+  color: var(--app-accent);
   font-weight: 600;
   text-decoration: none;
 }

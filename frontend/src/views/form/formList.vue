@@ -203,7 +203,7 @@ export default {
 </script>
 <style scoped>
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -224,7 +224,7 @@ export default {
 }
 
 .application-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }

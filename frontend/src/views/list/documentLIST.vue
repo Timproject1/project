@@ -572,7 +572,7 @@ export default {
 <style scoped>
 /* work.vue / list.vue 동일 레이아웃 */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -600,9 +600,13 @@ export default {
 
 .application-card,
 .filter-card {
-  background: #ffffff;
-
+  background: var(--app-surface);
+  padding: 18px 18px 20px;
   position: relative;
+}
+
+.filter-card .card-body {
+  padding: 18px;
 }
 
 .bottom-actions {
@@ -644,9 +648,9 @@ button {
 }
 .content-area {
   padding: 1rem;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
-  background: #fafbfc;
+  background: var(--app-surface-muted);
 }
 
 .form-sections {
@@ -657,11 +661,11 @@ button {
 
 /* 대분류 */
 .big-section {
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .big-title {
@@ -669,8 +673,8 @@ button {
   padding: 0.75rem 1.25rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -691,7 +695,7 @@ button {
 /* 소분류 */
 .small-group {
   padding: 0 1.25rem 1rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--app-border-muted);
 }
 
 .small-title {
@@ -699,9 +703,9 @@ button {
   padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #2d3748;
-  background: #e8f5e9;
-  border-left: 4px solid #17c653;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
   border-radius: 0 8px 8px 0;
   display: flex;
   align-items: center;
@@ -711,8 +715,8 @@ button {
 .small-title-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #17c653;
-  background: #fff;
+  color: var(--app-accent);
+  background: var(--app-surface);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
 }
@@ -721,17 +725,17 @@ button {
 .question-card {
   margin-top: 0.75rem;
   padding: 1rem 1rem 1rem 1.25rem;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
   border-radius: 10px;
-  border-left: 4px solid #adb5bd;
+  border-left: 4px solid var(--app-scrollbar-thumb);
 }
 
 .question-text {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #495057;
+  color: var(--app-text-muted);
   line-height: 1.5;
 }
 
@@ -739,7 +743,7 @@ button {
   display: inline-block;
   min-width: 1.5em;
   font-weight: 700;
-  color: #17c653;
+  color: var(--app-accent);
 }
 
 .answer-area {
@@ -766,10 +770,10 @@ button {
   min-height: 60px;
   padding: 0.6rem 0.75rem;
   font-size: 0.9rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--app-border-muted);
   border-radius: 8px;
-  background: #e9ecef; /* 읽기 전용 느낌을 주기 위해 살짝 회색으로 변경 */
-  color: #495057;
+  background: var(--app-border-muted); /* 읽기 전용 느낌을 주기 위해 살짝 회색으로 변경 */
+  color: var(--app-text-muted);
   resize: none; /* 크기 조절 방지 */
 }
 </style>

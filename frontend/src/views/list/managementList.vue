@@ -170,7 +170,7 @@ const resetSearch = () => {
 <style scoped>
 /* documentLIST.vue 동일 레이아웃 */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -198,7 +198,7 @@ const resetSearch = () => {
 
 .application-card,
 .filter-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }

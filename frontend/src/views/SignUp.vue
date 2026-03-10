@@ -378,7 +378,7 @@ const handleSignup = async () => {
 <style scoped>
 /* documentLIST / SignIn과 동일 레이아웃 */
 .signup-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -397,7 +397,7 @@ const handleSignup = async () => {
 
 /* documentLIST card 스타일 */
 .signup-card {
-  background: #ffffff;
+  background: var(--app-surface);
   position: relative;
 }
 
@@ -411,13 +411,13 @@ const handleSignup = async () => {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.9rem;
-  color: #495057;
+  color: var(--app-text-muted);
   cursor: pointer;
 }
 
 .radio-group .radio-item input {
   margin: 0;
-  accent-color: #17c653;
+  accent-color: var(--app-accent);
 }
 
 /* 모달 - documentLIST와 동일 */
