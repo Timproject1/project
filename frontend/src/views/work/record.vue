@@ -128,10 +128,15 @@ const sevedate = async () => {
     .post(`http://localhost:3000/document/bringrecord`)
     .catch((err) => console.log(err));
 
-  const data = result.data;
+  const data = result.data[0];
+  if (!data) {
+    alert("저장된 데이터가 없습니다");
+    return;
+  }
+
   newrecord.value = true;
-  addRecordName.value = data.result[0].counsel_title;
-  addRecordContent.value = data.result[0].counsel_content;
+  addRecordName.value = data.result.counsel_title;
+  addRecordContent.value = data.result.counsel_content;
   console.log(data.result);
 };
 
@@ -217,13 +222,19 @@ const filelist = async () => {
 </script>
 <template>
   <div class="work-section-card card shadow-lg border-0 border-radius-xl">
-    <div class="work-section-header d-flex justify-content-between align-items-center mb-3">
+    <div
+      class="work-section-header d-flex justify-content-between align-items-center mb-3"
+    >
       <h4 class="mb-0 fw-bold text-dark">상담기록</h4>
       <div class="work-section-header-actions">
         <material-button type="button" size="sm" @click="sevedate()"
           >임시저장 내용</material-button
         >
-        <material-button type="button" size="sm" color="info" @click="newrecord = true"
+        <material-button
+          type="button"
+          size="sm"
+          color="info"
+          @click="newrecord = true"
           >상담기록 추가</material-button
         >
       </div>
@@ -293,10 +304,15 @@ const filelist = async () => {
     >
       <div class="d-flex justify-content-between align-items-center mb-2">
         <p class="mb-0 text-sm text-secondary">
-          {{ timedate(record.counsel_date) }} · {{ record.row_num }}번째 상담기록
+          {{ timedate(record.counsel_date) }} · {{ record.row_num }}번째
+          상담기록
         </p>
         <div class="d-flex gap-2">
-          <material-button type="button" size="sm" color="info" @click="openresmodal(record)"
+          <material-button
+            type="button"
+            size="sm"
+            color="info"
+            @click="openresmodal(record)"
             >수정</material-button
           >
           <material-button
@@ -342,10 +358,11 @@ const filelist = async () => {
         @close="record.showrecordDelete = false"
       >
         <template #content>
-          <p class="mb-3">
-            해당 상담내용을 <br />삭제하시겠습니까?
-          </p>
-          <material-button type="button" color="danger" @click="delRecord(record)"
+          <p class="mb-3">해당 상담내용을 <br />삭제하시겠습니까?</p>
+          <material-button
+            type="button"
+            color="danger"
+            @click="delRecord(record)"
             >예</material-button
           >
         </template>

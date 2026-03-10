@@ -106,7 +106,7 @@ const service = {
   //정보 받아오기
   getDoc: async (num) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,form_ver,writer_id from getDocumentList where doc_num=?`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,form_ver,writer_id,gender,birthday from getDocumentList where doc_num=?`;
       const result = await pool.query(query, [num]);
       // console.log(result);
       return result;
@@ -740,7 +740,7 @@ const service = {
           -- 담당자 정보 (member - 관리자)
           mgr.user_name AS manager_name,
           d.write_date,
-          d.progress
+          c.detail_name AS progress
       FROM 
           priority_req pr
       JOIN 
@@ -751,6 +751,8 @@ const service = {
           member m ON d.user_id = m.user_id
       LEFT JOIN 
           member mgr ON d.manager = mgr.user_id  -- 담당자가 지정되지 않았을 수도 있으므로 LEFT JOIN 권장
+      JOIN 
+          code_detail c ON c.detail_code = d.progress 
       where pr.priority_approved = "d1"
       and m.registernum =?`;
 
@@ -789,7 +791,7 @@ const service = {
           -- 담당자 정보 (member - 관리자)
           mgr.user_name AS manager_name,
           d.write_date,
-          d.progress
+          c.detail_name AS progress
       FROM 
           plan_req pr
       JOIN 
@@ -802,6 +804,8 @@ const service = {
           member m ON d.user_id = m.user_id
       LEFT JOIN 
           member mgr ON d.manager = mgr.user_id
+      JOIN 
+          code_detail c ON c.detail_code = d.progress 
       WHERE 
           m.registernum =? 
       and 

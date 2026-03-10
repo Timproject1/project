@@ -97,10 +97,14 @@ const sevedate = async () => {
     .post(`http://localhost:3000/document/bringplan`)
     .catch((err) => console.log(err));
 
-  const data = result.data;
+  const data = result.data[0];
+  if (!data) {
+    alert("저장된 데이터가 없습니다");
+    return;
+  }
   newPlan.value = true;
-  addPlanName.value = data.result[0].plan_title;
-  addPlanContent.value = data.result[0].plan_content;
+  addPlanName.value = data.result.plan_title;
+  addPlanContent.value = data.result.plan_content;
   console.log(data.result[0]);
 };
 

@@ -130,7 +130,7 @@ const confirmReject = () => {
             class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
           >
             <h6 class="mb-0 text-white font-weight-bolder">
-              일반회원 가입승인 요청 목록
+              가입승인 요청 목록
             </h6>
           </div>
 
