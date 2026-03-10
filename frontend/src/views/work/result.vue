@@ -3,6 +3,7 @@ import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
+import MaterialTextarea from "@/components/MaterialTextarea.vue";
 import axios from "axios";
 import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
@@ -203,46 +204,65 @@ const filelist = async () => {
 </script>
 <template>
   <div class="work-section-card card shadow-lg border-0 border-radius-xl">
-    <div class="work-section-header d-flex justify-content-between align-items-center mb-3">
+    <div
+      class="work-section-header d-flex justify-content-between align-items-center mb-3"
+    >
       <h4 class="mb-0 fw-bold text-dark">지원결과서</h4>
       <div class="work-section-header-actions">
         <material-button type="button" size="sm" @click="sevedate()"
           >임시저장 내용</material-button
         >
-        <material-button type="button" size="sm" color="info" @click="newresult = true"
+        <material-button
+          type="button"
+          size="sm"
+          color="info"
+          @click="newresult = true"
           >지원결과서 추가</material-button
         >
       </div>
     </div>
 
     <!-- 지원결과서 추가 모달 -->
-    <Modal v-if="newresult" @close="newresult = false">
+    <Modal v-if="newresult" class="result-add-modal" @close="newresult = false">
       <template #content>
-        <p class="mb-2 text-sm text-secondary">
-          {{ timedate() }}
-        </p>
-        <material-button type="button" size="sm" @click="draft()"
-          >임시저장</material-button
-        >
+        <div class="add-modal-draft-row">
+          <p class="mb-0 text-secondary add-modal-draft-date">
+            {{ timedate() }}
+          </p>
+          <material-button
+            type="button"
+            size="sm"
+            class="btn-draft"
+            @click="draft()"
+            >임시저장</material-button
+          >
+        </div>
         <material-input
           id="text"
           placeholder="결과제목"
           v-model="addresultsName"
         />
-        <material-input
+        <material-textarea
           id="text"
           placeholder="내용입력"
           v-model="addresultsContent"
         />
-        <material-button type="button">첨부파일 등록</material-button>
-        <p>파일이름</p>
-        <material-button type="button" color="success" @click="addresults()"
-          >등록</material-button
-        >
+        <div class="add-modal-file-row">
+          <material-button type="button">첨부파일 등록</material-button>
+          <p class="mb-0">파일이름</p>
+        </div>
       </template>
       <template #actions="{ close }">
         <material-button
           type="button"
+          color="success"
+          class="btn-register"
+          @click="addresults()"
+          >등록</material-button
+        >
+        <material-button
+          type="button"
+          class="btn-cancel"
           @click="
             () => {
               addresultsName = '';
@@ -266,7 +286,11 @@ const filelist = async () => {
           {{ timedate(result.result_date) }} · 지원결과 {{ result.row_num }}
         </p>
         <div class="d-flex gap-2">
-          <material-button type="button" size="sm" color="info" @click="openresmodal(result)"
+          <material-button
+            type="button"
+            size="sm"
+            color="info"
+            @click="openresmodal(result)"
             >수정</material-button
           >
           <material-button
@@ -292,7 +316,11 @@ const filelist = async () => {
             placeholder="내용입력"
             v-model="result.result_contnet"
           />
-          <material-input id="text" placeholder="수정사유" v-model="resreason" />
+          <material-input
+            id="text"
+            placeholder="수정사유"
+            v-model="resreason"
+          />
           <material-button type="button" color="success" @click="Update(result)"
             >수정 완료</material-button
           >
@@ -308,10 +336,11 @@ const filelist = async () => {
         @close="result.showResultDelete = false"
       >
         <template #content>
-          <p class="mb-3">
-            해당 지원계획서를 <br />삭제하시겠습니까?
-          </p>
-          <material-button type="button" color="danger" @click="delresult(result)"
+          <p class="mb-3">해당 지원계획서를 <br />삭제하시겠습니까?</p>
+          <material-button
+            type="button"
+            color="danger"
+            @click="delresult(result)"
             >예</material-button
           >
         </template>
@@ -330,7 +359,9 @@ const filelist = async () => {
       <div class="mt-2">
         <p class="text-sm text-secondary mb-1">첨부파일</p>
         <div
-          v-for="file in filename.filter((f) => f.result_num === result.result_num)"
+          v-for="file in filename.filter(
+            (f) => f.result_num === result.result_num,
+          )"
           :key="file.result_num"
           class="text-sm"
         >
@@ -386,5 +417,45 @@ const filelist = async () => {
 
 .record-item {
   border-color: #e9ecef;
+}
+
+.add-modal-file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-modal-draft-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.add-modal-draft-row :deep(.btn-draft) {
+  width: 20%;
+  min-width: 80px;
+}
+
+.add-modal-draft-row .add-modal-draft-date {
+  font-size: 0.875rem;
+}
+
+/* 지원결과서 추가 모달: 버튼 같은 크기, 취소 회색 */
+.result-add-modal :deep(.mt-3) .btn-register,
+.result-add-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.result-add-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.result-add-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
 }
 </style>

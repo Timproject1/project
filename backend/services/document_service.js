@@ -83,22 +83,22 @@ const service = {
       con.release();
     }
   },
-  delDoc :async (num) =>{
-    const con= await pool.getConnection();
+  delDoc: async (num) => {
+    const con = await pool.getConnection();
     try {
       await con.beginTransaction();
-      let query =`delete from responce where doc_ver LIKE CONCAT(?, '-%') `;
-      await con.query(query,[num]);
+      let query = `delete from responce where doc_ver LIKE CONCAT(?, '-%') `;
+      await con.query(query, [num]);
       query = `delete from doc_version where doc_num =? `;
-      await con.query(query,[num]);
-      query = `delete from documents where doc_num = ?;`
-      await con.query(query,[num]);
+      await con.query(query, [num]);
+      query = `delete from documents where doc_num = ?;`;
+      await con.query(query, [num]);
       await con.commit();
     } catch (error) {
       await con.rollback();
       console.log(error);
       throw error;
-    }finally{
+    } finally {
       await con.release();
     }
   },
@@ -158,6 +158,16 @@ const service = {
       throw error;
     } finally {
       await con.release();
+    }
+  },
+  pri: async (id) => {
+    try {
+      const query = `select doc_num,priority_approved from priority_req where doc_num=?`;
+      const result = await pool.query(query, [id]);
+      return result;
+    } catch (err) {
+      console.log(err);
+      return;
     }
   },
   //우선순위 셋팅
@@ -494,7 +504,7 @@ const service = {
   },
   restartPlan: async (id) => {
     try {
-      const query = `update plans set plan_approved="d1" where plan_num=?`;
+      const query = `update plan_req set plan_approved="d1" where plan_num=?`;
       const result = await pool.query(query, [id.plan_num]);
       return result[0];
     } catch (err) {
@@ -790,6 +800,16 @@ const service = {
                     from result_file`;
       const result = await pool.query(query);
       return result;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  },
+  cancelPlan: async (id) => {
+    try {
+      const query = `update plan_req set plan_approved="d4" where plan_num=?`;
+      const result = await pool.query(query, [id.plan_num]);
+      return result[0];
     } catch (err) {
       console.log(err);
       return;
