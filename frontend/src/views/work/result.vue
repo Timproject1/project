@@ -304,7 +304,11 @@ const filelist = async () => {
       </div>
 
       <!-- 수정 모달 -->
-      <modal v-if="result.modifyResult" @close="result.modifyResult = false">
+      <modal
+        v-if="result.modifyResult"
+        class="result-edit-modal"
+        @close="result.modifyResult = false"
+      >
         <template #content>
           <material-input
             id="text"
@@ -321,51 +325,68 @@ const filelist = async () => {
             placeholder="수정사유"
             v-model="resreason"
           />
-          <material-button type="button" color="success" @click="Update(result)"
-            >수정 완료</material-button
-          >
         </template>
         <template #actions="{ close }">
-          <material-button type="button" @click="close">취소</material-button>
+          <material-button
+            type="button"
+            color="success"
+            class="btn-register"
+            @click="Update(result)"
+            >수정 완료</material-button
+          >
+          <material-button type="button" class="btn-cancel" @click="close"
+            >취소</material-button
+          >
         </template>
       </modal>
 
       <!-- 삭제 모달 -->
       <Modal
         v-if="result.showResultDelete"
+        class="result-delete-modal"
         @close="result.showResultDelete = false"
       >
         <template #content>
           <p class="mb-3">해당 지원계획서를 <br />삭제하시겠습니까?</p>
+        </template>
+        <template #actions="{ close }">
           <material-button
             type="button"
             color="danger"
+            class="btn-register"
             @click="delresult(result)"
             >예</material-button
           >
-        </template>
-        <template #actions="{ close }">
-          <material-button type="button" @click="close">아니오</material-button>
+          <material-button type="button" class="btn-cancel" @click="close"
+            >아니오</material-button
+          >
         </template>
       </Modal>
 
-      <div class="mt-2">
-        <!-- 목표 및 내용 출력 -->
-        <h5 class="fw-semibold mb-1">{{ result.result_title }}</h5>
-        <p class="mb-2">{{ result.result_contnet }}</p>
-      </div>
+      <div class="doc-display mt-2">
+        <div class="doc-section">
+          <div class="doc-label">제목</div>
+          <h5 class="doc-title mb-1">{{ result.result_title }}</h5>
+        </div>
 
-      <!-- 첨부파일 -->
-      <div class="mt-2">
-        <p class="text-sm text-secondary mb-1">첨부파일</p>
-        <div
-          v-for="file in filename.filter(
-            (f) => f.result_num === result.result_num,
-          )"
-          :key="file.result_num"
-          class="text-sm"
-        >
-          <p class="mb-0">{{ file.origin_name }}</p>
+        <div class="doc-section">
+          <div class="doc-label">내용</div>
+          <p class="doc-content mb-0">{{ result.result_contnet }}</p>
+        </div>
+
+        <div class="doc-section">
+          <div class="doc-label">첨부파일</div>
+          <div class="doc-files">
+            <div
+              v-for="file in filename.filter(
+                (f) => f.result_num === result.result_num,
+              )"
+              :key="file.result_num"
+              class="doc-file"
+            >
+              {{ file.origin_name }}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -417,6 +438,88 @@ const filelist = async () => {
 
 .record-item {
   border-color: var(--app-border-muted);
+}
+
+.doc-display {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--app-border-muted);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.doc-section + .doc-section {
+  margin-top: 10px;
+}
+
+.doc-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.doc-title {
+  font-weight: 700;
+  color: #212529;
+}
+
+.doc-content {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  color: #212529;
+}
+
+.doc-files {
+  background: #ffffff;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.doc-file + .doc-file {
+  margin-top: 4px;
+}
+
+.doc-file {
+  font-size: 0.875rem;
+  color: #343a40;
+}
+
+.result-edit-modal :deep(.mt-3) .btn-register,
+.result-edit-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.result-edit-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.result-edit-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
+}
+
+.result-delete-modal :deep(.mt-3) .btn-register,
+.result-delete-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.result-delete-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.result-delete-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
 }
 
 .add-modal-file-row {

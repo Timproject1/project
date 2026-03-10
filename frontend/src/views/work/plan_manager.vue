@@ -112,7 +112,9 @@ const filelist = async () => {
 </script>
 <template>
   <div class="work-section-card card shadow-lg border-0 border-radius-xl">
-    <div class="work-section-header d-flex justify-content-between align-items-center mb-3">
+    <div
+      class="work-section-header d-flex justify-content-between align-items-center mb-3"
+    >
       <h4 class="mb-0 fw-bold text-dark">지원계획서 승인</h4>
       <div class="work-section-header-actions">
         <material-button type="button" size="sm" disabled
@@ -131,11 +133,7 @@ const filelist = async () => {
           <p class="mb-0 text-secondary add-modal-draft-date">
             {{ timedate(new Date()) }}
           </p>
-          <material-button
-            type="button"
-            size="sm"
-            class="btn-draft"
-            disabled
+          <material-button type="button" size="sm" class="btn-draft" disabled
             >임시저장</material-button
           >
         </div>
@@ -166,11 +164,6 @@ const filelist = async () => {
         <p class="mb-0 text-sm text-secondary">
           {{ timedate(Plan.plan_date) }} · 지원계획 {{ Plan.row_num }}
         </p>
-        <div class="d-flex gap-2">
-          <material-button type="button" size="sm" @click="revisions(Plan)"
-            >수정내역</material-button
-          >
-        </div>
       </div>
 
       <!-- 수정내역 모달 -->
@@ -201,63 +194,88 @@ const filelist = async () => {
         </template>
       </Modal>
 
-      <div class="mt-2">
-        <!-- 목표 및 내용 출력 -->
-        <h5 class="fw-semibold mb-1">{{ Plan.plan_title }}</h5>
-        <p class="mb-2">{{ Plan.plan_content }}</p>
-      </div>
+      <div class="doc-display mt-2">
+        <div class="doc-section">
+          <div class="doc-label">제목</div>
+          <h5 class="doc-title mb-1">{{ Plan.plan_title }}</h5>
+        </div>
 
-      <!-- 첨부파일 -->
-      <div class="mt-2">
-        <p class="text-sm text-secondary mb-1">첨부파일</p>
-        <div
-          v-for="file in filename.filter((f) => f.plan_num === Plan.plan_num)"
-          :key="file.file_num"
-          class="text-sm"
-        >
-          <p class="mb-0">{{ file.origin_name }}</p>
+        <div class="doc-section">
+          <div class="doc-label">내용</div>
+          <p class="doc-content mb-0">{{ Plan.plan_content }}</p>
+        </div>
+
+        <div class="doc-section">
+          <div class="doc-label">첨부파일</div>
+          <div class="doc-files">
+            <div
+              v-for="file in filename.filter(
+                (f) => f.plan_num === Plan.plan_num,
+              )"
+              :key="file.file_num"
+              class="doc-file"
+            >
+              {{ file.origin_name }}
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 승인 / 반려 -->
-      <div class="mt-3 text-end">
-        <div v-if="Plan.plan_approved == 'd1'">
-          <material-button type="button" color="warning" class="me-1" @click="appPlan(Plan)"
-            >승인</material-button
+      <div class="mt-3 plan-action-row">
+        <!-- 수정내역 -->
+        <div class="plan-revision-actions">
+          <material-button type="button" size="sm" @click="revisions(Plan)"
+            >수정내역</material-button
           >
-          <material-button
-            type="button"
-            color="danger"
-            @click="Plan.returnplan = true"
-            >반려</material-button
-          >
+        </div>
 
-          <Modal v-if="Plan.returnplan" @close="Plan.returnplan = false">
-            <template #content>
-              <h4>반려사유</h4>
-              <material-input
-                id="text"
-                placeholder="반려사유작성"
-                v-model="returnReason"
-              />
-              <material-button type="button" @click="returnplan(Plan.plan_num)"
-                >반려</material-button
-              >
-            </template>
-            <template #actions="{ close }">
-              <material-button type="button" @click="close">취소</material-button>
-            </template>
-          </Modal>
-        </div>
-        <div v-else-if="Plan.plan_approved == 'd2'">
-          <material-button type="button" color="warning" disabled
-            >승인 완료</material-button
-          >
-        </div>
-        <div v-else>
-          <material-button type="button" color="warning" disabled
-            >반려</material-button
-          >
+        <!-- 승인 / 반려 -->
+        <div class="plan-status-actions">
+          <p v-if="Plan.plan_approved == 'd1'">
+            <material-button
+              type="button"
+              color="warning"
+              @click="appPlan(Plan)"
+              >승인</material-button
+            >
+            <material-button
+              type="button"
+              color="danger"
+              @click="Plan.returnplan = true"
+              >반려</material-button
+            >
+
+            <Modal v-if="Plan.returnplan" @close="Plan.returnplan = false">
+              <template #content>
+                <h4>반려사유</h4>
+                <material-input
+                  id="text"
+                  placeholder="반려사유작성"
+                  v-model="returnReason"
+                />
+                <material-button
+                  type="button"
+                  @click="returnplan(Plan.plan_num)"
+                  >반려</material-button
+                >
+              </template>
+              <template #actions="{ close }">
+                <material-button type="button" @click="close"
+                  >취소</material-button
+                >
+              </template>
+            </Modal>
+          </p>
+          <p v-else-if="Plan.plan_approved == 'd2'">
+            <material-button type="button" color="warning" disabled
+              >승인 완료</material-button
+            >
+          </p>
+          <p v-else>
+            <material-button type="button" color="warning" disabled
+              >반려</material-button
+            >
+          </p>
         </div>
       </div>
     </div>
@@ -276,6 +294,79 @@ const filelist = async () => {
 
 .record-item {
   border-color: var(--app-border-muted);
+}
+
+.doc-display {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--app-border-muted);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.doc-section + .doc-section {
+  margin-top: 10px;
+}
+
+.doc-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.doc-title {
+  font-weight: 700;
+  color: #212529;
+}
+
+.doc-content {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  color: #212529;
+}
+
+.doc-files {
+  background: #ffffff;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.doc-file + .doc-file {
+  margin-top: 4px;
+}
+
+.doc-file {
+  font-size: 0.875rem;
+  color: #343a40;
+}
+
+.plan-action-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-revision-actions {
+  flex: 0 0 auto;
+}
+
+.plan-status-actions {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.plan-status-actions > p {
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .add-modal-file-row {
