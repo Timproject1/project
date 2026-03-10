@@ -718,9 +718,9 @@ const service = {
     }
   },
   //우선순위 승인 목록
-  priReqList: async (center_num) => {
+  priReqList: async (center_num, filters = {}) => {
     try {
-      const query = `SELECT 
+      let query = `SELECT 
           pr.priority_req_num,
           d.doc_num,
           -- 지원자 정보 (supported)
@@ -743,7 +743,23 @@ const service = {
           member mgr ON d.manager = mgr.user_id  -- 담당자가 지정되지 않았을 수도 있으므로 LEFT JOIN 권장
       where pr.priority_approved = "d1"
       and m.registernum =?`;
-      const result = await pool.query(query, [center_num]);
+
+      const params = [center_num];
+      if (filters.sup) {
+        query += ` AND s.sup_name LIKE ?`;
+        params.push(`%${filters.sup}%`);
+      }
+      if (filters.writer) {
+        query += ` AND m.user_name LIKE ?`;
+        params.push(`%${filters.writer}%`);
+      }
+      if (filters.maneger) {
+        // 담당자 이름 검색 시, NULL은 제외하고 이름이 매칭되는 것만
+        query += ` AND mgr.user_name LIKE ?`;
+        params.push(`%${filters.maneger}%`);
+      }
+
+      const result = await pool.query(query, params);
       return result;
     } catch (error) {
       console.log(error);
@@ -751,9 +767,9 @@ const service = {
     }
   },
   //계획 승인 목록
-  planReqList: async (center_num) => {
+  planReqList: async (center_num, filters = {}) => {
     try {
-      const query = `SELECT 
+      let query = `SELECT 
           pr.plan_req_num,
           d.doc_num,
           -- 지원자 정보 (supported)
@@ -781,7 +797,21 @@ const service = {
       and 
           plan_approved ='d1'`;
 
-      const result = await pool.query(query, [center_num]);
+      const params = [center_num];
+      if (filters.sup) {
+        query += ` AND s.sup_name LIKE ?`;
+        params.push(`%${filters.sup}%`);
+      }
+      if (filters.writer) {
+        query += ` AND m.user_name LIKE ?`;
+        params.push(`%${filters.writer}%`);
+      }
+      if (filters.maneger) {
+        query += ` AND mgr.user_name LIKE ?`;
+        params.push(`%${filters.maneger}%`);
+      }
+
+      const result = await pool.query(query, params);
       return result;
     } catch (error) {
       console.log(error);

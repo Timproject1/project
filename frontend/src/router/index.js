@@ -8,7 +8,6 @@ import FindId from "@/views/FindId.vue";
 import findpw from "@/views/findpw.vue";
 import Mypage from "@/views/mypage/mypage.vue";
 import { useMemberStore } from "@/store/member";
-
 const routes = [
   {
     path: "/",
@@ -183,14 +182,14 @@ const routes = [
     component: () => import("@/views/ResetPassword.vue"),
   },
   {
+    path: "/approval", // 일반회원 가입승인
+    component: () => import("@/views/mypage/Approvalpage.vue"),
+    meta: { requiredLevel: ["a3"] },
+  },
+  {
     path: "/mypage", // 마이페이지 메인 화면 (접속 시 본인확인을 위해 비밀번호 입력)
     component: Mypage,
     children: [
-      {
-        path: "supported", // 일반회원 가입승인
-        component: () => import("@/views/mypage/Approvalpage.vue"),
-        meta: { requiredLevel: ["a3"] },
-      },
       {
         path: "info", // 내정보 수정
         component: () => import("@/views/mypage/mypageInfo.vue"),

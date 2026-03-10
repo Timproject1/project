@@ -173,33 +173,33 @@ const service = {
    * DB에 저장된 평문 비밀번호를 모두 bcrypt 해시로 변환.
    * 이미 해시된 값($2a$, $2b$...)은 건너뛰고, 그 외는 평문으로 간주해 해시 후 업데이트.
    */
-  migratePasswordsToHash: async function () {
-    try {
-      const query = `SELECT user_id, user_password FROM member WHERE user_password IS NOT NULL AND user_password != ''`;
-      const rows = await pool.query(query);
-      let updated = 0;
-      let skipped = 0;
+  // migratePasswordsToHash: async function () {
+  //   try {
+  //     const query = `SELECT user_id, user_password FROM member WHERE user_password IS NOT NULL AND user_password != ''`;
+  //     const rows = await pool.query(query);
+  //     let updated = 0;
+  //     let skipped = 0;
 
-      for (const row of rows) {
-        const { user_id, user_password } = row;
-        if (isBcryptHash(user_password)) {
-          skipped += 1;
-          continue;
-        }
-        const hashedPw = await hashPassword(user_password);
-        await pool.query(
-          `UPDATE member SET user_password = ? WHERE user_id = ?`,
-          [hashedPw, user_id],
-        );
-        updated += 1;
-      }
+  //     for (const row of rows) {
+  //       const { user_id, user_password } = row;
+  //       if (isBcryptHash(user_password)) {
+  //         skipped += 1;
+  //         continue;
+  //       }
+  //       const hashedPw = await hashPassword(user_password);
+  //       await pool.query(
+  //         `UPDATE member SET user_password = ? WHERE user_id = ?`,
+  //         [hashedPw, user_id],
+  //       );
+  //       updated += 1;
+  //     }
 
-      return { success: true, updated, skipped, total: rows.length };
-    } catch (error) {
-      console.error("비밀번호 마이그레이션 에러:", error);
-      throw error;
-    }
-  },
+  //     return { success: true, updated, skipped, total: rows.length };
+  //   } catch (error) {
+  //     console.error("비밀번호 마이그레이션 에러:", error);
+  //     throw error;
+  //   }
+  // },
 };
 
 module.exports = service;

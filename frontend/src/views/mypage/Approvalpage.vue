@@ -1,656 +1,454 @@
 <script setup>
-// 최종 완료
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-const router = useRouter();
-const isOpen = ref(false);
-const currentTab = ref("list");
-const toggleMenu = () => {
-  isOpen.value = !isOpen.value;
-};
-// 지원자 명 검색
-const searchName = ref("");
-// 담당자 검색
-const counsel_manager = ref("");
+import { ref, onMounted, computed } from "vue";
+import MaterialPagination from "@/components/MaterialPagination.vue";
+import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 
-// 검색버튼 클릭 시 실행
-const resetSearch = () => {
-  searchName.value = "";
-  counsel_manager.value = "";
-};
+// 실제 DB에서 가져온 데이터를 담을 배열 (초기값 빈 배열)
+const userInfo = ref([]);
 
-// 장애 유형을 보는 모달창
-const detailModal = ref(false);
-const selectMember = ref(null);
-const sup_file = ref(null);
+const choiceUser = ref({});
+const showInfo = ref(true);
+const Noapprove = ref(false);
+const Reason = ref("");
 
-// 지원자 정보 수정 부분
-const Modifymember = ref(null);
-const isEditModalOpen = ref(false);
+// --- 페이징 관련 상태 및 로직 ---
+const pageSize = ref(10); // 한 페이지에 보여줄 개수
+const currentPage = ref(1); // 현재 페이지
 
-const openEditModal = (member) => {
-  // 클릭한 행의 데이터를 깊은 복사하여 담기
-  Modifymember.value = { ...member };
-  sup_file.value = member?.sup_file || "";
-  isEditModalOpen.value = true;
+// 전체 페이지 수 계산
+const totalPages = computed(() =>
+  userInfo.value.length ? Math.ceil(userInfo.value.length / pageSize.value) : 1,
+);
+
+// 현재 페이지에 보여줄 데이터(10개씩 자름)
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return userInfo.value.slice(start, end);
+});
+
+// 페이지 변경 함수
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
 };
-const closeEditModal = () => {
-  isEditModalOpen.value = false;
-  Modifymember.value = null; // 수정 중이던 데이터 초기화
-  sup_file.value = "";
-};
-// 지원자 정보 수정부분 데이터 저장
-const updateMember = async () => {
+const goPrev = () => changePage(currentPage.value - 1);
+const goNext = () => changePage(currentPage.value + 1);
+// ------------------------------
+
+// DB에서 일반회원 승인신청목록 받아오기
+const fetchUsers = async () => {
   try {
-    Modifymember.value.sup_file = sup_file.value;
-    // 반드시 Modifymember.value를 두 번째 인자로 전달!
-    const response = await axios.put(
-      "http://localhost:3000/support/update",
-      Modifymember.value,
+    const response = await fetch(
+      "http://localhost:3000/mypage/admin/users/pending",
     );
-
-    if (response.status === 200) {
-      alert("정보 수정 완료");
-      isEditModalOpen.value = false;
-      getList(); // location.reload() 대신 목록 다시 불러오기
+    if (response.ok) {
+      userInfo.value = await response.json();
+      currentPage.value = 1; // 데이터를 새로 불러오면 1페이지로 초기화
     }
   } catch (error) {
-    console.error("수정 실패:", error);
-    alert("정보 수정을 실패 하였습니다.");
+    console.error("목록 로드 실패:", error);
   }
 };
 
-// 장애 유형 보기 버튼 제어
-const openDetailModal = async (member) => {
-  selectMember.value = member;
+// 페이지 로드 시 목록 실행
+onMounted(() => {
+  fetchUsers();
+});
+
+// 등록 버튼 클릭 시 일반회원 상세 정보를 보여주는 부분
+const viewInfo = (user) => {
+  choiceUser.value = user;
+  showInfo.value = false;
+  Noapprove.value = false;
+};
+
+// 회원 가입승인버튼 눌렀을 때 (추가 + 승인을 누르면 목록에서 삭제)
+const Okapprove = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:3000/support/disabilities",
+    const response = await fetch(
+      "http://localhost:3000/mypage/admin/users/approve",
       {
-        params: { sup_num: member.sup_num },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: choiceUser.value.user_id }),
       },
     );
-    selectMember.value.disabilities = response.data;
-    detailModal.value = true;
-    console.log("장애유형 가져오기 성공:", response.data);
-  } catch (err) {
-    console.error("장애유형 가져오기 실패:", err);
-    alert("장애 유형정보를 가져오는 중에 에러 발생");
-  }
-};
-// 담당자 배정 요청
-const requestManager = (sup_name) => {
-  alert(
-    `${sup_name}님의 담당자 배정요청이 완료 되었습니다 요청 완료 시 안내 메일 발송`,
-  );
-  console.log(`${sup_name}님 배정 요청 처리됨`);
-};
-// 장애 유형 버튼 닫기
-const closeDetailModal = () => {
-  detailModal.value = false;
-  selectMember.value = null;
-};
+    // 승인 완료 후 승인 안내 메세지, 목록에서 삭제
+    if (response.ok) {
+      alert(`${choiceUser.value.user_name} 님을 승인 하였습니다.`);
+      userInfo.value = userInfo.value.filter(
+        (user) => user.user_id !== choiceUser.value.user_id,
+      );
 
-// 지원자 목록 데이터 부분
-const supported = ref([]);
-
-// 데이터 가져오기
-// 함수 선언
-const getList = async () => {
-  try {
-    const response = await axios.get("http://localhost:3000/support/list");
-    console.log("서버 원본 응답:", response.data);
-
-    if (response.data.retCode === "OK") {
-      const result = response.data.result;
-
-      if (Array.isArray(result)) {
-        supported.value = result;
-      } else if (result && typeof result === "object") {
-        supported.value = result; // 객체 하나면 배열에 담기
-      } else {
-        supported.value = []; // 데이터가 없으면 빈 배열
+      // 목록 삭제 후 현재 페이지가 비었다면 이전 페이지로 이동
+      if (pagedList.value.length === 0 && currentPage.value > 1) {
+        currentPage.value--;
       }
 
-      console.log("Vue 변수에 담긴 최종 데이터:", supported.value);
+      showInfo.value = true;
     }
-  } catch (err) {
-    console.error("데이터 로드 실패:", err);
+  } catch (error) {
+    alert("승인 처리 실패");
   }
 };
-onMounted(() => {
-  getList();
-});
-// 지원자 추가등록 모달 제어
-const addModal = ref(false); // 등록 모달 열림
 
-// 지원자 등록 시 입력 하는 부분
-const newSupported = ref({
-  sup_name: "",
-  sup_birthday: "",
-  sup_gender: "",
-  sup_tel: "",
-  sup_address: "",
-  disability_category: "",
-  sup_file: "",
-});
-// 등록 모달창 여는 함수
-const openAddModal = () => {
-  addModal.value = true;
-};
-// 지원자 등록 모달창 닫을 때 초기화
-const closeModal = () => {
-  addModal.value = false;
-
-  newSupported.value = {
-    sup_name: "",
-    sup_birthday: "",
-    sup_gender: "",
-    sup_tel: "",
-    sup_address: "",
-    disability_category: "",
-    sup_file: "",
-  };
+const reasonModal = () => {
+  Noapprove.value = true;
 };
 
-// 지원자 데이터를 서버에 저장
-const addSupported = async () => {
-  try {
-    const response = await axios.post(
-      "http://localhost:3000/support/add",
-      newSupported.value,
-    );
-    if (response.data.retCode === "OK") {
-      alert("등록 완료");
-      closeModal();
-    }
-  } catch (err) {
-    console.log("등록 오류:", err);
+// 반려 사유 입력 부분
+const confirmReject = () => {
+  if (!Reason.value) return alert("반려 사유를 입력하세요");
+
+  // 반려 시 목록에서 제거
+  userInfo.value = userInfo.value.filter(
+    (user) => user.user_id !== choiceUser.value.user_id,
+  );
+
+  // 목록 삭제 후 현재 페이지가 비었다면 이전 페이지로 이동
+  if (pagedList.value.length === 0 && currentPage.value > 1) {
+    currentPage.value--;
   }
+
+  Noapprove.value = false;
+  showInfo.value = true;
+  Reason.value = "";
+  alert("반려 처리가 완료되었습니다.");
 };
 </script>
+
 <template>
-  <div class="container-fluid pt-6 pb-5 approval-layout">
-    <div class="row wide-row">
-      <aside class="col-lg-3 pe-lg-4">
-        <div class="card shadow-sm mb-4 border-0 overflow-hidden">
+  <div class="container-fluid work-layout pt-4 pb-4">
+    <div class="work-container justify-content-center">
+      <div class="right w-100" style="max-width: 1200px">
+        <div
+          v-if="showInfo"
+          class="application-card card shadow-lg border-0 border-radius-xl"
+        >
           <div
-            class="card-header bg-gradient-success p-3 cursor-pointer d-flex justify-content-between align-items-center"
-            @click="toggleMenu"
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
           >
-            <h6 class="text-white mb-0 font-weight-bolder">지원자 관리</h6>
-            <span class="text-white text-xs">{{ isOpen ? "▼" : "▶" }}</span>
-          </div>
-          <div v-if="isOpen" class="card-body p-0">
-            <ul class="menu-list">
-              <li
-                :class="{ active: currentTab === 'list' }"
-                @click="
-                  currentTab = 'list';
-                  router.push('/support/supported');
-                "
-              >
-                지원자 현황
-              </li>
-              <li
-                :class="{ active: currentTab === 'info' }"
-                @click="
-                  currentTab = 'info';
-                  router.push('/support/info');
-                "
-              >
-                지원자 정보관리
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0 border-radius-lg overflow-hidden">
-          <div class="card-header bg-gray-100 py-3 ps-3">
-            <h6 class="mb-0 font-weight-bolder text-dark">검색 필터</h6>
-          </div>
-          <div class="card-body p-3">
-            <div class="mb-3">
-              <label class="text-xs fw-bold text-success">지원자 명</label>
-              <input
-                type="text"
-                v-model="searchName"
-                class="form-control border px-2 py-2"
-                placeholder="이름 입력"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="text-xs fw-bold text-success d-block">성별</label>
-              <div class="btn-group w-100 shadow-none">
-                <button class="btn btn-sm btn-outline-success mb-0 active">
-                  전체
-                </button>
-                <button class="btn btn-sm btn-outline-success mb-0">남성</button>
-                <button class="btn btn-sm btn-outline-success mb-0">여성</button>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="text-xs fw-bold text-success">장애유형</label>
-              <input
-                type="text"
-                class="form-control border px-2 py-2"
-                placeholder="유형 입력"
-              />
-            </div>
-            <div class="mb-4">
-              <label class="text-xs fw-bold text-success">담당자</label>
-              <input
-                type="text"
-                v-model="counsel_manager"
-                class="form-control border px-2 py-2"
-                placeholder="담당자명 입력"
-              />
-            </div>
-            <div class="d-flex gap-2">
-              <button
-                class="btn bg-gradient-dark w-100 text-white fw-bold mb-0"
-                @click="getList"
-              >
-                검색
-              </button>
-              <button
-                class="btn btn-outline-secondary w-100 mb-0 px-2"
-                @click="resetSearch"
-              >
-                초기화
-              </button>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <main class="col-lg-9">
-        <div class="card shadow-lg border-0 main-content-card">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <div
-              class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3 ps-4 pe-4 d-flex justify-content-between align-items-center"
-            >
-              <div>
-                <h5 class="text-white mb-0 font-weight-bolder">
-                  지원자 정보목록
-                </h5>
-                <p class="text-white text-xs opacity-9 mb-0">
-                  총 {{ supported.length }}명의 데이터를 관리 중입니다.
-                </p>
-              </div>
-              <button
-                class="btn btn-white btn-sm mb-0 text-success fw-bold px-4"
-                @click="openAddModal"
-              >
-                신규 등록
-              </button>
-            </div>
+            <h6 class="mb-0 text-white font-weight-bolder">
+              일반회원 가입승인 요청 목록
+            </h6>
           </div>
 
           <div class="card-body px-0 pb-2">
-            <div class="table-responsive p-0">
-              <table class="table align-items-center mb-0 w-100">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
                 <thead>
                   <tr class="bg-gray-100">
                     <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7 py-3"
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
                       번호
                     </th>
                     <th
-                      class="ps-3 text-secondary text-xxs font-weight-bolder opacity-7"
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
-                      지원자명
+                      아이디
                     </th>
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
-                      성별
+                      이름
                     </th>
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
-                      생년월일
+                      이메일 주소
                     </th>
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
-                      휴대폰
+                      가입 신청일
                     </th>
                     <th
                       class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
                     >
-                      주소
-                    </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      장애유형
-                    </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      담당자
-                    </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      등록일
-                    </th>
-                    <th
-                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                    >
-                      관리
+                      확인하기
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="member in supported"
-                    :key="member.sup_num"
-                    class="table-hover-row"
-                  >
-                    <td class="text-center text-xs font-weight-bold">
-                      {{ member.sup_num }}
-                    </td>
-                    <td class="ps-3 text-sm font-weight-bold text-dark">
-                      {{ member.sup_name }}
-                    </td>
-                    <td class="text-center text-xs">
-                      <span
-                        v-if="member.gender === 'm1' || member.gender === '남성'"
-                        class="badge badge-sm bg-gradient-info"
-                        >남성</span
-                      >
-                      <span
-                        v-else-if="
-                          member.gender === 'f1' || member.gender === '여성'
-                        "
-                        class="badge badge-sm bg-gradient-danger"
-                        >여성</span
-                      >
-                      <span v-else class="badge badge-sm bg-gradient-secondary"
-                        >미정</span
-                      >
-                    </td>
-                    <td class="text-center text-xs font-weight-bold text-dark">
-                      {{ member.birthday ? member.birthday.split("T")[0] : "-" }}
-                    </td>
-                    <td class="text-center text-xs text-dark">
-                      {{ member.sup_tel || "-" }}
-                    </td>
-                    <td class="text-center text-xs text-secondary">
-                      {{ member.sup_address || "-" }}
-                    </td>
-                    <td class="text-center">
-                      <button
-                        class="btn btn-xs btn-outline-success mb-0 fw-bold"
-                        @click="openDetailModal(member)"
-                      >
-                        보기
-                      </button>
-                    </td>
-                    <td class="text-center">
-                      <span
-                        v-if="member.user_id"
-                        class="text-xs font-weight-bold text-dark"
-                        >{{ member.user_id }}</span
-                      >
-                      <button
-                        v-else
-                        class="btn btn-xs bg-gradient-warning mb-0 text-white"
-                        @click="requestManager(member.sup_name)"
-                      >
-                        배정요청
-                      </button>
-                    </td>
-                    <td class="text-center text-xs font-weight-bold text-secondary">
-                      {{
-                        member.sup_reg_date
-                          ? member.sup_reg_date.split("T")[0]
-                          : "-"
-                      }}
-                    </td>
-                    <td class="text-center">
-                      <button
-                        class="btn btn-sm bg-gradient-info mb-0 px-3 py-1 fw-bold text-white shadow-sm"
-                        @click="openEditModal(member)"
-                      >
-                        수정
-                      </button>
+                  <template v-if="pagedList && pagedList.length > 0">
+                    <tr v-for="(user, index) in pagedList" :key="user.user_id">
+                      <td class="text-center text-sm">
+                        {{ (currentPage - 1) * pageSize + index + 1 }}
+                      </td>
+                      <td class="text-center text-sm font-weight-bold">
+                        {{ user.user_id }}
+                      </td>
+                      <td class="text-center text-sm">{{ user.user_name }}</td>
+                      <td class="text-center text-sm">{{ user.user_email }}</td>
+                      <td class="text-center text-sm">
+                        {{
+                          user.user_reg_date
+                            ? user.user_reg_date.split("T")[0]
+                            : ""
+                        }}
+                      </td>
+                      <td class="text-center">
+                        <button
+                          class="btn btn-sm bg-gradient-info text-white mb-0"
+                          @click="viewInfo(user)"
+                        >
+                          등록
+                        </button>
+                      </td>
+                    </tr>
+                  </template>
+                  <tr v-else>
+                    <td colspan="6" class="text-center py-5">
+                      <div class="d-flex flex-column align-items-center">
+                        <i
+                          class="material-icons text-secondary mb-2"
+                          style="font-size: 2rem"
+                          >info_outline</i
+                        >
+                        <p class="text-secondary mb-0">
+                          승인 대기 중인 회원이 없습니다.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+
+            <div
+              class="bottom-actions d-flex justify-content-center align-items-center p-3 mt-2"
+              v-if="userInfo.length > 0"
+            >
+              <material-pagination>
+                <material-pagination-item
+                  prev
+                  :disabled="currentPage === 1"
+                  @click="goPrev"
+                />
+                <material-pagination-item
+                  v-for="page in totalPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="page === currentPage"
+                  @click="changePage(page)"
+                />
+                <material-pagination-item
+                  next
+                  :disabled="currentPage === totalPages"
+                  @click="goNext"
+                />
+              </material-pagination>
+            </div>
           </div>
         </div>
-      </main>
-    </div>
-  </div>
-  <!-- 모달창 부분 -->
-  <!-- 지원자의 장애 유형 보는 모달 창 -->
-  <div v-if="detailModal" class="modal-overlay">
-    <div class="card modal-content border-radius-xl shadow-xl p-4">
-      <h5 class="font-weight-bolder text-success mb-3">장애유형 상세</h5>
-      <div class="bg-gray-100 p-3 border-radius-lg mb-4 text-sm">
-        지원자:
-        <strong class="text-dark">{{ selectMember?.sup_name }}</strong>
+
+        <div
+          v-if="!showInfo"
+          class="application-card card shadow-lg border-0 border-radius-xl"
+        >
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex justify-content-between align-items-center"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">회원 상세정보</h6>
+            <button
+              type="button"
+              class="btn-close text-white"
+              @click="showInfo = true"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="card-body p-4">
+            <div class="row content-area mb-4">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold text-secondary text-xs"
+                  >아이디</label
+                >
+                <p class="text-dark font-weight-bold">
+                  {{ choiceUser.user_id }}
+                </p>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold text-secondary text-xs"
+                  >이름</label
+                >
+                <p class="text-dark font-weight-bold">
+                  {{ choiceUser.user_name }}
+                </p>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold text-secondary text-xs"
+                  >이메일</label
+                >
+                <p class="text-dark font-weight-bold">
+                  {{ choiceUser.user_email }}
+                </p>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold text-secondary text-xs"
+                  >연락처</label
+                >
+                <p class="text-dark font-weight-bold">
+                  {{ choiceUser.user_tel || "정보 없음" }}
+                </p>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button
+                class="btn bg-gradient-success text-white mb-0"
+                @click="Okapprove"
+              >
+                승인
+              </button>
+              <button
+                class="btn bg-gradient-danger text-white mb-0"
+                @click="reasonModal"
+              >
+                반려
+              </button>
+              <button
+                class="btn btn-outline-secondary mb-0"
+                @click="showInfo = true"
+              >
+                목록으로
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <table class="table mb-0">
-        <thead>
-          <tr class="text-xxs font-weight-bolder">
-            <th class="text-center">번호</th>
-            <th>장애유형</th>
-            <th>정도</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in selectMember?.disabilities" :key="index">
-            <td class="text-center text-xs">{{ index + 1 }}</td>
-            <td class="text-xs">{{ item.type }}</td>
-            <td class="text-xs">{{ item.level }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <button class="btn bg-gradient-dark w-100 mb-0 mt-4" @click="closeDetailModal">
-        창 닫기
-      </button>
     </div>
   </div>
 
-  <!-- 지원자 정보 수정 모달창 -->
-  <div v-if="isEditModalOpen && Modifymember" class="modal-overlay">
-    <div class="card modal-content border-radius-xl shadow-xl p-4">
-      <h5 class="font-weight-bolder text-dark mb-4 border-bottom pb-2">
-        지원자 상세 정보 수정
-      </h5>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">이름</label>
-        <input type="text" v-model="Modifymember.sup_name" class="form-control border p-2" />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">휴대폰 번호</label>
-        <input type="text" v-model="Modifymember.sup_tel" class="form-control border p-2" />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">주소</label>
-        <input type="text" v-model="Modifymember.sup_address" class="form-control border p-2" />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">장애유형 추가</label>
-        <input
-          type="text"
-          v-model="Modifymember.disability_category"
-          class="form-control border p-2"
-          placeholder="추가할 유형 입력"
-        />
-      </div>
-      <div class="mb-4">
-        <label class="text-xs fw-bold text-success">첨부파일명</label>
-        <input
-          type="text"
-          v-model="sup_file"
-          class="form-control border p-2"
-          placeholder="파일명 입력 (pdf/jpg 등)"
-        />
-      </div>
-      <div class="d-flex gap-2">
-        <button class="btn bg-gradient-success w-100 mb-0 fw-bold" @click="updateMember">
-          저장하기
-        </button>
-        <button class="btn btn-outline-secondary w-100 mb-0" @click="closeEditModal">
-          취소
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- 지원자 등록 부분 모달창 -->
-  <div v-if="addModal" class="modal-overlay">
-    <div class="card modal-content border-radius-xl shadow-xl p-4">
-      <h5 class="font-weight-bolder text-success mb-4 border-bottom pb-2">
-        신규 지원자 등록
-      </h5>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">지원자명</label>
-        <input type="text" v-model="newSupported.sup_name" class="form-control border p-2" />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">생년월일</label>
-        <input
-          type="text"
-          v-model="newSupported.sup_birthday"
-          class="form-control border p-2"
-          placeholder="YYYY-MM-DD"
-        />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success d-block">성별</label>
-        <div class="d-flex gap-3 p-2 bg-gray-100 border-radius-lg text-sm">
-          <label class="mb-0"
-            ><input type="radio" v-model="newSupported.sup_gender" value="남성" />
-            남성</label
+  <div v-if="Noapprove" class="modal-backdrop fade show"></div>
+  <div
+    class="modal fade"
+    :class="{ 'show d-block': Noapprove }"
+    tabindex="-1"
+    role="dialog"
+    @click.self="Noapprove = false"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="card shadow-lg w-100">
+        <div
+          class="card-header p-3 pb-0 d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0 text-danger font-weight-bolder">반려 사유 입력</h5>
+          <button
+            type="button"
+            class="btn-close text-dark"
+            @click="Noapprove = false"
           >
-          <label class="mb-0"
-            ><input type="radio" v-model="newSupported.sup_gender" value="여성" />
-            여성</label
-          >
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">휴대폰 번호</label>
-        <input type="text" v-model="newSupported.sup_tel" class="form-control border p-2" />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">주소</label>
-        <input type="text" v-model="newSupported.sup_address" class="form-control border p-2" />
-      </div>
-      <div class="mb-3">
-        <label class="text-xs fw-bold text-success">장애유형</label>
-        <input
-          type="text"
-          v-model="newSupported.disability_category"
-          class="form-control border p-2"
-          placeholder="예: 발달장애"
-        />
-      </div>
-      <div class="mb-4">
-        <label class="text-xs fw-bold text-success">첨부파일</label>
-        <input
-          type="text"
-          v-model="newSupported.sup_file"
-          class="form-control border p-2"
-          placeholder="파일명 입력 (pdf/jpg 등)"
-        />
-      </div>
-      <div class="d-flex gap-2">
-        <button class="btn bg-gradient-success w-100 mb-0 fw-bold" @click="addSupported">
-          등록 완료
-        </button>
-        <button class="btn btn-outline-secondary w-100 mb-0" @click="closeModal">
-          닫기
-        </button>
+        <hr class="dark horizontal my-2" />
+        <div class="card-body p-4">
+          <div class="form-group">
+            <label class="form-label text-secondary text-xs fw-bolder"
+              >반려 사유를 상세히 적어주세요.</label
+            >
+            <textarea
+              v-model="Reason"
+              class="form-control answer-textarea border p-3"
+              placeholder="반려 사유를 입력하세요"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end p-3 gap-2">
+          <button
+            class="btn bg-gradient-danger text-white mb-0"
+            @click="confirmReject"
+          >
+            확인
+          </button>
+          <button
+            class="btn btn-outline-secondary mb-0"
+            @click="Noapprove = false"
+          >
+            취소
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
 <style scoped>
-.approval-layout {
-  background-color: var(--app-surface-muted);
-  min-height: 100vh;
+.work-layout {
+  background-color: var(--app-surface-muted, #f8f9fa);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.wide-row {
-  max-width: 1600px;
-  margin: 0 auto;
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
 }
 
-.main-content-card {
-  height: auto;
-  min-height: 750px;
-  background-color: var(--app-surface);
-  overflow: visible;
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-list li {
-  padding: 14px 25px;
-  font-size: 0.85rem;
-  color: var(--app-text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
+.application-card {
+  background: var(--app-surface, #ffffff);
+  padding: 18px 18px 20px;
   position: relative;
 }
 
-.menu-list li:hover {
-  background-color: rgba(var(--app-accent-rgb), 0.12);
-  color: var(--app-accent);
-  font-weight: 600;
-}
-
-.menu-list li.active {
-  color: var(--app-accent);
-  font-weight: 700;
-}
-
-.menu-list li.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background-color: var(--app-accent);
-}
-
-.table-hover-row:hover {
-  background-color: var(--app-backdrop-light);
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--app-backdrop);
-  backdrop-filter: blur(5px);
+/* 하단 페이징 관련 영역 지정 */
+.bottom-actions {
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  padding: 18px;
+  margin-top: 5px;
 }
 
-.modal-content {
-  max-width: 650px;
+button {
+  cursor: pointer;
+}
+
+/* 모달 관련 스타일 */
+.modal {
+  pointer-events: none;
+}
+
+.modal-dialog {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 3.5rem);
+}
+
+.content-area {
+  padding: 1.5rem;
+  border: 1px solid var(--app-border-muted, #e9ecef);
+  border-radius: 12px;
+  background: var(--app-surface-muted, #f8f9fa);
+}
+
+.answer-textarea {
   width: 100%;
-  animation: appFadeInUp 0.35s ease-out;
+  font-size: 0.9rem;
+  border: 1px solid #d2d6da;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #495057;
+  resize: vertical;
+}
+
+.answer-textarea:focus {
+  border-color: #4caf50;
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 </style>

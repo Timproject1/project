@@ -45,8 +45,11 @@ const handleLogin = async () => {
         grade: response.data.user.grade,
         name: response.data.user.user_name,
       });
-
-      router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
+      if (response.data.user.approve == "k1") {
+        router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
+      } else {
+        router.push("/wait-approval");
+      }
     } else {
       // 아이디나 비번이 틀려서 서버가 실패 응답을 보낸 경우입니다.
       loginError.value = true; // 에러 상태를 켭니다.
