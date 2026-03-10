@@ -117,7 +117,7 @@ const appSigncancel = async () => {
   width: 100%;
   max-width: none;
   margin: 0;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
   padding: 18px 18px 20px;
 }
 
@@ -147,7 +147,7 @@ const appSigncancel = async () => {
   vertical-align: top;
   resize: vertical;
   border-radius: 12px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   padding: 12px 14px;
 }
 </style>

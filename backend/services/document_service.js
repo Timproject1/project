@@ -83,22 +83,23 @@ const service = {
       con.release();
     }
   },
-  delDoc :async (num) =>{
-    const con= await pool.getConnection();
+  //문서 삭제
+  delDoc: async (num) => {
+    const con = await pool.getConnection();
     try {
       await con.beginTransaction();
-      let query =`delete from responce where doc_ver LIKE CONCAT(?, '-%') `;
-      await con.query(query,[num]);
+      let query = `delete from responce where doc_ver LIKE CONCAT(?, '-%') `;
+      await con.query(query, [num]);
       query = `delete from doc_version where doc_num =? `;
-      await con.query(query,[num]);
-      query = `delete from documents where doc_num = ?;`
-      await con.query(query,[num]);
+      await con.query(query, [num]);
+      query = `delete from documents where doc_num = ?;`;
+      await con.query(query, [num]);
       await con.commit();
     } catch (error) {
       await con.rollback();
       console.log(error);
       throw error;
-    }finally{
+    } finally {
       await con.release();
     }
   },
@@ -192,6 +193,7 @@ const service = {
       return;
     }
   },
+  //우선순위 승인
   appPriority: async (id) => {
     const conn = await pool.getConnection();
     console.log(id);
@@ -215,6 +217,7 @@ const service = {
       conn.release();
     }
   },
+  //우선순위 반려
   returnPriority: async (id) => {
     try {
       const query = `update priority_req set priority_return_reason=?,priority_approved=? where priority_req_num = ?`;
@@ -229,6 +232,7 @@ const service = {
       return;
     }
   },
+  //상담기록 추가
   addrecord: async (id) => {
     try {
       const query = `insert into counsels (counsel_num, doc_num, counsel_title, counsel_content, counsel_manager)
@@ -245,6 +249,7 @@ const service = {
       return;
     }
   },
+  //상담내역 목록
   recordList: async (id) => {
     try {
       const query = `SELECT ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(counsel_num, '-', -1) AS UNSIGNED) ASC) AS row_num, counsel_num, doc_num, counsel_date, counsel_title, counsel_content, counsel_manager 
@@ -256,6 +261,7 @@ const service = {
       return;
     }
   },
+  //상담내역 수정내역
   modifyRecordList: async (id) => {
     try {
       const query = `select counsel_modifi_num,counsel_num,counsel_modified_by,counsel_modified_date,counsel_modified_comment,counsel_modified_title,counsel_modified_content
@@ -267,6 +273,7 @@ const service = {
       return;
     }
   },
+  //상담내역 등록
   saveRecord: async (id) => {
     try {
       const query = `insert into counsel_draft (counsel_num,doc_num,counsel_title,counsel_content,counsel_dissavedate)
@@ -283,6 +290,7 @@ const service = {
       return;
     }
   },
+  //상담내역 임시저장 불러오기
   saveRecordBring: async () => {
     const conn = await pool.getConnection();
     try {
@@ -305,6 +313,7 @@ const service = {
       conn.release();
     }
   },
+  //상담내역 수정
   UpdateRecord: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -336,7 +345,7 @@ const service = {
       conn.release();
     }
   },
-
+  //지원계획 추가하기
   addplan: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -377,6 +386,7 @@ const service = {
       conn.release();
     }
   },
+  //계획 목록 조회
   planList: async (id) => {
     try {
       const query = `select ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(p.plan_num, '-', -1) AS UNSIGNED) ASC) AS row_num ,p.plan_num,p.doc_num,p.plan_date,p.plan_manager,p.plan_title,p.plan_content,r.plan_approved,r.plan_return_reason
@@ -388,6 +398,7 @@ const service = {
       return;
     }
   },
+  //계획 수정
   updatePlan: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -419,6 +430,7 @@ const service = {
       conn.release();
     }
   },
+  //계획 등록
   savePlan: async (id) => {
     try {
       const query = `insert into plan_draft (plan_num,doc_num,plan_title,plan_content,plan_dissavedate)
@@ -435,6 +447,7 @@ const service = {
       return;
     }
   },
+  //계획 임시저장 불러오기
   savePlanBring: async () => {
     const conn = await pool.getConnection();
     try {
@@ -457,6 +470,7 @@ const service = {
       conn.release();
     }
   },
+  //계획 승인하기
   appPlan: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -479,6 +493,7 @@ const service = {
       conn.release();
     }
   },
+  //계획 반려
   returnPlan: async (id) => {
     try {
       const query = `update plan_req set plan_approved="d3",plan_return_reason=? where plan_num=?`;
@@ -492,6 +507,7 @@ const service = {
       return;
     }
   },
+  //계획 승인요청
   restartPlan: async (id) => {
     try {
       const query = `update plans set plan_approved="d1" where plan_num=?`;
@@ -502,6 +518,7 @@ const service = {
       return;
     }
   },
+  //지원결과 목록
   resultList: async (id) => {
     try {
       const query = `SELECT ROW_NUMBER() OVER(ORDER BY CAST(SUBSTRING_INDEX(result_num, '-', -1) AS UNSIGNED) ASC) AS row_num, result_num, doc_num, result_manager, result_title, result_contnet, result_date 
@@ -513,6 +530,7 @@ const service = {
       return;
     }
   },
+  //지원결과 추가
   addResult: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -536,6 +554,7 @@ const service = {
       conn.release();
     }
   },
+  //지원결과 수정
   updateresult: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -567,6 +586,7 @@ const service = {
       conn.release();
     }
   },
+  //지원결과 임시저장
   saveResult: async (id) => {
     try {
       const query = `insert into result_draft (result_num,doc_num,result_title,result_content,result_dissavedate)
@@ -583,6 +603,7 @@ const service = {
       return;
     }
   },
+  //지원결과 임시저장 불러오기
   saveResultBring: async () => {
     const conn = await pool.getConnection();
     try {
@@ -605,6 +626,7 @@ const service = {
       conn.release();
     }
   },
+  //상담 삭제
   deleteRecord: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -627,6 +649,7 @@ const service = {
       conn.release();
     }
   },
+  //지원계획 삭제
   deletePlan: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -647,6 +670,7 @@ const service = {
       conn.release();
     }
   },
+  //지원결과 삭제
   deleteResult: async (id) => {
     const conn = await pool.getConnection();
     try {
@@ -669,6 +693,7 @@ const service = {
       conn.release();
     }
   },
+  //지원결과 수정내역
   modifyResultList: async (id) => {
     try {
       const query = `select result_modifi_num,result_num,result_modified_by,result_modified_date,result_modified_comment,result_modified_title,result_modified_content
@@ -680,6 +705,7 @@ const service = {
       return;
     }
   },
+  //지원계획 수정내역
   modifyPlanList: async (id) => {
     try {
       const query = `select plan_modifi_num, plan_num, plan_modified_by, plan_modified_date, plan_modified_comment, plan_modified_title,plan_modified_content
@@ -691,6 +717,7 @@ const service = {
       return;
     }
   },
+  //우선순위 승인 목록
   priReqList: async (center_num) => {
     try {
       const query = `SELECT 
@@ -723,6 +750,7 @@ const service = {
       throw error;
     }
   },
+  //계획 승인 목록
   planReqList: async (center_num) => {
     try {
       const query = `SELECT 
@@ -749,7 +777,10 @@ const service = {
       LEFT JOIN 
           member mgr ON d.manager = mgr.user_id
       WHERE 
-          m.registernum =? `;
+          m.registernum =? 
+      and 
+          plan_approved ='d1'`;
+
       const result = await pool.query(query, [center_num]);
       return result;
     } catch (error) {
@@ -757,11 +788,13 @@ const service = {
       throw error;
     }
   },
+  //매니저 불러오기
   getManager: async (doc_num) => {
     const query = `select manager from documents where doc_num=?`;
     const result = await pool.query(query, [doc_num]);
     return result[0];
   },
+  //상담내역 첨부파일 조회
   recordFile: async () => {
     try {
       const query = `select file_num, counsel_num, path, origin_name, filetype, upload_date,file_byte
@@ -773,6 +806,7 @@ const service = {
       return;
     }
   },
+  //계획 첨부파일 조회
   planFile: async () => {
     try {
       const query = `select file_num, plan_num, path, origin_name, filetype, upload_date,file_byte
@@ -784,6 +818,7 @@ const service = {
       return;
     }
   },
+  //결과 첨부파일 조회
   resultFile: async () => {
     try {
       const query = `select file_num, result_num, path, origin_name, filetype, upload_date,file_byte

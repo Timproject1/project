@@ -95,7 +95,7 @@ onBeforeMount(async () => {
   max-height: none;
   margin: 0;
   padding: 18px 18px 20px;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
 }
 
 /* 문장 가로 배치 */
@@ -130,7 +130,7 @@ onBeforeMount(async () => {
   height: 50px;
   padding: 0 15px;
   font-size: 18px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   border-radius: 12px;
   appearance: none; /* 기본 화살표 숨김 */
   background-color: white;

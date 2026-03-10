@@ -1,15 +1,13 @@
 const pool = require("../db/mapper");
+const { comparePassword } = require("../util/auth");
 
 const service = {
-  // 마이페이지 접속 전 본인확인 부분 (비밀번호 재입력)
+  // 마이페이지 접속 전 본인확인 (bcrypt 비교)
   checkPassword: async (user_id, password) => {
     const query = "select user_password from member where user_id = ?";
     const rows = await pool.query(query, [user_id]);
-
-    if (rows && rows.length > 0) {
-      return rows[0].user_password === password;
-    }
-    return false;
+    if (!rows || rows.length === 0) return false;
+    return comparePassword(password, rows[0].user_password || "");
   },
   getUserInfo: async (user_id) => {
     if (!user_id || user_id === "null") return null; // 아이디가 없으면 즉시 종료
@@ -19,10 +17,20 @@ const service = {
     return rows.length > 0 ? rows[0] : null;
   },
   updateInfo: async (updateData) => {
+    const { hashPassword } = require("../util/auth");
     const { user_password, user_email, user_tel, user_id } = updateData;
-    const query = `update member set user_password = ?, user_email =?, user_tel=? where user_id = ? `;
+    const wantChangePw =
+      user_password != null && String(user_password).trim() !== "";
+    const hashedPw = wantChangePw ? await hashPassword(user_password) : null;
 
-    const params = [user_password, user_email, user_tel, user_id];
+    let query, params;
+    if (hashedPw) {
+      query = `update member set user_password = ?, user_email = ?, user_tel = ? where user_id = ?`;
+      params = [hashedPw, user_email, user_tel, user_id];
+    } else {
+      query = `update member set user_email = ?, user_tel = ? where user_id = ?`;
+      params = [user_email, user_tel, user_id];
+    }
     const result = await pool.query(query, params);
     return result.affectedRows > 0;
   },

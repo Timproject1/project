@@ -68,7 +68,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="container-fluid  work-layout">
+  <div class="container-fluid work-layout pt-4 pb-4">
     <div class="work-container">
       <div class="right">
         <div class="application-card card shadow-lg border-0 border-radius-xl">
@@ -186,9 +186,8 @@ onBeforeMount(async () => {
           </div>
         </div>
       </div>
-      </div>
     </div>
-
+  </div>
 </template>
 <script>
 import MaterialPagination from "@/components/MaterialPagination.vue";
@@ -204,7 +203,7 @@ export default {
 </script>
 <style scoped>
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -225,7 +224,7 @@ export default {
 }
 
 .application-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }

@@ -7,7 +7,7 @@ import Home from "@/views/Home.vue";
 import FindId from "@/views/FindId.vue";
 import findpw from "@/views/findpw.vue";
 import Mypage from "@/views/mypage/mypage.vue";
-import { useMemberStore } from "@/store/member";
+// import { useMemberStore } from "@/store/member";
 
 const routes = [
   {
@@ -23,11 +23,13 @@ const routes = [
     path: "/find-id",
     name: "FindId",
     component: FindId,
+    meta: { hideHeader: true },
   },
   {
     path: "/find-pw",
     name: "FindPw",
     component: findpw,
+    meta: { hideHeader: true },
   },
   {
     path: "/wait-approval",
@@ -38,12 +40,14 @@ const routes = [
     path: "/work",
     name: "work",
     component: work,
+    description: "서류관련 페이지들",
     meta: { requiredLevel: ["a2", "a3"] },
     children: [
       {
         path: "plan",
         components: { right: () => import("../views/work/plan.vue") },
         meta: { requiredLevel: ["a2"] },
+        description: "계획조회",
       },
       {
         path: "plan_manager",
@@ -165,11 +169,13 @@ const routes = [
     path: "/sign-in",
     name: "SignIn",
     component: SignIn,
+    meta: { hideHeader: true },
   },
   {
     path: "/sign-up",
     name: "SignUp",
     component: SignUp,
+    meta: { hideHeader: true },
   },
   {
     path: "/reset-password",

@@ -405,7 +405,7 @@ const submitForm = async () => {
 
 <style scoped>
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -426,7 +426,7 @@ const submitForm = async () => {
 }
 
 .application-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }
@@ -449,11 +449,11 @@ button {
 
 /* 대분류 섹션 */
 .big-section {
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .big-title {
@@ -461,8 +461,8 @@ button {
   padding: 0.75rem 1.25rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
   border-bottom: 2px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
@@ -491,8 +491,8 @@ button {
 
 .btn-add-sub {
   margin-top: 0.75rem;
-  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
-  color: #fff;
+  background: var(--app-gradient-success);
+  color: var(--app-surface);
   border: none;
   border-radius: 8px;
   padding: 0.35rem 0.75rem;
@@ -507,7 +507,7 @@ button {
 /* 소분류 그룹 */
 .small-group {
   padding: 0 1.25rem 1rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--app-border-muted);
 }
 
 .small-group:last-child {
@@ -520,9 +520,9 @@ button {
   padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #2d3748;
-  background: #e8f5e9;
-  border-left: 4px solid #17c653;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
   border-radius: 0 8px 8px 0;
   display: flex;
   align-items: center;
@@ -532,8 +532,8 @@ button {
 .small-title-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #17c653;
-  background: #fff;
+  color: var(--app-accent);
+  background: var(--app-surface);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
 }
@@ -548,8 +548,8 @@ button {
 
 .btn-add-question {
   margin-top: 0.5rem;
-  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
-  color: #fff;
+  background: var(--app-gradient-success);
+  color: var(--app-surface);
   border: none;
   border-radius: 8px;
   padding: 0.35rem 0.75rem;
@@ -565,10 +565,10 @@ button {
 .question-card {
   margin-top: 0.75rem;
   padding: 1rem 1rem 1rem 1.25rem;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
   border-radius: 10px;
-  border-left: 4px solid #adb5bd;
+  border-left: 4px solid var(--app-scrollbar-thumb);
 }
 
 .question-card-inner {
@@ -586,7 +586,7 @@ button {
 
 .type-select-area .q-num {
   font-weight: 700;
-  color: #17c653;
+  color: var(--app-accent);
   min-width: 1.5em;
 }
 
@@ -597,7 +597,7 @@ button {
 .type-select {
   width: auto;
   min-width: 120px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
@@ -623,27 +623,27 @@ button {
 
 .option-label {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: var(--app-text-secondary);
   min-width: 5rem;
 }
 
 .option-input {
   flex: 1;
   min-width: 180px;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--app-border-muted);
   border-radius: 8px;
   padding: 0.35rem 0.6rem;
 }
 
 .option-input:focus {
-  border-color: #17c653;
+  border-color: var(--app-accent);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(23, 198, 83, 0.2);
+  box-shadow: var(--app-focus-ring-sm);
 }
 
 .btn-add-big {
-  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
-  color: #fff;
+  background: var(--app-gradient-success);
+  color: var(--app-surface);
   border: none;
   border-radius: 8px;
   padding: 0.4rem 0.9rem;
@@ -657,9 +657,9 @@ button {
 
 .form-control,
 .form-select {
-  border: 1px solid #d2d6da !important;
+  border: 1px solid var(--app-border) !important;
 }
 .bg-light {
-  background-color: #f8f9fa !important;
+  background-color: var(--app-surface-muted) !important;
 }
 </style>

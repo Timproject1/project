@@ -99,7 +99,7 @@ const updateCenter = async () => {
 };
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -205,16 +205,22 @@ const updateCenter = async () => {
                 </thead>
                 <tbody>
                   <tr v-for="center in centerList" :key="center.registernum">
-                    <td class="text-center text-sm">{{ center.registernum }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.registernum }}
+                    </td>
                     <td class="ps-4 text-sm font-weight-bold">
                       {{ center.repname }}
                     </td>
-                    <td class="text-center text-sm">{{ center.center_name }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.center_name }}
+                    </td>
                     <td class="text-center text-sm">{{ center.center_tel }}</td>
                     <td class="text-center text-sm table-cell-ellipsis">
                       {{ center.center_addr }}
                     </td>
-                    <td class="text-center text-sm">{{ center.center_email }}</td>
+                    <td class="text-center text-sm">
+                      {{ center.center_email }}
+                    </td>
                     <td class="text-center text-sm">{{ center.reg_date }}</td>
                     <td class="text-center">
                       <span class="badge badge-sm bg-gradient-success">{{
@@ -257,7 +263,11 @@ const updateCenter = async () => {
   </div>
 
   <!-- 기관 등록 모달 -->
-  <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
+  <div
+    v-if="showAddModal"
+    class="modal-overlay"
+    @click.self="showAddModal = false"
+  >
     <div class="modal-content">
       <h3 class="mb-3 fw-bold">기관 등록</h3>
       <hr class="dark horizontal my-2" />
@@ -360,15 +370,49 @@ const updateCenter = async () => {
       <hr class="dark horizontal my-2" />
       <div class="form-group mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표명</label
+        >
+        <input
+          v-model="modifyCenter.repname"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="대표명"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >기관명</label
         >
         <input
           v-model="modifyCenter.center_name"
           type="text"
           class="form-control form-control-sm"
-          placeholder="기관명"
+          placeholder="기관주소"
         />
       </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관주소</label
+        >
+        <input
+          v-model="modifyCenter.center_addr"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="기관주소"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >사업자번호</label
+        >
+        <input
+          v-model="modifyCenter.registernum"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="사업자번호"
+        />
+      </div>
+
       <div class="form-group mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >대표번호</label
@@ -402,6 +446,15 @@ const updateCenter = async () => {
           placeholder="이메일"
         />
       </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관 운영여부</label
+        >
+        <select v-model="newCenter.runed" class="form-control form-control-sm">
+          <option value="운영">운영</option>
+          <option value="휴업">휴업</option>
+        </select>
+      </div>
       <div class="d-flex justify-content-end gap-2">
         <button
           type="button"
@@ -424,7 +477,7 @@ const updateCenter = async () => {
 <style scoped>
 /* documentLIST.vue 동일 레이아웃 - list.vue 안에서 테이블 한 번에 표시(스크롤 없음) */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: auto;
   min-height: 0;
   overflow: visible;
@@ -463,7 +516,7 @@ const updateCenter = async () => {
 
 .application-card,
 .filter-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }
@@ -496,7 +549,7 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--app-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -509,7 +562,7 @@ button {
   border-radius: 0.75rem;
   width: 500px;
   max-width: 90%;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: var(--app-shadow-modal);
 }
 
 .modal-content input,
