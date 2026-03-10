@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed,onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -20,6 +20,13 @@ const getList = async () => {
   console.log(result.data.result);
   sups.value = result.data.result;
 };
+const genderLabel = computed((gender) => {
+  if (gender == "f1") {
+    return "남자";
+  } else {
+    return "여자";
+  }
+});
 //설문지 양식을 가져온다
 const getForm = async () => {
   const result = await axios.get(`/api/form/usageForm`);
@@ -60,10 +67,7 @@ const submitForm = async () => {
     formVer, // 처음에 서버에서 받았던 그 버전!
     response: userAnswers.value,
   };
-  const result = await axios.post(
-    `/api/document/write`,
-    surveyData,
-  );
+  const result = await axios.post(`/api/document/write`, surveyData);
   console.log(result);
   if (result.data.retCode == "OK") {
     alert("작성완료");
@@ -79,21 +83,25 @@ const cancel = () => {
     userAnswers.value[key].response = "";
   }
 };
-onBeforeMount(()=>{
+onBeforeMount(() => {
   getList();
   getForm();
-})
+});
 </script>
 <template>
   <div class="container-fluid pt-2 pb-2 document-write">
     <div class="row justify-content-center">
       <div class="col-12 col-xl-10">
-        <div class="card my-4 shadow-lg border-0 border-radius-xl animation-fade-in">
+        <div
+          class="card my-4 shadow-lg border-0 border-radius-xl animation-fade-in"
+        >
           <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
             <div
               class="bg-gradient-success shadow-success border-radius-lg pt-4 pb-3"
             >
-              <div class="d-flex align-items-center justify-content-between px-4">
+              <div
+                class="d-flex align-items-center justify-content-between px-4"
+              >
                 <div>
                   <h5 class="text-white mb-0 font-weight-bolder">
                     지원 신청서 작성
@@ -127,19 +135,14 @@ onBeforeMount(()=>{
                   v-if="selectedUser"
                   type="text"
                   class="form-control"
-                  v-model="selectedUser.gender"
+                  :value="genderLabel(selectedUser.gender)"
                   :readonly="true"
                 />
               </div>
 
               <div class="col-md-3">
                 <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
-                <material-input
-                  v-if="selectedUser"
-                  type="date"
-                  class="form-control"
-                  :readonly="true"
-                />
+                {{ selectedUser.birthday }}
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
@@ -203,10 +206,7 @@ onBeforeMount(()=>{
               </section>
             </div>
             <div class="d-flex justify-content-center gap-2 mt-4">
-              <material-button
-                class="btn bg-gradient-dark"
-                @click="saveTemp"
-              >
+              <material-button class="btn bg-gradient-dark" @click="saveTemp">
                 임시저장
               </material-button>
               <material-button
@@ -215,7 +215,10 @@ onBeforeMount(()=>{
               >
                 제출
               </material-button>
-              <material-button class="btn btn-outline-secondary" @click="cancel">
+              <material-button
+                class="btn btn-outline-secondary"
+                @click="cancel"
+              >
                 취소
               </material-button>
             </div>
