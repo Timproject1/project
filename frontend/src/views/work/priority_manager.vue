@@ -192,7 +192,7 @@ const returnPri = async () => {
   width: 100%;
   max-width: none;
   margin: 0;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
   padding: 18px 18px 20px;
 }
 
@@ -218,10 +218,10 @@ const returnPri = async () => {
 .return {
   display: none;
   text-align: center;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
   padding: 5px;
   border-radius: 12px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   width: 100%;
   margin: 0 auto;
 }
@@ -252,8 +252,8 @@ const returnPri = async () => {
   min-height: 120px;
   font-size: 0.95rem;
   border-radius: 12px;
-  border: 1px solid #d2d6da;
-  background-color: #f8f9fa;
+  border: 1px solid var(--app-border);
+  background-color: var(--app-surface-muted);
   padding: 10px 12px;
 }
 </style>

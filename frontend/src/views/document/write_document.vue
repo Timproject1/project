@@ -246,7 +246,7 @@ export default {
 .big-title {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #344767;
+  color: var(--app-text);
   margin: 18px 0 10px;
   padding-left: 2px;
 }
@@ -258,29 +258,29 @@ export default {
 .small-title {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #4caf50;
+  color: var(--app-accent);
   margin: 0 0 12px;
 }
 
 .question-card {
-  background: #ffffff;
-  border: 1px solid #eef0f3;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
   border-radius: 14px;
   padding: 18px 18px 16px;
   margin-bottom: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--app-shadow-md);
 }
 
 .question-text {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #344767;
+  color: var(--app-text);
   margin-bottom: 12px;
 }
 
 .answer-area {
-  background: #f8f9fa;
-  border: 1px dashed #d2d6da;
+  background: var(--app-surface-muted);
+  border: 1px dashed var(--app-border);
   border-radius: 12px;
   padding: 12px;
 }
@@ -296,9 +296,9 @@ export default {
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: #495057;
-  background: #ffffff;
-  border: 1px solid #e9ecef;
+  color: var(--app-text-muted);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
   border-radius: 10px;
   padding: 10px 12px;
 }
@@ -307,11 +307,11 @@ export default {
   width: 100%;
   min-height: 120px;
   resize: vertical;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   border-radius: 12px;
   padding: 12px 14px;
   outline: none;
-  background: #ffffff;
+  background: var(--app-surface);
 }
 
 .text-group textarea:focus {

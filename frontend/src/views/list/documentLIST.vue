@@ -127,21 +127,21 @@ const getResp = async (doc_num) => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
-const delDoc = async (doc_num)=>{
+const delDoc = async (doc_num) => {
   const result = await axios.delete(
     `http://localhost:3000/document/delDoc/${doc_num}`,
-  )
-  if(result.data.retCode=="OK"){
+  );
+  if (result.data.retCode == "OK") {
     alert("삭제완료");
     router.go(0);
   }
-}
+};
 onBeforeMount(async () => {
   await getList();
 });
 </script>
 <template>
-  <div class="container-fluid work-layout">
+  <div class="container-fluid work-layout pt-4 pb-4">
     <div class="work-container">
       <div class="left">
         <div
@@ -290,20 +290,25 @@ onBeforeMount(async () => {
                     <td class="text-center">
                       <material-button
                         size="sm"
-                        color="dark"
-                        variant="outline"
-                        class="mb-0 px-3"
+                        color="info"
+                        variant="text"
+                        class="mb-0"
                         @click.stop="getPlan(doc)"
+                        :disabled="
+                          doc.progress != '지원계획' &&
+                          doc.progress != '지원결과'
+                        "
                         >보기</material-button
                       >
                     </td>
                     <td class="text-center">
                       <material-button
                         size="sm"
-                        color="dark"
-                        variant="outline"
-                        class="mb-0 px-3"
+                        color="info"
+                        variant="text"
+                        class="mb-0"
                         @click.stop="getResult(doc)"
+                        :disabled="doc.progress != '지원결과'"
                         >보기</material-button
                       >
                     </td>
@@ -382,59 +387,73 @@ onBeforeMount(async () => {
               <label class="form-label fw-bold">상세 내용:</label>
               <div class="p-3 bg-gray-100 border-radius-lg">
                 <div v-if="modalType == 'document'">
-                  <section
-                    v-for="big in formData"
-                    :key="big.bcategory"
-                    class="big-section"
-                  >
-                    <h1 class="big-title">{{ big.bcategory }}</h1>
-
-                    <div
-                      v-for="small in big.scategory"
-                      :key="small.scategory"
-                      class="small-group"
+                  <div v-if="formData.length" class="form-sections">
+                    <section
+                      v-for="(big, bIdx) in formData"
+                      :key="big.bcategory"
+                      class="big-section mb-4"
                     >
-                      <h2 class="small-title">▣ {{ small.scategory }}</h2>
+                      <h2 class="big-title">
+                        <span class="big-title-num">{{ bIdx + 1 }}</span>
+                        {{ big.bcategory }}
+                      </h2>
 
                       <div
-                        v-for="q in small.questions"
-                        :key="q.question_num"
-                        class="question-card"
+                        v-for="(small, sIdx) in big.scategory"
+                        :key="small.scategory"
+                        class="small-group"
                       >
-                        <p class="question-text">
-                          <span class="q-num"></span>
-                          {{ q.question }}
-                        </p>
+                        <h3 class="small-title">
+                          <span class="small-title-badge"
+                            >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                          >
+                          {{ small.scategory }}
+                        </h3>
 
-                        <div class="answer-area">
-                          <div v-if="q.options.length > 0" class="radio-group">
-                            <label
-                              v-for="opt in q.options"
-                              :key="opt.exam_num"
-                              class="radio-item"
+                        <div
+                          v-for="(q, qIdx) in small.questions"
+                          :key="q.question_num"
+                          class="question-card"
+                        >
+                          <p class="question-text">
+                            <span class="q-num">{{ qIdx + 1 }}.</span>
+                            {{ q.question }}
+                          </p>
+
+                          <div class="answer-area">
+                            <div
+                              v-if="q.options.length > 0"
+                              class="radio-group"
                             >
-                              <input
-                                type="radio"
-                                :name="q.question_num"
-                                :value="opt.exam_num"
-                                v-model="userAnswers[q.question_num]"
-                                :disabled="true"
-                              />
-                              {{ opt.value }}
-                            </label>
-                          </div>
+                              <label
+                                v-for="opt in q.options"
+                                :key="opt.exam_num"
+                                class="radio-item"
+                              >
+                                <input
+                                  type="radio"
+                                  :name="'modal-q-' + q.question_num"
+                                  :value="opt.exam_num"
+                                  v-model="userAnswers[q.question_num]"
+                                  :disabled="true"
+                                />
+                                <span class="radio-label">{{ opt.value }}</span>
+                              </label>
+                            </div>
 
-                          <div v-else class="text-group">
-                            <textarea
-                              v-model="userAnswers[q.question_num]"
-                              placeholder="답변을 입력해주세요."
-                              :readonly="true"
-                            ></textarea>
+                            <div v-else class="text-group">
+                              <textarea
+                                v-model="userAnswers[q.question_num]"
+                                class="answer-textarea"
+                                placeholder="답변이 없습니다."
+                                readonly
+                              ></textarea>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </section>
+                    </section>
+                  </div>
                 </div>
                 <div v-if="modalType == 'result'">
                   <div class="card-body modal-body">
@@ -518,7 +537,7 @@ onBeforeMount(async () => {
           >
           <material-button
             v-if="modalType == 'document'"
-            color="success"
+            color="primary"
             variant="gradient"
             @click="delDoc(selectedDocData.doc_num)"
             >삭제</material-button
@@ -553,7 +572,7 @@ export default {
 <style scoped>
 /* work.vue / list.vue 동일 레이아웃 */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -581,11 +600,14 @@ export default {
 
 .application-card,
 .filter-card {
-  background: #ffffff;
-
+  background: var(--app-surface);
+  padding: 18px 18px 20px;
   position: relative;
 }
 
+.filter-card .card-body {
+  padding: 18px;
+}
 
 .bottom-actions {
   display: flex;
@@ -623,5 +645,135 @@ button {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch; /* 모바일 대응 */
   position: relative; /* 내부 요소 위치 계산 기준 */
+}
+.content-area {
+  padding: 1rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: 12px;
+  background: var(--app-surface-muted);
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 */
+.big-section {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--app-shadow-sm);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* 소분류 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--app-border-muted);
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--app-accent);
+  background: var(--app-surface);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* 질문 및 답변 영역 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
+  border-radius: 10px;
+  border-left: 4px solid var(--app-scrollbar-thumb);
+}
+
+.question-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  line-height: 1.5;
+}
+
+.q-num {
+  display: inline-block;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: var(--app-accent);
+}
+
+.answer-area {
+  margin-left: 0.25rem;
+}
+
+/* 라디오 버튼 */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* 텍스트 입력칸 (읽기 전용 스타일) */
+.answer-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: 8px;
+  background: var(--app-border-muted); /* 읽기 전용 느낌을 주기 위해 살짝 회색으로 변경 */
+  color: var(--app-text-muted);
+  resize: none; /* 크기 조절 방지 */
 }
 </style>

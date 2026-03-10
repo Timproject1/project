@@ -50,6 +50,18 @@ const goresult = () => {
 const gorepresentative = () => {
   router.push("/work/representative");
 };
+let prioritydb = ref({});
+//get으로 데이터 당겨오기
+const priorityData = async () => {
+  let doc = docStore.doc_num;
+  let result = await axios
+    .get(`http://localhost:3000/document/pri/${doc}`)
+    .catch((err) => console.log(err));
+  prioritydb.value = result.data.result[0];
+  // console.log(result.data.result);
+  console.log(prioritydb.value);
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("ko-KR");
@@ -118,6 +130,7 @@ onBeforeMount(async () => {
   await getDoc();
   await getForm();
   await getResp();
+  priorityData();
 });
 </script>
 
@@ -126,7 +139,24 @@ onBeforeMount(async () => {
     <div class="work-container">
       <div class="left">
         <!-- <RouterView name="left" /> -->
-        <div class="top-actions">
+        <div class="top-actions" v-if="prioritydb?.priority_approved == 'd2'">
+          <button
+            @click="gorepresentative()"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('representative') }"
+          >
+            담당자 변경
+          </button>
+          <button
+            @click="gopriority()"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('priority') }"
+            disabled
+          >
+            우선순위 선택
+          </button>
+        </div>
+        <div class="top-actions" v-else>
           <button
             @click="gorepresentative()"
             class="tab-pill action-pill"
@@ -187,7 +217,8 @@ onBeforeMount(async () => {
             <div class="info-item">담당자:{{ doc.manager_name }}</div>
           </div>
           <div class="date-stamp text-xs text-secondary mt-2">
-            작성자: {{ doc.writer_name }} · 담당자: {{ doc.manager_name || "-" }}
+            작성자: {{ doc.writer_name }} · 담당자:
+            {{ doc.manager_name || "-" }}
           </div>
 
           <div class="content-area mt-4">
@@ -208,7 +239,9 @@ onBeforeMount(async () => {
                   class="small-group"
                 >
                   <h3 class="small-title">
-                    <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
+                    <span class="small-title-badge"
+                      >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                    >
                     {{ small.scategory }}
                   </h3>
 
@@ -277,7 +310,7 @@ onBeforeMount(async () => {
 </template>
 <style scoped>
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -293,7 +326,6 @@ onBeforeMount(async () => {
 
 .left,
 .right {
-  
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -329,8 +361,8 @@ onBeforeMount(async () => {
   flex: 1;
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid #d2d6da;
-  background-color: #ffffff;
+  border: 1px solid var(--app-border);
+  background-color: var(--app-surface);
   font-size: 0.85rem;
   font-weight: 600;
   color: #67748e;
@@ -354,7 +386,7 @@ onBeforeMount(async () => {
   color: var(--app-accent);
 }
 .application-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   flex-grow: 1;
   position: relative;
@@ -370,9 +402,9 @@ onBeforeMount(async () => {
 
 .content-area {
   padding: 1rem;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
-  background: #fafbfc;
+  background: var(--app-surface-muted);
   max-height: 60vh;
   overflow-y: auto;
 }
@@ -385,11 +417,11 @@ onBeforeMount(async () => {
 
 /* 대분류 섹션 */
 .big-section {
-  background: #fff;
-  border: 1px solid #dee2e6;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .big-title {
@@ -397,8 +429,8 @@ onBeforeMount(async () => {
   padding: 0.75rem 1.25rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, #17c653 0%, #1aae4a 100%);
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
   border-bottom: 2px solid rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
@@ -420,7 +452,7 @@ onBeforeMount(async () => {
 /* 소분류 그룹 */
 .small-group {
   padding: 0 1.25rem 1rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--app-border-muted);
 }
 
 .small-group:last-child {
@@ -433,9 +465,9 @@ onBeforeMount(async () => {
   padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #2d3748;
-  background: #e8f5e9;
-  border-left: 4px solid #17c653;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
   border-radius: 0 8px 8px 0;
   display: flex;
   align-items: center;
@@ -445,8 +477,8 @@ onBeforeMount(async () => {
 .small-title-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #17c653;
-  background: #fff;
+  color: var(--app-accent);
+  background: var(--app-surface);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
 }
@@ -455,17 +487,17 @@ onBeforeMount(async () => {
 .question-card {
   margin-top: 0.75rem;
   padding: 1rem 1rem 1rem 1.25rem;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
   border-radius: 10px;
-  border-left: 4px solid #adb5bd;
+  border-left: 4px solid var(--app-scrollbar-thumb);
 }
 
 .question-text {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #495057;
+  color: var(--app-text-muted);
   line-height: 1.5;
 }
 
@@ -473,7 +505,7 @@ onBeforeMount(async () => {
   display: inline-block;
   min-width: 1.5em;
   font-weight: 700;
-  color: #17c653;
+  color: var(--app-accent);
 }
 
 .answer-area {
@@ -491,13 +523,13 @@ onBeforeMount(async () => {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.9rem;
-  color: #495057;
+  color: var(--app-text-muted);
   cursor: default;
 }
 
 .radio-item input {
   margin: 0;
-  accent-color: #17c653;
+  accent-color: var(--app-accent);
 }
 
 .radio-label {
@@ -509,27 +541,27 @@ onBeforeMount(async () => {
   min-height: 80px;
   padding: 0.6rem 0.75rem;
   font-size: 0.9rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--app-border-muted);
   border-radius: 8px;
-  background: #fff;
+  background: var(--app-surface);
   resize: vertical;
 }
 
 .text-group .answer-textarea:focus {
   outline: none;
-  border-color: #17c653;
-  box-shadow: 0 0 0 2px rgba(23, 198, 83, 0.2);
+  border-color: var(--app-accent);
+  box-shadow: var(--app-focus-ring-sm);
 }
 
 .content-area::-webkit-scrollbar {
   width: 6px;
 }
 .content-area::-webkit-scrollbar-thumb {
-  background-color: #cccccc;
+  background-color: var(--app-scrollbar-thumb);
   border-radius: 10px;
 }
 .content-area::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
+  background-color: var(--app-scrollbar-track);
 }
 
 .bottom-actions {
@@ -541,8 +573,8 @@ onBeforeMount(async () => {
 /* 오른쪽 패널 스타일 */
 .right-panel {
   flex: 1;
-  background-color: #e5e5e5;
-  border: 1px solid #ccc;
+  background-color: var(--app-scrollbar-track);
+  border: 1px solid var(--app-scrollbar-thumb);
   padding: 20px;
 }
 
@@ -552,7 +584,7 @@ button {
 }
 
 .badge {
-  background: #d35400;
+  background: var(--app-warning-end);
   color: white;
   padding: 0 4px;
   font-size: 0.7rem;

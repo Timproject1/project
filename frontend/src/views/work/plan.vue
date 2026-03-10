@@ -3,6 +3,7 @@ import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
+import MaterialTextarea from "@/components/MaterialTextarea.vue";
 import axios from "axios";
 import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
@@ -117,6 +118,21 @@ const restart = async (id) => {
   console.log(data);
   location.reload();
 };
+//승인 취소
+const cancel = async (id) => {
+  console.log(id);
+  let res = {
+    plan_num: id,
+  };
+  let result = await axios
+    .post(`http://localhost:3000/document/cancelplan/`, res)
+    .catch((err) => console.log(err));
+
+  const data = result.data;
+  console.log(data);
+  location.reload();
+};
+
 //수정완료
 const original = ref([]);
 const openresmodal = (res) => {
@@ -220,42 +236,65 @@ const filelist = async () => {
 </script>
 <template>
   <div class="work-section-card card shadow-lg border-0 border-radius-xl">
-    <div class="work-section-header d-flex justify-content-between align-items-center mb-3">
+    <div
+      class="work-section-header d-flex justify-content-between align-items-center mb-3"
+    >
       <h4 class="mb-0 fw-bold text-dark">지원계획서</h4>
       <div class="work-section-header-actions">
         <material-button type="button" size="sm" @click="sevedate()"
           >임시저장 내용</material-button
         >
-        <material-button type="button" size="sm" color="info" @click="newPlan = true"
+        <material-button
+          type="button"
+          size="sm"
+          color="info"
+          @click="newPlan = true"
           >지원계획서 추가</material-button
         >
       </div>
     </div>
 
     <!-- 지원계획서 추가 모달 -->
-    <Modal v-if="newPlan" @close="newPlan = false">
+    <Modal v-if="newPlan" class="plan-add-modal" @close="newPlan = false">
       <template #content>
-        <p class="mb-2 text-sm text-secondary">
-          {{ timedate(new Date()) }}
-        </p>
-        <material-button type="button" size="sm" @click="draft()"
-          >임시저장</material-button
-        >
-        <material-input id="text" placeholder="목표입력" v-model="addPlanName" />
+        <div class="add-modal-draft-row">
+          <p class="mb-0 text-secondary add-modal-draft-date">
+            {{ timedate(new Date()) }}
+          </p>
+          <material-button
+            type="button"
+            size="sm"
+            class="btn-draft"
+            @click="draft()"
+            >임시저장</material-button
+          >
+        </div>
         <material-input
+          id="text"
+          placeholder="목표입력"
+          v-model="addPlanName"
+        />
+        <material-textarea
           id="text"
           placeholder="내용입력"
           v-model="addPlanContent"
         />
-        <material-button type="button">첨부파일 등록</material-button>
-        <p>파일이름</p>
-        <material-button type="button" color="success" @click="addPlan()"
-          >승인 요청</material-button
-        >
+        <div class="add-modal-file-row">
+          <material-button type="button">첨부파일 등록</material-button>
+          <p class="mb-0">파일이름</p>
+        </div>
       </template>
       <template #actions="{ close }">
         <material-button
           type="button"
+          color="success"
+          class="btn-register"
+          @click="addPlan()"
+          >승인 요청</material-button
+        >
+        <material-button
+          type="button"
+          class="btn-cancel"
           @click="
             () => {
               addPlanName = '';
@@ -279,7 +318,11 @@ const filelist = async () => {
           {{ timedate(Plan.plan_date) }} · 지원계획 {{ Plan.row_num }}
         </p>
         <div class="d-flex gap-2">
-          <material-button type="button" size="sm" color="info" @click="openresmodal(Plan)"
+          <material-button
+            type="button"
+            size="sm"
+            color="info"
+            @click="openresmodal(Plan)"
             >수정</material-button
           >
           <material-button
@@ -322,9 +365,7 @@ const filelist = async () => {
       <!-- 삭제 모달 -->
       <Modal v-if="Plan.showPlanDelete" @close="Plan.showPlanDelete = false">
         <template #content>
-          <p class="mb-3">
-            해당 지원계획서를 <br />삭제하시겠습니까?
-          </p>
+          <p class="mb-3">해당 지원계획서를 <br />삭제하시겠습니까?</p>
           <material-button type="button" color="danger" @click="delplan(Plan)"
             >예</material-button
           >
@@ -395,7 +436,10 @@ const filelist = async () => {
           <material-button type="button" color="warning"
             >승인 대기 중</material-button
           >
-          <material-button type="button" color="danger"
+          <material-button
+            type="button"
+            color="danger"
+            @click="cancel(Plan.plan_num)"
             >승인 요청 취소</material-button
           >
         </p>
@@ -412,7 +456,9 @@ const filelist = async () => {
               <p>{{ Plan.plan_return_reason }}</p>
             </template>
             <template #actions="{ close }">
-              <material-button type="button" @click="close">닫기</material-button>
+              <material-button type="button" @click="close"
+                >닫기</material-button
+              >
             </template>
           </Modal>
         </p>
@@ -430,7 +476,7 @@ const filelist = async () => {
 </template>
 <style scoped>
 .work-section-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
 }
 
@@ -440,6 +486,46 @@ const filelist = async () => {
 }
 
 .record-item {
-  border-color: #e9ecef;
+  border-color: var(--app-border-muted);
+}
+
+.add-modal-file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-modal-draft-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.add-modal-draft-row :deep(.btn-draft) {
+  width: 20%;
+  min-width: 80px;
+}
+
+.add-modal-draft-row .add-modal-draft-date {
+  font-size: 0.875rem;
+}
+
+/* 지원계획서 추가 모달: 버튼 같은 크기, 취소 회색 */
+.plan-add-modal :deep(.mt-3) .btn-register,
+.plan-add-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.plan-add-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.plan-add-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
 }
 </style>

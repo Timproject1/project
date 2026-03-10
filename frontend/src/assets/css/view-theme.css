@@ -59,7 +59,28 @@
 
   /* Focus */
   --app-focus-ring: 0 0 0 3px rgba(var(--app-accent-rgb), 0.15);
-  --app-focus-ring-sm: 0 0 0 2px rgba(var(--app-accent-rgb), 0.15);
+  --app-focus-ring-sm: 0 0 0 2px rgba(var(--app-accent-rgb), 0.2);
+  --app-focus-ring-color: rgba(var(--app-accent-rgb), 0.2);
+
+  /* Text */
+  --app-text: #344767;
+  --app-text-muted: #495057;
+  --app-text-secondary: #67748e;
+  --app-success-bg: #e8f5e9;
+
+  /* Shadows */
+  --app-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --app-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --app-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --app-shadow-modal: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+  /* Overlay / backdrop */
+  --app-backdrop: rgba(0, 0, 0, 0.5);
+  --app-backdrop-light: rgba(0, 0, 0, 0.02);
+
+  /* Scrollbar (optional) */
+  --app-scrollbar-thumb: #c4c8cc;
+  --app-scrollbar-track: #f0f2f5;
 }
 
 /* === Palette overrides (keep consistent everywhere) === */

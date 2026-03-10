@@ -3,6 +3,7 @@ import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
+import MaterialTextarea from "@/components/MaterialTextarea.vue";
 import axios from "axios";
 // import { useRoute } from "vue-router";
 // export default { components: { MaterialInput } };
@@ -229,36 +230,49 @@ const filelist = async () => {
     </div>
 
     <!-- 상담기록 추가 모달 -->
-    <Modal v-if="newrecord" @close="closeModal()">
+    <Modal v-if="newrecord" class="record-add-modal" @close="closeModal()">
       <template #content>
-        <material-input
-          id="date"
-          type="date"
-          placeholder="내용입력"
-          v-model="today"
-        />
-        <material-button type="button" size="sm" @click="draft()"
-          >임시저장</material-button
-        >
+        <div class="add-modal-draft-row">
+          <material-input
+            id="date"
+            type="date"
+            placeholder="내용입력"
+            v-model="today"
+          />
+          <material-button
+            type="button"
+            size="sm"
+            class="btn-draft"
+            @click="draft()"
+            >임시저장</material-button
+          >
+        </div>
         <material-input
           id="text"
           placeholder="제목입력"
           v-model="addRecordName"
         />
-        <material-input
+        <material-textarea
           id="text"
           placeholder="내용입력"
           v-model="addRecordContent"
         />
-        <material-button type="button">첨부파일 등록</material-button>
-        <p>파일이름</p>
-        <material-button type="button" color="success" @click="addrecord()"
-          >등록</material-button
-        >
+        <div class="add-modal-file-row">
+          <material-button type="button">첨부파일 등록</material-button>
+          <p class="mb-0">파일이름</p>
+        </div>
       </template>
       <template #actions="{ close }">
         <material-button
           type="button"
+          color="success"
+          class="btn-register"
+          @click="addrecord()"
+          >등록</material-button
+        >
+        <material-button
+          type="button"
+          class="btn-cancel"
           @click="
             () => {
               addRecordName = '';
@@ -395,7 +409,7 @@ const filelist = async () => {
 </template>
 <style scoped>
 .work-section-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
 }
 
@@ -405,6 +419,42 @@ const filelist = async () => {
 }
 
 .record-item {
-  border-color: #e9ecef;
+  border-color: var(--app-border-muted);
+}
+
+.add-modal-file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-modal-draft-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.add-modal-draft-row :deep(.btn-draft) {
+  width: 20%;
+  min-width: 80px;
+}
+
+/* 상담기록 추가 모달: 버튼 같은 크기, 취소 회색 */
+.record-add-modal :deep(.mt-3) .btn-register,
+.record-add-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.record-add-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.record-add-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
 }
 </style>

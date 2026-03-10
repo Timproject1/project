@@ -164,7 +164,7 @@ const requestManager = (name) =>
 </script>
 
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -618,7 +618,7 @@ const requestManager = (name) =>
 <style scoped>
 /* documentLIST.vue 동일 레이아웃 */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -646,7 +646,7 @@ const requestManager = (name) =>
 
 .application-card,
 .filter-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }
