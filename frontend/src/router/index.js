@@ -7,7 +7,7 @@ import Home from "@/views/Home.vue";
 import FindId from "@/views/FindId.vue";
 import findpw from "@/views/findpw.vue";
 import Mypage from "@/views/mypage/mypage.vue";
-import { useMemberStore } from "@/store/member";
+// import { useMemberStore } from "@/store/member";
 
 const routes = [
   {

@@ -412,12 +412,52 @@ const requestManager = (name) =>
       <h5 class="font-weight-bolder text-dark mb-4 border-bottom pb-2 fw-bold">
         지원자 상세 정보 수정
       </h5>
-      <div class="mb-3">
+      <div class="mb-1">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >이름</label
         >
         <input
           v-model="Modifymember.sup_name"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-1">
+        <label for="form-label text-xs fw-bolder mb-1 text-secondary">
+          생년월일
+        </label>
+        <input
+          v-modal="Modifymember.sup_birthday"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-1">
+        <label for="form-label text-xs fw-bolder mb-1 text-secondary">
+          휴대폰번호
+        </label>
+        <input
+          v-modal="Modifymember.sup_tel"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-1">
+        <label for="form-label text-xs fw-bolder mb-1 text-secondary">
+          주소
+        </label>
+        <input
+          v-modal="Modifymember.sup_address"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-1">
+        <label for="form-label text-xs fw-bolder mb-1 text-secondary">
+          장애유형 수정
+        </label>
+        <input
+          v-modal="Modifymember.disability_category"
           type="text"
           class="form-control form-control-sm"
         />
@@ -464,6 +504,76 @@ const requestManager = (name) =>
         >
         <input
           v-model="newSupported.sup_name"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >지원자명</label
+        >
+        <input
+          v-model="newSupported.sup_name"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >생년월일</label
+        >
+        <input
+          v-model="newSupported.sup_birthday"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >성별</label
+        >
+        <input
+          v-model="newSupported.gender"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >휴대폰번호</label
+        >
+        <input
+          v-model="newSupported.sup_tel"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >주소</label
+        >
+        <input
+          v-model="newSupported.sup_address"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >장애유형</label
+        >
+        <input
+          v-model="newSupported.disability_category"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >첨부파일</label
+        >
+        <input
+          v-model="newSupported.sup_file"
           type="text"
           class="form-control form-control-sm"
         />
