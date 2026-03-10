@@ -3,6 +3,7 @@ import MaterialButton from "@/components/MaterialButton.vue";
 import { ref, onBeforeMount } from "vue";
 import Modal from "./modal.vue";
 import MaterialInput from "@/components/MaterialInput.vue";
+import MaterialTextarea from "@/components/MaterialTextarea.vue";
 import axios from "axios";
 // import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
@@ -124,20 +125,34 @@ const filelist = async () => {
     </div>
 
     <!-- 지원계획서 추가 모달 (관리자용 작성 기능) -->
-    <Modal v-if="newPlan" @close="newPlan = false">
+    <Modal v-if="newPlan" class="plan-add-modal" @close="newPlan = false">
       <template #content>
-        <p class="mb-2 text-sm text-secondary">
-          {{ timedate(new Date()) }}
-        </p>
-        <material-button type="button" size="sm" disabled>임시저장</material-button>
+        <div class="add-modal-draft-row">
+          <p class="mb-0 text-secondary add-modal-draft-date">
+            {{ timedate(new Date()) }}
+          </p>
+          <material-button
+            type="button"
+            size="sm"
+            class="btn-draft"
+            disabled
+            >임시저장</material-button
+          >
+        </div>
         <material-input id="text" placeholder="목표입력" />
-        <material-input id="text" placeholder="내용입력" />
-        <material-button type="button">첨부파일 등록</material-button>
-        <p>파일이름</p>
-        <material-button type="button">등록</material-button>
+        <material-textarea id="text-content" placeholder="내용입력" />
+        <div class="add-modal-file-row">
+          <material-button type="button">첨부파일 등록</material-button>
+          <p class="mb-0">파일이름</p>
+        </div>
       </template>
       <template #actions="{ close }">
-        <material-button type="button" @click="close">취소</material-button>
+        <material-button type="button" color="success" class="btn-register"
+          >등록</material-button
+        >
+        <material-button type="button" class="btn-cancel" @click="close"
+          >취소</material-button
+        >
       </template>
     </Modal>
 
@@ -261,5 +276,45 @@ const filelist = async () => {
 
 .record-item {
   border-color: var(--app-border-muted);
+}
+
+.add-modal-file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-modal-draft-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.add-modal-draft-row :deep(.btn-draft) {
+  width: 20%;
+  min-width: 80px;
+}
+
+.add-modal-draft-row .add-modal-draft-date {
+  font-size: 0.875rem;
+}
+
+/* 지원계획서 추가 모달: 버튼 같은 크기, 취소 회색 */
+.plan-add-modal :deep(.mt-3) .btn-register,
+.plan-add-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.plan-add-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.plan-add-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
 }
 </style>

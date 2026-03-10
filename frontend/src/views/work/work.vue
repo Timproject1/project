@@ -50,6 +50,18 @@ const goresult = () => {
 const gorepresentative = () => {
   router.push("/work/representative");
 };
+let prioritydb = ref({});
+//get으로 데이터 당겨오기
+const priorityData = async () => {
+  let doc = docStore.doc_num;
+  let result = await axios
+    .get(`http://localhost:3000/document/pri/${doc}`)
+    .catch((err) => console.log(err));
+  prioritydb.value = result.data.result[0];
+  // console.log(result.data.result);
+  console.log(prioritydb.value);
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("ko-KR");
@@ -118,6 +130,7 @@ onBeforeMount(async () => {
   await getDoc();
   await getForm();
   await getResp();
+  priorityData();
 });
 </script>
 
@@ -126,7 +139,24 @@ onBeforeMount(async () => {
     <div class="work-container">
       <div class="left">
         <!-- <RouterView name="left" /> -->
-        <div class="top-actions">
+        <div class="top-actions" v-if="prioritydb?.priority_approved == 'd2'">
+          <button
+            @click="gorepresentative()"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('representative') }"
+          >
+            담당자 변경
+          </button>
+          <button
+            @click="gopriority()"
+            class="tab-pill action-pill"
+            :class="{ active: isActiveTab('priority') }"
+            disabled
+          >
+            우선순위 선택
+          </button>
+        </div>
+        <div class="top-actions" v-else>
           <button
             @click="gorepresentative()"
             class="tab-pill action-pill"
@@ -187,7 +217,8 @@ onBeforeMount(async () => {
             <div class="info-item">담당자:{{ doc.manager_name }}</div>
           </div>
           <div class="date-stamp text-xs text-secondary mt-2">
-            작성자: {{ doc.writer_name }} · 담당자: {{ doc.manager_name || "-" }}
+            작성자: {{ doc.writer_name }} · 담당자:
+            {{ doc.manager_name || "-" }}
           </div>
 
           <div class="content-area mt-4">
@@ -208,7 +239,9 @@ onBeforeMount(async () => {
                   class="small-group"
                 >
                   <h3 class="small-title">
-                    <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
+                    <span class="small-title-badge"
+                      >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                    >
                     {{ small.scategory }}
                   </h3>
 
@@ -293,7 +326,6 @@ onBeforeMount(async () => {
 
 .left,
 .right {
-  
   flex: 1;
   min-height: 0;
   overflow-y: auto;
