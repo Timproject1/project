@@ -69,11 +69,11 @@ const isUpdating = ref(false); // 현재 서버에 데이터를 보내는 중인
 onMounted(() => {
   token.value = route.query.token; // 주소창의 ?token=값 부분을 읽어와 변수에 넣습니다.
 
-  if (!token.value) {
-    // 만약 토큰이 없다면 잘못된 경로로 들어온 것입니다.
-    alert("메일의 링크를 다시 확인해주세요."); // 경고 메시지를 보여줍니다.
-    router.push("/login"); // 로그인 페이지로 쫓아냅니다.
-  }
+  // if (!token.value) {
+  //   // 만약 토큰이 없다면 잘못된 경로로 들어온 것입니다.
+  //   alert("메일의 링크를 다시 확인해주세요."); // 경고 메시지를 보여줍니다.
+  //   router.push("/login"); // 로그인 페이지로 쫓아냅니다.
+  // }
 });
 
 // 비밀번호 변경 버튼을 눌렀을 때 실행되는 함수입니다.
