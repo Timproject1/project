@@ -370,15 +370,49 @@ const updateCenter = async () => {
       <hr class="dark horizontal my-2" />
       <div class="form-group mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표명</label
+        >
+        <input
+          v-model="modifyCenter.repname"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="대표명"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >기관명</label
         >
         <input
           v-model="modifyCenter.center_name"
           type="text"
           class="form-control form-control-sm"
-          placeholder="기관명"
+          placeholder="기관주소"
         />
       </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관주소</label
+        >
+        <input
+          v-model="modifyCenter.center_addr"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="기관주소"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >사업자번호</label
+        >
+        <input
+          v-model="modifyCenter.registernum"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="사업자번호"
+        />
+      </div>
+
       <div class="form-group mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >대표번호</label
@@ -411,6 +445,15 @@ const updateCenter = async () => {
           class="form-control form-control-sm"
           placeholder="이메일"
         />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관 운영여부</label
+        >
+        <select v-model="newCenter.runed" class="form-control form-control-sm">
+          <option value="운영">운영</option>
+          <option value="휴업">휴업</option>
+        </select>
       </div>
       <div class="d-flex justify-content-end gap-2">
         <button

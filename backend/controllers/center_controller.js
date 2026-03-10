@@ -2,9 +2,8 @@ const service = require("../services/center_service");
 const ctrl = {
   // 기존 목록
   getList: async function (req, res) {
-    const filter = req.query.filter ? req.query.filter : "";
     try {
-      const result = await service.getList(filter);
+      const result = await service.getList(req.query);
       // console.log(result);
       res.json({ retCode: "OK", result });
     } catch (error) {
