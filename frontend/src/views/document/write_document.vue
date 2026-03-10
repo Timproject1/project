@@ -12,7 +12,7 @@ const formData = ref([]); //설문지 양식
 let formVer = ""; //설문지 버전
 //지원자 목록을 가져온다
 const getList = async () => {
-  const result = await axios.get(`http://localhost:3000/support/list`, {
+  const result = await axios.get(`/api/support/list`, {
     params: {
       id: memberStore.id,
     },
@@ -22,7 +22,7 @@ const getList = async () => {
 };
 //설문지 양식을 가져온다
 const getForm = async () => {
-  const result = await axios.get(`http://localhost:3000/form/usageForm`);
+  const result = await axios.get(`/api/form/usageForm`);
   console.log(result);
   formData.value = result.data.form;
   formVer = result.data.ver;
@@ -61,7 +61,7 @@ const submitForm = async () => {
     response: userAnswers.value,
   };
   const result = await axios.post(
-    `http://localhost:3000/document/write`,
+    `/api/document/write`,
     surveyData,
   );
   console.log(result);

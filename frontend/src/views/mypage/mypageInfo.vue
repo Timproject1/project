@@ -17,7 +17,7 @@ onMounted(async () => {
   }
   user_id.value = userId;
   try {
-    const response = await axios.get(`http://localhost:3000/mypage/info`, {
+    const response = await axios.get(`/api/mypage/info`, {
       params: { user_id: userId },
     });
     const data = response.data;
@@ -34,7 +34,7 @@ onMounted(async () => {
 const saveInfo = async () => {
   if (!user_id.value) return alert("사용자 정보가 없습니다.");
   try {
-    const response = await fetch("http://localhost:3000/mypage/update", {
+    const response = await fetch("/api/mypage/update", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

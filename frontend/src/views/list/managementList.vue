@@ -11,7 +11,7 @@ const supported = ref([]);
 const getList = async () => {
   try {
     const loginId = "user";
-    const response = await axios.get("http://localhost:3000/support/list", {
+    const response = await axios.get("/api/support/list", {
       params: {
         user_id: loginId,
         sup_name: searchName.value, // 사용자가 입력한 검색어 추가!

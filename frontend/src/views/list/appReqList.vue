@@ -45,9 +45,7 @@ const movePath = {
 };
 const getList = async () => {
   const result = await axios.get(
-    `http://localhost:3000/document/${getPath[currentTab.value]}/${
-      memberStore.center
-    }`,
+    `/api/document/${getPath[currentTab.value]}/${memberStore.center}`,
     {
       params: {
         sup: searchQuery.value.sup || "",
@@ -216,7 +214,9 @@ onBeforeMount(async () => {
                       @click="selectDoc(doc.doc_num)"
                     >
                       <td class="text-center text-sm">
-                        {{ list.length - ((currentPage - 1) * pageSize + index) }}
+                        {{
+                          list.length - ((currentPage - 1) * pageSize + index)
+                        }}
                       </td>
                       <td class="ps-4 text-sm font-weight-bold">
                         {{ doc.sup_name }}

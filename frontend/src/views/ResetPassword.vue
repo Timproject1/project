@@ -89,7 +89,7 @@ const handleResetPassword = async () => {
   try {
     // 백엔드 서버에 토큰과 새 비밀번호를 실어서 보냅니다.
     const response = await axios.post(
-      "http://localhost:3000/user/reset-password-confirm",
+      "/api/user/reset-password-confirm",
       {
         token: token.value, // 인증용 토큰입니다.
         newPassword: newPassword.value, // 변경할 비밀번호입니다.

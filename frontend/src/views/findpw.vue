@@ -88,13 +88,10 @@ const handleSendAuthEmail = async () => {
   isSending.value = true;
 
   try {
-    const response = await axios.post(
-      "http://localhost:3000/user/forgot-password",
-      {
-        userId: userId.value,
-        userEmail: userEmail.value,
-      },
-    );
+    const response = await axios.post("/api/user/forgot-password", {
+      userId: userId.value,
+      userEmail: userEmail.value,
+    });
 
     if (response.data.success) {
       alert("정보 확인 완료! 인증 메일이 발송되었습니다.\n(유효시간: 5분)");

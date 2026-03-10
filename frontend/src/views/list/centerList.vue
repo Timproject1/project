@@ -9,7 +9,7 @@ const searchName = ref("");
 const centerList = ref([]);
 const getCenterList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/center/list");
+    const response = await axios.get("/api/center/list");
 
     if (response.data.retCode === "OK") {
       centerList.value = response.data.result;
@@ -43,7 +43,7 @@ const addCenter = async () => {
   }
   try {
     const response = await axios.post(
-      "http://localhost:3000/center/addCenter",
+      "/api/center/addCenter",
       newCenter.value,
     );
     if (response.data.retCode === "OK") {
@@ -84,7 +84,7 @@ const openCenterEditModal = (center) => {
 const updateCenter = async () => {
   try {
     const response = await axios.put(
-      "http://localhost:3000/center/update",
+      "/api/center/update",
       modifyCenter.value,
     );
     if (response.status === 200) {
