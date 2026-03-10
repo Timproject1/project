@@ -42,7 +42,7 @@ const check = computed(() => {
 });
 //버전목록 가져오기
 const getList = async () => {
-  const result = await axios.get("http://localhost:3000/form/vers");
+  const result = await axios.get("/api/form/vers");
   list.value = result.data.result;
   // console.log(result.data.result);
 };
@@ -50,7 +50,7 @@ const getList = async () => {
 const getForm = async () => {
   // console.log(route.params.num);
   const result = await axios.get(
-    `http://localhost:3000/form/getForm/${selectedVersion.value}`,
+    `/api/form/getForm/${selectedVersion.value}`,
   );
   console.log(result.data.form);
   // formData.value = result.data.form;
@@ -177,7 +177,7 @@ onBeforeMount(async () => {
 const submitForm = async () => {
   console.log(formData);
   const result = await axios.post(
-    "http://localhost:3000/form/write",
+    "/api/form/write",
     {
       form: formData.value,
       comment: comment.value,

@@ -16,7 +16,7 @@ const results = ref([]);
 const listresult = async () => {
   let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/resultlist/${doc}`)
+    .get(`/api/document/resultlist/${doc}`)
     .catch((err) => console.log(err));
 
   results.value = (result.data.result || []).map((r) => ({
@@ -38,7 +38,7 @@ const revisions = async (id) => {
   // console.log(id);
   try {
     let result = await axios
-      .get(`http://localhost:3000/document/modifyResultlist/${id.result_num}`)
+      .get(`/api/document/modifyResultlist/${id.result_num}`)
       .catch((err) => console.log(err));
     id.revision = Array.isArray(result.data.result) ? result.data.result : [];
     id.showRevision = true;
@@ -69,7 +69,7 @@ const addresults = async () => {
 
   const result = ref(null);
   try {
-    const res = await axios.post("http://localhost:3000/document/result", add);
+    const res = await axios.post("/api/document/result", add);
     console.log(res.data);
     result.value = res.data;
     addresultsName.value = "";
@@ -115,7 +115,7 @@ const Update = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/updateresult",
+      "/api/document/updateresult",
       updatedate,
     );
     console.log(res.data);
@@ -138,7 +138,7 @@ const draft = async () => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/saveresult",
+      "/api/document/saveresult",
       savedate,
     );
     console.log(res.data);
@@ -153,7 +153,7 @@ const draft = async () => {
 //임시저장 불러오기
 const sevedate = async () => {
   let result = await axios
-    .post(`http://localhost:3000/document/bringresult`)
+    .post(`/api/document/bringresult`)
     .catch((err) => console.log(err));
   const data = result.data[0];
   if (!data) {
@@ -181,7 +181,7 @@ const delresult = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/deleteresult",
+      "/api/document/deleteresult",
       del,
     );
     console.log(res.data);
@@ -199,7 +199,7 @@ const filename = ref([]);
 console.log(filename);
 const filelist = async () => {
   let result = await axios
-    .get(`http://localhost:3000/document/resultFile`)
+    .get(`/api/document/resultFile`)
     .catch((err) => console.log(err));
   console.log(result.data.result);
   filename.value = Array.isArray(result.data.result) ? result.data.result : [];

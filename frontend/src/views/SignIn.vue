@@ -28,7 +28,7 @@ const handleLogin = async () => {
 
   try {
     // 서버의 로그인 API 주소로 사용자가 입력한 정보를 보냅니다.
-    const response = await axios.post("http://localhost:3000/user/login", {
+    const response = await axios.post("/api/user/login", {
       user_id: userId.value, // 입력한 아이디입니다.
       user_password: password.value, // 입력한 비밀번호입니다.
     });

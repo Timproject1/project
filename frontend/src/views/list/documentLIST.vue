@@ -48,7 +48,7 @@ const docName = {
   result: "지원결과서",
 };
 const getList = async () => {
-  const result = await axios.get("http://localhost:3000/document/list", {
+  const result = await axios.get("/api/document/list", {
     params: {
       id: memberStore.id || "",
       grade: memberStore.grade || "",
@@ -77,7 +77,7 @@ const getDocument = async (doc) => {
 const getPlan = async (doc) => {
   modalType.value = "plan";
   const result = await axios
-    .get(`http://localhost:3000/document/planlist/${doc.doc_num}`)
+    .get(`/api/document/planlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
   console.log(result.data);
   plans.value = result.data.result;
@@ -88,7 +88,7 @@ const getPlan = async (doc) => {
 const getResult = async (doc) => {
   modalType.value = "result";
   const result = await axios
-    .get(`http://localhost:3000/document/resultlist/${doc.doc_num}`)
+    .get(`/api/document/resultlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
   console.log(result.data);
   results.value = result.data.result;
@@ -116,7 +116,7 @@ const selectDoc = (doc_num) => {
 const getForm = async (form_ver) => {
   // console.log(doc.value);
   const result = await axios.get(
-    `http://localhost:3000/form/getForm/${form_ver}`,
+    `/api/form/getForm/${form_ver}`,
   );
   // console.log(result);
   formData.value = result.data.form;
@@ -138,7 +138,7 @@ const getForm = async (form_ver) => {
 //응답 조회
 const getResp = async (doc_num) => {
   const result = await axios.get(
-    `http://localhost:3000/document/getResp/${doc_num}`,
+    `/api/document/getResp/${doc_num}`,
   );
   // console.log(result.data.response);
   for (const key in result.data.response) {
@@ -149,7 +149,7 @@ const getResp = async (doc_num) => {
 };
 const delDoc = async (doc_num) => {
   const result = await axios.delete(
-    `http://localhost:3000/document/delDoc/${doc_num}`,
+    `/api/document/delDoc/${doc_num}`,
   );
   if (result.data.retCode == "OK") {
     alert("삭제완료");

@@ -33,7 +33,7 @@ const getList = async () => {
     };
 
     // 서버에 파라미터를 함께 전송합니다.
-    const response = await axios.get("http://localhost:3000/support/list", {
+    const response = await axios.get("/api/support/list", {
       params: searchParams,
     });
 
@@ -94,7 +94,7 @@ const closeModel = () => {
 const addSupported = async () => {
   try {
     const response = await axios.post(
-      "http://localhost:3000/support/add",
+      "/api/support/add",
       newSupported.value,
     );
     if (response.data.retCode === "OK") {
@@ -124,7 +124,7 @@ const updateMember = async () => {
   try {
     Modifymember.value.sup_file = sup_file.value;
     const response = await axios.put(
-      "http://localhost:3000/support/update",
+      "/api/support/update",
       Modifymember.value,
     );
     if (response.status === 200) {
@@ -142,7 +142,7 @@ const openDetailModel = async (member) => {
   selectMember.value = member;
   try {
     const response = await axios.get(
-      "http://localhost:3000/support/disabilities",
+      "/api/support/disabilities",
       { params: { sup_num: member.sup_num } },
     );
     selectMember.value.disabilities = response.data;

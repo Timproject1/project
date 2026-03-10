@@ -56,7 +56,7 @@ const updateTableData = (data) => {
 
 const getSupportedList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/support/list");
+    const response = await axios.get("/api/support/list");
     if (response.data.retCode === "OK") updateTableData(response.data.result);
   } catch (err) {
     console.error("로드 실패:", err);
@@ -65,7 +65,7 @@ const getSupportedList = async () => {
 
 const fetchData = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/support/list", {
+    const response = await axios.get("/api/support/list", {
       params: search,
     });
     if (response.data.retCode === "OK") updateTableData(response.data.result);
@@ -90,7 +90,7 @@ const closeEditModal = () => {
 const updateMember = async () => {
   try {
     Modifymember.value.sup_file = sup_file.value;
-    await axios.put("http://localhost:3000/support/update", Modifymember.value);
+    await axios.put("/api/support/update", Modifymember.value);
     alert("정보 수정이 완료되었습니다.");
     closeEditModal();
     getSupportedList();
@@ -117,7 +117,7 @@ const closeModal = () => {
 };
 const addSupported = async () => {
   try {
-    await axios.post("http://localhost:3000/support/add", newSupported.value);
+    await axios.post("/api/support/add", newSupported.value);
     alert("신규 등록 완료");
     closeModal();
     getSupportedList();
@@ -130,7 +130,7 @@ const addSupported = async () => {
 const openDetailModal = async (member) => {
   selectMember.value = member;
   try {
-    const res = await axios.get("http://localhost:3000/support/disabilities", {
+    const res = await axios.get("/api/support/disabilities", {
       params: { sup_num: member.sup_num },
     });
     selectMember.value.disabilities = res.data;

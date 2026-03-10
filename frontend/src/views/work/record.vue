@@ -19,7 +19,7 @@ console.log(records);
 const listrecord = async () => {
   let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/recordlist/${doc}`)
+    .get(`/api/document/recordlist/${doc}`)
     .catch((err) => console.log(err));
   records.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -36,7 +36,7 @@ const revisions = async (id) => {
   // console.log(id);
   try {
     let result = await axios
-      .get(`http://localhost:3000/document/modifyRecordlist/${id.counsel_num}`)
+      .get(`/api/document/modifyRecordlist/${id.counsel_num}`)
       .catch((err) => console.log(err));
     id.revision = Array.isArray(result.data.result) ? result.data.result : [];
     id.showRevision = true;
@@ -86,7 +86,7 @@ const addrecord = async () => {
 
   const result = ref(null);
   try {
-    const res = await axios.post("http://localhost:3000/document/record", add);
+    const res = await axios.post("/api/document/record", add);
     console.log(res.data);
     result.value = res.data;
     addRecordName.value = "";
@@ -109,7 +109,7 @@ const draft = async () => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/saverecord",
+      "/api/document/saverecord",
       savedate,
     );
     console.log(res.data);
@@ -125,7 +125,7 @@ const draft = async () => {
 //임시저장 불러오기
 const sevedate = async () => {
   let result = await axios
-    .post(`http://localhost:3000/document/bringrecord`)
+    .post(`/api/document/bringrecord`)
     .catch((err) => console.log(err));
 
   const data = result.data[0];
@@ -178,7 +178,7 @@ const Update = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/Updaterecord",
+      "/api/document/Updaterecord",
       updatedate,
     );
     console.log(res.data);
@@ -197,7 +197,7 @@ const delRecord = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/deleterecord",
+      "/api/document/deleterecord",
       del,
     );
     console.log(res.data);
@@ -214,7 +214,7 @@ const filename = ref([]);
 console.log(filename);
 const filelist = async () => {
   let result = await axios
-    .get(`http://localhost:3000/document/recordFile`)
+    .get(`/api/document/recordFile`)
     .catch((err) => console.log(err));
   console.log(result.data.result);
   filename.value = Array.isArray(result.data.result) ? result.data.result : [];

@@ -16,7 +16,7 @@ const userInfo = reactive({
 const checkpassword = async () => {
   if (!passwordConfirm.value) return alert("비밀번호를 입력해주세요.");
   try {
-    const response = await fetch("http://localhost:3000/mypage/check", {
+    const response = await fetch("/api/mypage/check", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

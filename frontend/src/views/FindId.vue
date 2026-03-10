@@ -18,7 +18,7 @@ const handleFindId = async () => {
     return;
   }
   try {
-    const res = await axios.post("http://localhost:3000/user/find-id", {
+    const res = await axios.post("/api/user/find-id", {
       userName: userName.value,
       userEmail: userEmail.value,
     });

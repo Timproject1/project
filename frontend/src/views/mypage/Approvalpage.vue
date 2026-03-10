@@ -39,9 +39,7 @@ const goNext = () => changePage(currentPage.value + 1);
 // DB에서 일반회원 승인신청목록 받아오기
 const fetchUsers = async () => {
   try {
-    const response = await fetch(
-      "http://localhost:3000/mypage/admin/users/pending",
-    );
+    const response = await fetch("/api/mypage/admin/users/pending");
     if (response.ok) {
       userInfo.value = await response.json();
       currentPage.value = 1; // 데이터를 새로 불러오면 1페이지로 초기화
@@ -66,14 +64,11 @@ const viewInfo = (user) => {
 // 회원 가입승인버튼 눌렀을 때 (추가 + 승인을 누르면 목록에서 삭제)
 const Okapprove = async () => {
   try {
-    const response = await fetch(
-      "http://localhost:3000/mypage/admin/users/approve",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: choiceUser.value.user_id }),
-      },
-    );
+    const response = await fetch("/api/mypage/admin/users/approve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: choiceUser.value.user_id }),
+    });
     // 승인 완료 후 승인 안내 메세지, 목록에서 삭제
     if (response.ok) {
       alert(`${choiceUser.value.user_name} 님을 승인 하였습니다.`);

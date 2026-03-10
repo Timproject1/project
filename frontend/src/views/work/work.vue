@@ -55,7 +55,7 @@ let prioritydb = ref({});
 const priorityData = async () => {
   let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/pri/${doc}`)
+    .get(`/api/document/pri/${doc}`)
     .catch((err) => console.log(err));
   prioritydb.value = result.data.result[0];
   // console.log(result.data.result);
@@ -75,7 +75,7 @@ const userAnswers = ref({});
 const getDoc = async () => {
   // console.log(docStore.doc_num);
   let result = await axios(
-    `http://localhost:3000/document/getDoc/${docStore.doc_num}`,
+    `/api/document/getDoc/${docStore.doc_num}`,
   ).catch((err) => console.error(err));
   doc.value = result.data.result[0];
   // console.log(result.data);
@@ -86,7 +86,7 @@ const getDoc = async () => {
 const getForm = async () => {
   // console.log(doc.value);
   const result = await axios.get(
-    `http://localhost:3000/form/getForm/${doc.value.form_ver}`,
+    `/api/form/getForm/${doc.value.form_ver}`,
   );
   // console.log(result);
   formData.value = result.data.form;
@@ -108,7 +108,7 @@ const getForm = async () => {
 //신청서 응답 받아오기
 const getResp = async () => {
   const result = await axios.get(
-    `http://localhost:3000/document/getResp/${doc.value.doc_num}`,
+    `/api/document/getResp/${doc.value.doc_num}`,
   );
   // console.log(result.data.response);
   for (const key in result.data.response) {
