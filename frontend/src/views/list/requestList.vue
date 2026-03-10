@@ -86,7 +86,7 @@ const assignManager = async (manager) => {
 };
 </script>
 <template>
-  <div class="container-fluid pt-6 pb-5 work-layout">
+  <div class="container-fluid pt-4 pb-4 work-layout">
     <div class="work-container">
       <div class="left">
         <div
@@ -212,11 +212,7 @@ const assignManager = async (manager) => {
     </div>
   </div>
 
-  <div
-    v-if="showModal"
-    class="modal-overlay"
-    @click.self="showModal = false"
-  >
+  <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
     <div class="modal-content card shadow-lg p-4 border-radius-xl">
       <h5 class="font-weight-bolder text-dark mb-3 fw-bold">담당자 목록</h5>
       <div class="table-responsive">
@@ -284,7 +280,7 @@ const assignManager = async (manager) => {
 <style scoped>
 /* documentLIST.vue 동일 레이아웃 */
 .work-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   height: 100dvh;
   overflow: hidden;
   display: flex;
@@ -312,7 +308,7 @@ const assignManager = async (manager) => {
 
 .application-card,
 .filter-card {
-  background: #ffffff;
+  background: var(--app-surface);
   padding: 18px 18px 20px;
   position: relative;
 }
@@ -338,7 +334,7 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--app-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -346,7 +342,7 @@ button {
 }
 
 .modal-content {
-  background: #fff;
+  background: var(--app-surface);
   max-width: 550px;
   width: 90%;
   border-radius: 0.75rem;

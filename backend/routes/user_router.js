@@ -101,4 +101,19 @@ router.post("/reset-password-confirm", async (req, res) => {
   }
 });
 
+// /** 기존 DB 평문 비밀번호를 bcrypt로 일괄 암호화 (한 번만 실행 권장) */
+// router.post("/migrate-passwords", async (req, res) => {
+//   try {
+//     const result = await userService.migratePasswordsToHash();
+//     return res.json({
+//       success: true,
+//       message: "비밀번호 마이그레이션 완료",
+//       ...result,
+//     });
+//   } catch (err) {
+//     console.error("비밀번호 마이그레이션 라우터 에러:", err);
+//     return res.status(500).json({ success: false, message: err.message });
+//   }
+// });
+
 module.exports = router;

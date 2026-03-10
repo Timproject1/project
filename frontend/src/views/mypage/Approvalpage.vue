@@ -577,7 +577,7 @@ const addSupported = async () => {
 </template>
 <style scoped>
 .approval-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   min-height: 100vh;
 }
 
@@ -589,7 +589,7 @@ const addSupported = async () => {
 .main-content-card {
   height: auto;
   min-height: 750px;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
   overflow: visible;
 }
 
@@ -602,7 +602,7 @@ const addSupported = async () => {
 .menu-list li {
   padding: 14px 25px;
   font-size: 0.85rem;
-  color: #67748e;
+  color: var(--app-text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -630,7 +630,7 @@ const addSupported = async () => {
 }
 
 .table-hover-row:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: var(--app-backdrop-light);
 }
 
 .modal-overlay {
@@ -639,7 +639,7 @@ const addSupported = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--app-backdrop);
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;

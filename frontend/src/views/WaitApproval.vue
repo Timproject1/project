@@ -46,7 +46,7 @@ const router = useRouter();
 
 <style scoped>
 .wait-approval-layout {
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -61,7 +61,7 @@ const router = useRouter();
 }
 
 .wait-approval-card {
-  background: #ffffff;
+  background: var(--app-surface);
   position: relative;
 }
 
@@ -74,8 +74,8 @@ const router = useRouter();
 }
 
 .info-box {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
   border-radius: 12px;
   padding: 1rem 1.25rem;
 }

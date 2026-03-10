@@ -14,6 +14,6 @@ const emitClose = () => {
 </template>
 <style scoped>
 .work-modal {
-  background-color: #ffffff;
+  background-color: var(--app-surface);
 }
 </style>
