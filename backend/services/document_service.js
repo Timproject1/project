@@ -4,7 +4,7 @@ const service = {
   //목록받아오기
   getList: async (info, searchFilters) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id,form_ver from getDocumentList`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,writer_id,form_ver from getDocumentList ORDER BY CAST(SUBSTRING_INDEX(doc_num, '-', -1) AS UNSIGNED) DESC`;
       const conditions = [];
       const values = [];
       if (info.grade == "a1") {

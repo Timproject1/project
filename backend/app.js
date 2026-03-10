@@ -42,7 +42,7 @@ app.get("/", function (req, res, next) {
 });
 
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "./public", "index.html"));
+  res.sendFile(path.join(__dirname, "./public", "index.html"));
 });
 
 // 서버를 3000번 포트에서 실행합니다.
