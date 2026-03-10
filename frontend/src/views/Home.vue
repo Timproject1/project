@@ -62,7 +62,6 @@
                     <p class="text-xs text-secondary mb-0">
                       예정된 상담이 있습니다
                     </p>
-                    test2
                   </div>
                 </div>
               </div>
