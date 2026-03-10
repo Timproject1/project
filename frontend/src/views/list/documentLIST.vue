@@ -1,7 +1,7 @@
 <script setup>
 import { useMemberStore } from "@/store/member";
 import { useDocStore } from "@/store/doc";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -10,6 +10,25 @@ const memberStore = useMemberStore();
 const docStore = useDocStore();
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
+const pageSize = ref(10);
+const currentPage = ref(1);
+
+const totalPages = computed(() =>
+  list.value.length ? Math.ceil(list.value.length / pageSize.value) : 1,
+);
+
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return list.value.slice(start, end);
+});
+
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+};
+const goPrev = () => changePage(currentPage.value - 1);
+const goNext = () => changePage(currentPage.value + 1);
 const isModalOpen = ref(false); // 모달 열림 상태
 const modalType = ref(""); // 어떤 서류인지 (doc, plan, result)
 const selectedDocData = ref({}); // 모달에 표시할 데이터
@@ -40,6 +59,7 @@ const getList = async () => {
     },
   });
   list.value = result.data.result;
+  currentPage.value = 1;
   console.log(result.data);
   return result;
 };
@@ -259,63 +279,81 @@ onBeforeMount(async () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(doc, index) in list"
-                    :key="doc.doc_num"
-                    @click="selectDoc(doc.doc_num)"
-                  >
-                    <td class="text-center text-sm">
-                      {{ list.length - index }}
-                    </td>
-                    <td class="ps-4 text-sm font-weight-bold">
-                      {{ doc.sup_name }}
-                    </td>
-                    <td class="text-center text-sm">{{ doc.writer_name }}</td>
-                    <td class="text-center text-sm">
-                      {{ formatDate(doc.write_date) }}
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="info"
-                        variant="text"
-                        class="mb-0"
-                        @click.stop="getDocument(doc)"
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center text-sm">
-                      {{ doc.manager_name }}
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="info"
-                        variant="text"
-                        class="mb-0"
-                        @click.stop="getPlan(doc)"
-                        :disabled="
-                          doc.progress != '지원계획' &&
-                          doc.progress != '지원결과'
-                        "
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="info"
-                        variant="text"
-                        class="mb-0"
-                        @click.stop="getResult(doc)"
-                        :disabled="doc.progress != '지원결과'"
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center">
-                      <span class="badge badge-sm bg-gradient-success">{{
-                        doc.progress
-                      }}</span>
+                  <template v-if="list && list.length > 0">
+                    <tr
+                      v-for="(doc, index) in pagedList"
+                      :key="doc.doc_num"
+                      @click="selectDoc(doc.doc_num)"
+                    >
+                      <td class="text-center text-sm">
+                        {{
+                          list.length - ((currentPage - 1) * pageSize + index)
+                        }}
+                      </td>
+                      <td class="ps-4 text-sm font-weight-bold">
+                        {{ doc.sup_name }}
+                      </td>
+                      <td class="text-center text-sm">{{ doc.writer_name }}</td>
+                      <td class="text-center text-sm">
+                        {{ formatDate(doc.write_date) }}
+                      </td>
+                      <td class="text-center">
+                        <material-button
+                          size="sm"
+                          color="info"
+                          variant="text"
+                          class="mb-0"
+                          @click.stop="getDocument(doc)"
+                          >보기</material-button
+                        >
+                      </td>
+                      <td class="text-center text-sm">
+                        {{ doc.manager_name }}
+                      </td>
+                      <td class="text-center">
+                        <material-button
+                          size="sm"
+                          color="info"
+                          variant="text"
+                          class="mb-0"
+                          @click.stop="getPlan(doc)"
+                          :disabled="
+                            doc.progress != '지원계획' &&
+                            doc.progress != '지원결과'
+                          "
+                          >보기</material-button
+                        >
+                      </td>
+                      <td class="text-center">
+                        <material-button
+                          size="sm"
+                          color="info"
+                          variant="text"
+                          class="mb-0"
+                          @click.stop="getResult(doc)"
+                          :disabled="doc.progress != '지원결과'"
+                          >보기</material-button
+                        >
+                      </td>
+                      <td class="text-center">
+                        <span class="badge badge-sm bg-gradient-success">{{
+                          doc.progress
+                        }}</span>
+                      </td>
+                    </tr>
+                  </template>
+                  <tr v-else>
+                    <td colspan="9" class="text-center py-5">
+                      <div class="d-flex flex-column align-items-center">
+                        <i
+                          class="material-icons text-secondary mb-2"
+                          style="font-size: 2rem"
+                          >info_outline</i
+                        >
+                        <p class="text-secondary mb-0">
+                          현재 표시할 내역이 없습니다.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -326,10 +364,23 @@ onBeforeMount(async () => {
               class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
               <material-pagination>
-                <material-pagination-item prev />
-                <material-pagination-item label="1" active />
-                <material-pagination-item label="2" />
-                <material-pagination-item next />
+                <material-pagination-item
+                  prev
+                  :disabled="currentPage === 1"
+                  @click="goPrev"
+                />
+                <material-pagination-item
+                  v-for="page in totalPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="page === currentPage"
+                  @click="changePage(page)"
+                />
+                <material-pagination-item
+                  next
+                  :disabled="currentPage === totalPages"
+                  @click="goNext"
+                />
               </material-pagination>
 
               <button
@@ -772,7 +823,9 @@ button {
   font-size: 0.9rem;
   border: 1px solid var(--app-border-muted);
   border-radius: 8px;
-  background: var(--app-border-muted); /* 읽기 전용 느낌을 주기 위해 살짝 회색으로 변경 */
+  background: var(
+    --app-border-muted
+  ); /* 읽기 전용 느낌을 주기 위해 살짝 회색으로 변경 */
   color: var(--app-text-muted);
   resize: none; /* 크기 조절 방지 */
 }

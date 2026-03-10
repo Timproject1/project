@@ -128,10 +128,15 @@ const sevedate = async () => {
     .post(`http://localhost:3000/document/bringrecord`)
     .catch((err) => console.log(err));
 
-  const data = result.data;
+  const data = result.data[0];
+  if (!data) {
+    alert("저장된 데이터가 없습니다");
+    return;
+  }
+
   newrecord.value = true;
-  addRecordName.value = data.result[0].counsel_title;
-  addRecordContent.value = data.result[0].counsel_content;
+  addRecordName.value = data.result.counsel_title;
+  addRecordContent.value = data.result.counsel_content;
   console.log(data.result);
 };
 

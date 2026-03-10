@@ -155,11 +155,14 @@ const sevedate = async () => {
   let result = await axios
     .post(`http://localhost:3000/document/bringresult`)
     .catch((err) => console.log(err));
-
-  const data = result.data;
+  const data = result.data[0];
+  if (!data) {
+    alert("저장된 데이터가 없습니다");
+    return;
+  }
   newresult.value = true;
-  addresultsName.value = data.result[0].result_title;
-  addresultsContent.value = data.result[0].result_content;
+  addresultsName.value = data.result.result_title;
+  addresultsContent.value = data.result.result_content;
   console.log(data.result[0]);
 };
 

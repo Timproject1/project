@@ -106,7 +106,7 @@ const service = {
   //정보 받아오기
   getDoc: async (num) => {
     try {
-      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,form_ver,writer_id from getDocumentList where doc_num=?`;
+      let query = `select doc_num,sup_name,writer_name,write_date,manager_name,progress,form_ver,writer_id,gender,birthday from getDocumentList where doc_num=?`;
       const result = await pool.query(query, [num]);
       // console.log(result);
       return result;
@@ -728,9 +728,9 @@ const service = {
     }
   },
   //우선순위 승인 목록
-  priReqList: async (center_num) => {
+  priReqList: async (center_num, filters = {}) => {
     try {
-      const query = `SELECT 
+      let query = `SELECT 
           pr.priority_req_num,
           d.doc_num,
           -- 지원자 정보 (supported)
@@ -740,7 +740,7 @@ const service = {
           -- 담당자 정보 (member - 관리자)
           mgr.user_name AS manager_name,
           d.write_date,
-          d.progress
+          c.detail_name AS progress
       FROM 
           priority_req pr
       JOIN 
@@ -751,9 +751,27 @@ const service = {
           member m ON d.user_id = m.user_id
       LEFT JOIN 
           member mgr ON d.manager = mgr.user_id  -- 담당자가 지정되지 않았을 수도 있으므로 LEFT JOIN 권장
+      JOIN 
+          code_detail c ON c.detail_code = d.progress 
       where pr.priority_approved = "d1"
       and m.registernum =?`;
-      const result = await pool.query(query, [center_num]);
+
+      const params = [center_num];
+      if (filters.sup) {
+        query += ` AND s.sup_name LIKE ?`;
+        params.push(`%${filters.sup}%`);
+      }
+      if (filters.writer) {
+        query += ` AND m.user_name LIKE ?`;
+        params.push(`%${filters.writer}%`);
+      }
+      if (filters.maneger) {
+        // 담당자 이름 검색 시, NULL은 제외하고 이름이 매칭되는 것만
+        query += ` AND mgr.user_name LIKE ?`;
+        params.push(`%${filters.maneger}%`);
+      }
+
+      const result = await pool.query(query, params);
       return result;
     } catch (error) {
       console.log(error);
@@ -761,9 +779,9 @@ const service = {
     }
   },
   //계획 승인 목록
-  planReqList: async (center_num) => {
+  planReqList: async (center_num, filters = {}) => {
     try {
-      const query = `SELECT 
+      let query = `SELECT 
           pr.plan_req_num,
           d.doc_num,
           -- 지원자 정보 (supported)
@@ -773,7 +791,7 @@ const service = {
           -- 담당자 정보 (member - 관리자)
           mgr.user_name AS manager_name,
           d.write_date,
-          d.progress
+          c.detail_name AS progress
       FROM 
           plan_req pr
       JOIN 
@@ -786,12 +804,28 @@ const service = {
           member m ON d.user_id = m.user_id
       LEFT JOIN 
           member mgr ON d.manager = mgr.user_id
+      JOIN 
+          code_detail c ON c.detail_code = d.progress 
       WHERE 
           m.registernum =? 
       and 
           plan_approved ='d1'`;
 
-      const result = await pool.query(query, [center_num]);
+      const params = [center_num];
+      if (filters.sup) {
+        query += ` AND s.sup_name LIKE ?`;
+        params.push(`%${filters.sup}%`);
+      }
+      if (filters.writer) {
+        query += ` AND m.user_name LIKE ?`;
+        params.push(`%${filters.writer}%`);
+      }
+      if (filters.maneger) {
+        query += ` AND mgr.user_name LIKE ?`;
+        params.push(`%${filters.maneger}%`);
+      }
+
+      const result = await pool.query(query, params);
       return result;
     } catch (error) {
       console.log(error);

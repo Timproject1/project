@@ -151,7 +151,6 @@ onBeforeMount(async () => {
             @click="gopriority()"
             class="tab-pill action-pill"
             :class="{ active: isActiveTab('priority') }"
-            disabled
           >
             우선순위 선택
           </button>
@@ -211,9 +210,9 @@ onBeforeMount(async () => {
             <div class="info-item">이름:{{ doc.sup_name }}</div>
             <div class="info-item">보호자:{{ doc.writer_name }}</div>
             <div class="info-item">장애유형: 발달장애</div>
-            <div class="info-item">성별:</div>
+            <div class="info-item">성별:{{ doc.gender }}</div>
             <div class="info-item">대기 단계: {{ doc.progress }}</div>
-            <div class="info-item">생년월일:</div>
+            <div class="info-item">생년월일:{{ formatDate(doc.birthday) }}</div>
             <div class="info-item">담당자:{{ doc.manager_name }}</div>
           </div>
           <div class="date-stamp text-xs text-secondary mt-2">

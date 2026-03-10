@@ -1,7 +1,7 @@
 <script setup>
 import { useMemberStore } from "@/store/member";
 import { useDocStore } from "../../store/doc";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -11,6 +11,25 @@ const docStore = useDocStore();
 const currentTab = ref("priority");
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
+const pageSize = ref(10);
+const currentPage = ref(1);
+
+const totalPages = computed(() =>
+  list.value.length ? Math.ceil(list.value.length / pageSize.value) : 1,
+);
+
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return list.value.slice(start, end);
+});
+
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+};
+const goPrev = () => changePage(currentPage.value - 1);
+const goNext = () => changePage(currentPage.value + 1);
 const formatDate = (dateString) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("ko-KR");
@@ -29,8 +48,16 @@ const getList = async () => {
     `http://localhost:3000/document/${getPath[currentTab.value]}/${
       memberStore.center
     }`,
+    {
+      params: {
+        sup: searchQuery.value.sup || "",
+        writer: searchQuery.value.writer || "",
+        maneger: searchQuery.value.maneger || "",
+      },
+    },
   );
   list.value = result.data.result;
+  currentPage.value = 1;
   console.log(result.data);
   return result;
 };
@@ -44,6 +71,7 @@ const selectDoc = (doc_num) => {
 
 const fetchTableData = async (tab) => {
   currentTab.value = tab;
+  currentPage.value = 1;
   await getList();
 };
 onBeforeMount(async () => {
@@ -183,12 +211,12 @@ onBeforeMount(async () => {
                 <tbody>
                   <template v-if="list && list.length > 0">
                     <tr
-                      v-for="(doc, index) in list"
+                      v-for="(doc, index) in pagedList"
                       :key="doc.doc_num"
                       @click="selectDoc(doc.doc_num)"
                     >
                       <td class="text-center text-sm">
-                        {{ list.length - index }}
+                        {{ list.length - ((currentPage - 1) * pageSize + index) }}
                       </td>
                       <td class="ps-4 text-sm font-weight-bold">
                         {{ doc.sup_name }}
@@ -231,10 +259,23 @@ onBeforeMount(async () => {
               class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
               <material-pagination>
-                <material-pagination-item prev />
-                <material-pagination-item label="1" active />
-                <material-pagination-item label="2" />
-                <material-pagination-item next />
+                <material-pagination-item
+                  prev
+                  :disabled="currentPage === 1"
+                  @click="goPrev"
+                />
+                <material-pagination-item
+                  v-for="page in totalPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="page === currentPage"
+                  @click="changePage(page)"
+                />
+                <material-pagination-item
+                  next
+                  :disabled="currentPage === totalPages"
+                  @click="goNext"
+                />
               </material-pagination>
             </div>
           </div>
