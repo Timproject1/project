@@ -62,6 +62,7 @@
                     <p class="text-xs text-secondary mb-0">
                       예정된 상담이 있습니다
                     </p>
+                    test2
                   </div>
                 </div>
               </div>
@@ -87,7 +88,7 @@ onMounted(() => {
 /* 배경 부드러운 색감 */
 .main-page-bg {
   min-height: 80vh;
-  background-color: #f8f9fa;
+  background-color: var(--app-surface-muted);
 }
 
 /* 카드 현대화 */
@@ -97,12 +98,12 @@ onMounted(() => {
 }
 
 .shadow-soft {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: var(--app-shadow-lg) !important;
 }
 
 /* 헤더 그래디언트 강화 */
 .welcome-header {
-  background: linear-gradient(195deg, #66bb6a 0%, #43a047 100%);
+  background: var(--app-gradient-success);
 }
 
 /* 환영 아이콘 및 애니메이션 */
@@ -118,7 +119,7 @@ onMounted(() => {
   transform: translate(-50%, -50%);
   width: 100px;
   height: 100px;
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: rgba(var(--app-accent-rgb), 0.1);
   border-radius: 50%;
   z-index: -1;
   animation: pulse 2s infinite;
@@ -148,13 +149,13 @@ onMounted(() => {
 
 .info-box:hover {
   transform: translateY(-5px);
-  background-color: #ffffff !important;
-  border-color: #4caf50;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-accent);
+  box-shadow: var(--app-shadow-md);
 }
 
 .highlight-box {
-  background-color: #e8f5e9 !important;
+  background-color: var(--app-success-bg) !important;
 }
 
 .display-4 {

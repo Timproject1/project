@@ -2,18 +2,14 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 
-const isOpen = ref(false);
-const toggleMenu = () => {
-  isOpen.value = !isOpen.value;
-};
 const searchName = ref("");
-const resetSearch = () => {
-  searchName.value = "";
-};
+// const resetSearch = () => {
+//   searchName.value = "";
+// };
 const centerList = ref([]);
 const getCenterList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/center/list");
+    const response = await axios.get("/api/center/list");
 
     if (response.data.retCode === "OK") {
       centerList.value = response.data.result;
@@ -47,7 +43,7 @@ const addCenter = async () => {
   }
   try {
     const response = await axios.post(
-      "http://localhost:3000/center/addCenter",
+      "/api/center/addCenter",
       newCenter.value,
     );
     if (response.data.retCode === "OK") {
@@ -88,7 +84,7 @@ const openCenterEditModal = (center) => {
 const updateCenter = async () => {
   try {
     const response = await axios.put(
-      "http://localhost:3000/center/update",
+      "/api/center/update",
       modifyCenter.value,
     );
     if (response.status === 200) {
@@ -103,188 +99,475 @@ const updateCenter = async () => {
 };
 </script>
 <template>
-  <div class="main-container">
-    <div class="layout-wrapper">
-      <aside class="sidebar-container">
-        <div class="management-box">
-          <div class="box-header" @click="toggleMenu">
-            기관관리 <span class="arrow">{{ isOpen ? "▼" : "▶" }}</span>
+  <div class="container-fluid pt-4 pb-4 work-layout">
+    <div class="work-container">
+      <div class="left">
+        <div
+          class="filter-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+        >
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
+          >
+            <i class="material-icons opacity-10 me-2">search</i>
+            <span class="title text-white fw-bold">기관 검색</span>
           </div>
-          <ul>
-            <li>기관목록</li>
-          </ul>
-        </div>
-
-        <div class="search-box">
-          <h3 class="search-title">기관 검색</h3>
-          <div class="search-form">
-            <div class="form-group">
-              <label>기관명</label>
-              <input type="text" v-model="searchName" />
+          <div class="card-body p-3">
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >기관명</label
+              >
+              <input
+                v-model="searchName"
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="기관명 입력"
+              />
             </div>
-            <button class="search-btn" @click="resetSearch">검색</button>
-          </div>
-        </div>
-      </aside>
-    </div>
-    <div class="table-wrapper">
-      <h2>시스템관리자의 기관목록</h2>
-      <button type="button" @click="showAddModal = true">기관 등록</button>
-      <table>
-        <thead>
-          <tr>
-            <th>번호</th>
-            <th>대표명</th>
-            <th>기관명</th>
-            <th>대표번호</th>
-            <th>주소</th>
-            <th>이메일</th>
-            <th>기관등록일</th>
-            <th>운영상태</th>
-            <th>정보수정</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="center in centerList" :key="center.registernum">
-            <td>{{ center.registernum }}</td>
-            <td>{{ center.repname }}</td>
-            <td>{{ center.center_name }}</td>
-            <td>{{ center.center_tel }}</td>
-            <td>{{ center.center_addr }}</td>
-            <td>{{ center.center_email }}</td>
-            <td>{{ center.reg_date }}</td>
-            <td>{{ center.runed }}</td>
-            <td>
-              <button class="edit-btn" @click="openCenterEditModal(center)">
-                수정하기
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pagination">
-        <button>이전</button>
-        <span class="pages">
-          <span class="active">1</span> <span>2</span> <span>3</span>
-        </span>
-        <button>다음</button>
-      </div>
-      <!-- 기관 등록 -->
-      <div v-if="showAddModal" class="modal-overlay">
-        <div class="modal-content">
-          <h3>기관 등록</h3>
-          <hr />
-          <div class="form-group">
-            <label>대표명</label>
-            <input type="text" v-model="newCenter.repname" />
-          </div>
-          <div class="form-group">
-            <label>기관명</label>
-            <input type="text" v-model="newCenter.center_name" />
-          </div>
-          <div class="form-group">
-            <label>대표번호</label>
-            <input type="text" v-model="newCenter.center_tel" />
-          </div>
-          <div class="form-group">
-            <label>주소</label>
-            <input type="text" v-model="newCenter.center_addr" />
-          </div>
-          <div class="form-group">
-            <label>이메일</label>
-            <input type="text" v-model="newCenter.center_email" />
-          </div>
-          <div class="form-group">
-            <label>기관 사업자 번호</label>
-            <input type="text" v-model="newCenter.registernum" />
-          </div>
-          <div class="form-group">
-            <label>기관 운영여부</label>
-            <select v-model="newCenter.runed">
-              <option value="운영">운영</option>
-              <option value="휴업">휴업</option>
-            </select>
-          </div>
-          <div class="modal-button">
-            <button @click="addCenter">등록</button>
-            <button @click="showAddModal = false">취소</button>
+            <button
+              type="button"
+              class="btn btn-sm w-100 bg-gradient-success text-white"
+              @click="getCenterList()"
+            >
+              검색
+            </button>
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="isCenterModalOpen && modifyCenter" class="modal-overlay">
-      <div class="modal-content">
-        <h3>기관 정보 수정</h3>
-        <input v-model="modifyCenter.center_name" placeholder="기관명" />
-        <input v-model="modifyCenter.center_tel" placeholder="대표번호" />
-        <input v-model="modifyCenter.center_addr" placeholder="주소" />
-        <input v-model="modifyCenter.center_email" placeholder="이메일" />
 
-        <button @click="updateCenter">저장</button>
-        <button @click="isCenterModalOpen = false">닫기</button>
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex justify-content-between align-items-center"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">
+              시스템관리자의 기관목록
+            </h6>
+            <button
+              type="button"
+              class="btn btn-sm bg-gradient-dark text-white px-3"
+              @click="showAddModal = true"
+            >
+              기관 등록
+            </button>
+          </div>
+
+          <div class="card-body px-0 pb-2">
+            <div class="table-wrapper-full">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr class="bg-gray-100">
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      번호
+                    </th>
+                    <th
+                      class="ps-4 text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      대표명
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      기관명
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      대표번호
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      주소
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      이메일
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      기관등록일
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      운영상태
+                    </th>
+                    <th
+                      class="text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      정보수정
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="center in centerList" :key="center.registernum">
+                    <td class="text-center text-sm">
+                      {{ center.registernum }}
+                    </td>
+                    <td class="ps-4 text-sm font-weight-bold">
+                      {{ center.repname }}
+                    </td>
+                    <td class="text-center text-sm">
+                      {{ center.center_name }}
+                    </td>
+                    <td class="text-center text-sm">{{ center.center_tel }}</td>
+                    <td class="text-center text-sm table-cell-ellipsis">
+                      {{ center.center_addr }}
+                    </td>
+                    <td class="text-center text-sm">
+                      {{ center.center_email }}
+                    </td>
+                    <td class="text-center text-sm">{{ center.reg_date }}</td>
+                    <td class="text-center">
+                      <span class="badge badge-sm bg-gradient-success">{{
+                        center.runed
+                      }}</span>
+                    </td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn btn-sm bg-gradient-info text-white px-3"
+                        @click="openCenterEditModal(center)"
+                      >
+                        수정하기
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
+            >
+              <div class="pagination d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-sm btn-outline-secondary">
+                  이전
+                </button>
+                <span class="pages text-secondary text-sm">
+                  <span class="fw-bold">1</span> <span>2</span> <span>3</span>
+                </span>
+                <button type="button" class="btn btn-sm btn-outline-secondary">
+                  다음
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기관 등록 모달 -->
+  <div
+    v-if="showAddModal"
+    class="modal-overlay"
+    @click.self="showAddModal = false"
+  >
+    <div class="modal-content">
+      <h3 class="mb-3 fw-bold">기관 등록</h3>
+      <hr class="dark horizontal my-2" />
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표명</label
+        >
+        <input
+          v-model="newCenter.repname"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관명</label
+        >
+        <input
+          v-model="newCenter.center_name"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표번호</label
+        >
+        <input
+          v-model="newCenter.center_tel"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >주소</label
+        >
+        <input
+          v-model="newCenter.center_addr"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >이메일</label
+        >
+        <input
+          v-model="newCenter.center_email"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관 사업자 번호</label
+        >
+        <input
+          v-model="newCenter.registernum"
+          type="text"
+          class="form-control form-control-sm"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관 운영여부</label
+        >
+        <select v-model="newCenter.runed" class="form-control form-control-sm">
+          <option value="운영">운영</option>
+          <option value="휴업">휴업</option>
+        </select>
+      </div>
+      <div class="modal-button d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-sm bg-gradient-success text-white"
+          @click="addCenter"
+        >
+          등록
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          @click="showAddModal = false"
+        >
+          취소
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기관 수정 모달 -->
+  <div
+    v-if="isCenterModalOpen && modifyCenter"
+    class="modal-overlay"
+    @click.self="isCenterModalOpen = false"
+  >
+    <div class="modal-content">
+      <h3 class="mb-3 fw-bold">기관 정보 수정</h3>
+      <hr class="dark horizontal my-2" />
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표명</label
+        >
+        <input
+          v-model="modifyCenter.repname"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="대표명"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관명</label
+        >
+        <input
+          v-model="modifyCenter.center_name"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="기관주소"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관주소</label
+        >
+        <input
+          v-model="modifyCenter.center_addr"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="기관주소"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >사업자번호</label
+        >
+        <input
+          v-model="modifyCenter.registernum"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="사업자번호"
+        />
+      </div>
+
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >대표번호</label
+        >
+        <input
+          v-model="modifyCenter.center_tel"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="대표번호"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >주소</label
+        >
+        <input
+          v-model="modifyCenter.center_addr"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="주소"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >이메일</label
+        >
+        <input
+          v-model="modifyCenter.center_email"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="이메일"
+        />
+      </div>
+      <div class="form-group mb-3">
+        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+          >기관 운영여부</label
+        >
+        <select v-model="newCenter.runed" class="form-control form-control-sm">
+          <option value="운영">운영</option>
+          <option value="휴업">휴업</option>
+        </select>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-sm bg-gradient-success text-white"
+          @click="updateCenter"
+        >
+          저장
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          @click="isCenterModalOpen = false"
+        >
+          닫기
+        </button>
       </div>
     </div>
   </div>
 </template>
 <style scoped>
-/* 부모 컨테이너를 가로 정렬로 만듭니다 */
-.main-container {
+/* documentLIST.vue 동일 레이아웃 - list.vue 안에서 테이블 한 번에 표시(스크롤 없음) */
+.work-layout {
+  background-color: var(--app-surface-muted);
+  height: auto;
+  min-height: 0;
+  overflow: visible;
   display: flex;
-  width: 100%;
-  min-height: 100vh;
+  flex-direction: column;
 }
 
-/* 사이드바 너비를 고정하고 밀리지 않게 설정 */
-.sidebar-container {
-  width: 250px;
-  flex-shrink: 0;
-  z-index: 10; /* 사이드바가 위로 올라오게 하되 영역을 명확히 함 */
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-/* 테이블 영역이 나머지 공간을 다 차지하게 설정 */
-.table-wrapper {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-x: auto; /* 테이블이 길어질 때 가로 스크롤 허용 */
+.left,
+.right {
+  flex: 1;
+  min-height: 0;
 }
-.layout-wrapper {
-  display: flex; /* 사이드바와 콘텐츠를 가로로 나란히 */
-  align-items: flex-start;
+
+.right {
+  overflow: visible;
+  min-height: auto;
 }
-td {
-  white-space: nowrap; /* 글자가 줄바꿈되지 않게 함 */
+
+.left {
+  max-width: 320px;
+  flex: 0 0 auto;
+  overflow-y: auto;
+}
+
+/* 테이블 영역 스크롤 없이 전체 표시 */
+.table-wrapper-full {
+  overflow: visible;
+}
+
+.application-card,
+.filter-card {
+  background: var(--app-surface);
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+.filter-card .card-body {
+  padding: 18px;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.table-cell-ellipsis {
+  max-width: 180px;
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* 너무 길면 ...으로 표시 */
+  text-overflow: ellipsis;
 }
-/* 모달 배경: 화면 전체를 덮고 반투명 검정색 */
+
+/* 모달 */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--app-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999; /* 사이드바(10)보다 훨씬 높아야 함 */
+  z-index: 999;
 }
 
-/* 모달 박스: 흰색 배경에 그림자 효과 */
 .modal-content {
   background: white;
-  padding: 30px;
-  border-radius: 8px;
+  padding: 24px;
+  border-radius: 0.75rem;
   width: 500px;
   max-width: 90%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--app-shadow-modal);
 }
 
-/* 입력 폼 간격 */
-.modal-content input {
+.modal-content input,
+.modal-content select {
   width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
   box-sizing: border-box;
 }
 </style>

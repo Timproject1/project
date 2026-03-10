@@ -3,6 +3,7 @@ import { ref, reactive, computed } from "vue"; // Vue의 반응형 상태 관리
 import { useRouter } from "vue-router"; // 페이지 이동을 위한 라우터 도구 임포트
 import axios from "axios"; // API 통신을 위한 axios 라이브러리 임포트
 import MaterialInput from "@/components/MaterialInput.vue"; // 커스텀 입력창 컴포넌트 임포트
+import bgImage from "@/assets/img2.png";
 
 const router = useRouter(); // 라우터 인스턴스 생성
 
@@ -41,7 +42,7 @@ const checkIdDuplication = async () => {
     return;
   }
   try {
-    const res = await axios.post("http://localhost:3000/user/check-id", {
+    const res = await axios.post("/api/user/check-id", {
       user_id: form.user_id, // 서버로 현재 입력된 아이디 전송
     });
     alert(
@@ -57,7 +58,7 @@ const checkIdDuplication = async () => {
 // 기관 검색 버튼 클릭 시 서버에서 기관 목록을 가져오는 함수
 const fetchInstitutions = async () => {
   try {
-    const url = `http://localhost:3000/center/list`;
+    const url = `/api/center/list`;
     const res = await axios.get(url, { params: { name: searchQuery.value } }); // 검색어를 쿼리로 전달
 
     console.log("서버 응답 데이터:", res.data);
@@ -83,7 +84,7 @@ const handleSignup = async () => {
     return;
   }
   try {
-    const res = await axios.post("http://localhost:3000/user/signup", form); // 전체 데이터 전송
+    const res = await axios.post("/api/user/signup", form); // 전체 데이터 전송
     if (res.data.success) {
       alert("회원가입 완료!"); // 가입 성공 메시지
       router.push("/sign-in"); // 로그인 페이지로 페이지 이동
@@ -95,223 +96,279 @@ const handleSignup = async () => {
 </script>
 
 <template>
-  <div class="signup-container">
-    <div class="signup-wrap">
-      <h2 class="signup-title">회원가입</h2>
-
-      <!-- 가입 유형 선택 행 -->
-      <div class="form-row">
-        <label class="row-label">가입 유형</label>
-        <div class="row-content">
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" v-model="form.grade" value="a2" /> 기관담당자
-            </label>
-            <label class="radio-label">
-              <input type="radio" v-model="form.grade" value="a1" /> 일반사용자
-            </label>
-          </div>
+  <div class="signup-layout" :style="{ backgroundImage: `url(${bgImage})` }">
+    <div class="signup-container">
+      <div
+        class="signup-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+      >
+        <div
+          class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
+        >
+          <i class="material-icons opacity-10 me-2">person_add</i>
+          <span class="title text-white fw-bold">회원가입</span>
         </div>
-      </div>
-
-      <!-- 아이디 입력 행 -->
-      <div class="form-row">
-        <label class="row-label">아이디</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="form.user_id"
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
+        <div class="card-body p-4">
+          <!-- 가입 유형 -->
+          <div class="mb-4">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >가입 유형</label
+            >
+            <div class="radio-group d-flex gap-3 flex-wrap">
+              <label class="radio-item">
+                <input type="radio" v-model="form.grade" value="a2" />
+                <span>기관담당자</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" v-model="form.grade" value="a1" />
+                <span>일반사용자</span>
+              </label>
+            </div>
           </div>
-          <button
-            type="button"
-            class="green-btn shadow-btn"
-            @click="checkIdDuplication"
-          >
-            중복 확인
-          </button>
-        </div>
-      </div>
 
-      <!-- 비밀번호 입력 행 -->
-      <div class="form-row">
-        <label class="row-label">비밀번호</label>
-        <div class="row-content">
-          <div class="input-flex">
+          <!-- 아이디 -->
+          <div class="mb-4">
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_id"
+              >아이디 <span class="text-danger">(필수)</span></label
+            >
+            <div class="d-flex gap-2 align-items-center">
+              <material-input
+                id="user_id"
+                v-model="form.user_id"
+                variant="static"
+                placeholder="아이디 입력"
+                class="flex-grow-1"
+              />
+              <button
+                type="button"
+                class="btn btn-sm bg-gradient-success text-white flex-shrink-0"
+                @click="checkIdDuplication"
+              >
+                중복 확인
+              </button>
+            </div>
+          </div>
+
+          <!-- 비밀번호 -->
+          <div class="mb-4">
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_password"
+              >비밀번호 <span class="text-danger">(필수)</span></label
+            >
             <material-input
+              id="user_password"
               v-model="form.user_password"
               type="password"
-              variant="outline"
-              class="flex-grow-1"
+              variant="static"
+              placeholder="비밀번호 입력"
             />
-            <span class="required">(필수)</span>
           </div>
-        </div>
-      </div>
 
-      <!-- 비밀번호 확인 행 및 에러 메시지 -->
-      <div class="form-row">
-        <label class="row-label">비밀번호 확인</label>
-        <div class="row-content">
-          <div class="input-flex">
+          <!-- 비밀번호 확인 -->
+          <div class="mb-4">
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_pw_check"
+              >비밀번호 확인 <span class="text-danger">(필수)</span></label
+            >
             <material-input
+              id="user_pw_check"
               v-model="userPwCheck"
               type="password"
-              variant="outline"
-              class="flex-grow-1"
+              variant="static"
+              placeholder="비밀번호 다시 입력"
             />
-            <span class="required">(필수)</span>
+            <p v-if="isPasswordMismatch" class="text-danger text-xs mt-1 mb-0">
+              * 비밀번호가 일치하지 않습니다.
+            </p>
           </div>
-          <!-- 비밀번호 불일치 시 실시간 경고 표시 -->
-          <p v-if="isPasswordMismatch" class="error-msg-abs">
-            * 비밀번호가 틀렸습니다.
-          </p>
-        </div>
-      </div>
 
-      <!-- 이름 입력 행 -->
-      <div class="form-row">
-        <label class="row-label">이름</label>
-        <div class="row-content">
-          <div class="input-flex">
+          <!-- 이름 -->
+          <div class="mb-4">
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_name"
+              >이름 <span class="text-danger">(필수)</span></label
+            >
             <material-input
+              id="user_name"
               v-model="form.user_name"
-              variant="outline"
-              class="flex-grow-1"
+              variant="static"
+              placeholder="이름 입력"
             />
-            <span class="required">(필수)</span>
           </div>
-        </div>
-      </div>
 
-      <!-- 연락처 입력 행 -->
-      <div class="form-row">
-        <label class="row-label">연락처</label>
-        <div class="row-content">
-          <div class="input-flex">
+          <!-- 연락처 -->
+          <div class="mb-4">
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_tel"
+              >연락처 <span class="text-danger">(필수)</span></label
+            >
             <material-input
+              id="user_tel"
               v-model="form.user_tel"
-              variant="outline"
-              class="flex-grow-1"
+              variant="static"
+              placeholder="연락처 입력"
             />
-            <span class="required">(필수)</span>
           </div>
-        </div>
-      </div>
 
-      <!-- 이메일 입력 행 -->
-      <div class="form-row">
-        <label class="row-label">이메일</label>
-        <div class="row-content">
-          <div class="input-flex">
+          <!-- 이메일 -->
+          <div class="mb-4">
+            <label
+              class="form-label text-xs fw-bolder mb-1 text-secondary"
+              for="user_email"
+              >이메일 <span class="text-danger">(필수)</span></label
+            >
             <material-input
+              id="user_email"
               v-model="form.user_email"
               type="email"
-              variant="outline"
-              class="flex-grow-1"
+              variant="static"
+              placeholder="이메일 입력"
             />
-            <span class="required">(필수)</span>
+            <p v-if="emailDuplicate" class="text-danger text-xs mt-1 mb-0">
+              * 이미 등록된 이메일입니다.
+            </p>
           </div>
-          <p v-if="emailDuplicate" class="error-msg-abs">
-            * 기입 된 이메일입니다.
-          </p>
-        </div>
-      </div>
 
-      <!-- 기관명 검색 행 (ReadOnly) -->
-      <div class="form-row">
-        <label class="row-label">기관명</label>
-        <div class="row-content">
-          <div class="input-flex">
-            <material-input
-              v-model="institutionName"
-              readonly
-              variant="outline"
-              class="flex-grow-1"
-            />
-            <span class="required">(필수)</span>
+          <!-- 기관명 -->
+          <div class="mb-4">
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >기관명 <span class="text-danger">(필수)</span></label
+            >
+            <div class="d-flex gap-2 align-items-center">
+              <material-input
+                :model-value="institutionName"
+                variant="static"
+                placeholder="기관 검색 후 선택"
+                class="flex-grow-1"
+                readonly
+              />
+              <button
+                type="button"
+                class="btn btn-sm bg-gradient-success text-white flex-shrink-0"
+                @click="isModalOpen = true"
+              >
+                검색
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            class="green-btn shadow-btn"
-            @click="isModalOpen = true"
-          >
-            검색
-          </button>
-        </div>
-      </div>
 
-      <!-- 회원가입 완료 버튼 영역 -->
-      <div class="btn-area">
-        <button
-          type="button"
-          class="green-btn signup-btn shadow-btn"
-          @click="handleSignup"
-        >
-          가입하기
-        </button>
+          <!-- 가입하기 버튼 -->
+          <div class="mt-4 pt-3 border-top border-light">
+            <button
+              type="button"
+              class="btn btn-sm w-100 bg-gradient-success text-white py-2"
+              @click="handleSignup"
+            >
+              가입하기
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 기관 검색 모달 레이어 (v-if로 조건부 렌더링) -->
-    <div v-if="isModalOpen" class="modal-overlay">
-      <div class="modal-content">
-        <!-- 모달 내부 검색창 -->
-        <div class="modal-search-box">
-          <label class="row-label" style="width: 80px">기관명</label>
-          <input
-            type="text"
-            v-model="searchQuery"
-            @keyup.enter="fetchInstitutions"
-            placeholder="기관명을 입력하세요"
-          />
-          <button type="button" class="green-btn" @click="fetchInstitutions">
-            검색
-          </button>
-        </div>
-
-        <!-- 검색 결과 데이터 출력 테이블 -->
-        <div class="table-container">
-          <table class="org-table">
-            <thead>
-              <tr>
-                <th>기관명</th>
-                <th>주소</th>
-                <th>연락처</th>
-                <th>사용</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- 검색된 리스트 반복 출력 -->
-              <tr v-for="center in centers" :key="center.registernum">
-                <td>{{ center.center_name }}</td>
-                <td>{{ center.center_addr }}</td>
-                <td>{{ center.center_tel }}</td>
-                <td>
-                  <button
-                    type="button"
-                    class="green-btn select-btn"
-                    @click="selectOrg(center)"
-                  >
-                    사용
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- 모달 닫기 버튼 영역 -->
-        <div style="text-align: right; margin-top: 20px">
-          <button
-            class="green-btn"
-            style="background-color: #666"
-            @click="isModalOpen = false"
+    <!-- 기관 검색 모달 -->
+    <div v-if="isModalOpen" class="modal-backdrop fade show"></div>
+    <div
+      class="modal fade"
+      :class="{ 'show d-block': isModalOpen }"
+      tabindex="-1"
+      role="dialog"
+      @click.self="isModalOpen = false"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="card shadow-lg w-100 modal-content-scroll">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center justify-content-between"
           >
-            닫기
-          </button>
+            <span class="text-white fw-bold">기관 검색</span>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              aria-label="닫기"
+              @click="isModalOpen = false"
+            ></button>
+          </div>
+          <div class="card-body p-4">
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >기관명</label
+              >
+              <div class="d-flex gap-2">
+                <material-input
+                  v-model="searchQuery"
+                  variant="static"
+                  placeholder="기관명을 입력하세요"
+                  class="flex-grow-1"
+                  @keyup.enter="fetchInstitutions"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm bg-gradient-success text-white"
+                  @click="fetchInstitutions"
+                >
+                  검색
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0 org-table">
+                <thead>
+                  <tr class="bg-gray-100">
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7 ps-3"
+                    >
+                      기관명
+                    </th>
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      주소
+                    </th>
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7"
+                    >
+                      연락처
+                    </th>
+                    <th
+                      class="text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                    >
+                      선택
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="center in centers" :key="center.registernum">
+                    <td class="ps-3 text-sm">{{ center.center_name }}</td>
+                    <td class="text-sm">{{ center.center_addr }}</td>
+                    <td class="text-sm">{{ center.center_tel }}</td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn btn-sm bg-gradient-success text-white"
+                        @click="selectOrg(center)"
+                      >
+                        사용
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+              <button
+                type="button"
+                class="btn btn-sm bg-secondary text-white"
+                @click="isModalOpen = false"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -319,125 +376,76 @@ const handleSignup = async () => {
 </template>
 
 <style scoped>
-/* 컨테이너 및 폼 스타일 유지 */
-.signup-container {
+/* documentLIST / SignIn과 동일 레이아웃 */
+.signup-layout {
+  background-color: var(--app-surface-muted);
+  min-height: 100dvh;
   display: flex;
-  justify-content: center;
-  padding: 50px 20px;
-}
-.signup-wrap {
-  width: 100%;
-  max-width: 800px;
-  border: 2px solid #00a000;
-  padding: 40px;
-  border-radius: 12px;
-}
-.signup-title {
-  text-align: center;
-  margin-bottom: 40px;
-  color: #00a000;
-  font-size: 24px;
-}
-.form-row {
-  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
   position: relative;
-  margin-bottom: 30px;
-  align-items: center;
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-size: cover; /* 이미지가 요소에 꽉 차도록 비율 조정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
 }
-.row-label {
-  width: 150px;
-  font-weight: bold;
-  color: #333;
-}
-.row-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-.input-flex {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  gap: 10px;
-}
-.required {
-  color: #ff5722;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  width: 60px;
-  text-align: center;
-}
-.green-btn {
-  background-color: #00a000;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 10px;
-  white-space: nowrap;
-}
-.error-msg-abs {
-  color: #f44335;
-  font-size: 12px;
-  position: absolute;
-  bottom: -22px;
-  left: 150px;
-}
-.btn-area {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-}
-.signup-btn {
-  padding: 15px 60px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border-radius: 8px;
-}
-/* 모달창 스타일 유지 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+
+.signup-container {
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+  max-width: 520px;
 }
-.modal-content {
-  background: white;
-  padding: 30px;
-  border: 1px solid #333;
-  width: 750px;
-  max-height: 80vh;
+
+/* documentLIST card 스타일 */
+.signup-card {
+  background: var(--app-surface);
+  position: relative;
+}
+
+.signup-card .card-body {
+  padding: 1.5rem 1.25rem;
+}
+
+/* 라디오 (가입 유형) */
+.radio-group .radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--app-text-muted);
+  cursor: pointer;
+}
+
+.radio-group .radio-item input {
+  margin: 0;
+  accent-color: var(--app-accent);
+}
+
+/* 모달 - documentLIST와 동일 */
+.modal {
+  pointer-events: none;
+}
+
+.modal-dialog {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 3.5rem);
+}
+
+.modal-content-scroll {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+.modal .card-body {
   overflow-y: auto;
 }
-.modal-search-box {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.modal-search-box input {
-  flex: 1;
-  height: 40px;
-  border: 1px solid #ccc;
-  padding: 0 10px;
-}
-.org-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.org-table th,
-.org-table td {
-  border: 1px solid #333;
-  padding: 10px;
-  text-align: center;
-}
-.org-table th {
-  background: #eee;
+
+button {
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
 }
 </style>

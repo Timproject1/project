@@ -16,7 +16,7 @@ const route = useRoute();
 // };
 
 // const gopriority = () => {
-//   router.push("/list/supported");
+//   router.push("/support/supported");
 // };
 
 // const gorecord = () => {
@@ -27,8 +27,8 @@ const route = useRoute();
 // };
 </script>
 <template>
-  <div class="layout">
-    <div class="container">
+  <div class="work-layout">
+    <div class="work-container">
       <!-- <div class="left">
         <RouterView name="left" />
 
@@ -55,3 +55,21 @@ const route = useRoute();
     </div>
   </div>
 </template>
+<style scoped>
+.work-layout {
+  background-color: var(--app-surface-muted);
+  
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  flex: 1 1 auto;
+  min-height: min-content;
+}
+
+.right {
+  overflow: visible;
+}
+</style>

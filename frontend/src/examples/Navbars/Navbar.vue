@@ -23,20 +23,30 @@
         <div class="navbar-nav d-flex flex-row align-items-center gap-2">
           <button class="nav-link-custom active" @click="gohome">Home</button>
 
-          <template v-if="['a1', 'a2'].includes(memberStore.grade)">
+          <template v-if="memberStore.grade == 'a1'">
+            <button class="nav-link-custom" @click="godocument">
+              신청서 조회
+            </button>
             <button class="nav-link-custom" @click="govolunteer">
               지원자 관리
             </button>
           </template>
-
+          <template v-if="memberStore.grade == 'a2'">
+            <button class="nav-link-custom" @click="godocument">
+              신청서 관리
+            </button>
+          </template>
           <template v-if="memberStore.grade === 'a3'">
-            <button class="nav-link-custom" @click="govol">지원자 관리</button>
-            <button class="nav-link-custom" @click="govol">회원 관리</button>
+            <button class="nav-link-custom" @click="godocument">
+              신청서 조회
+            </button>
+            <button class="nav-link-custom" @click="govol">승인 관리</button>
+            <button class="nav-link-custom" @click="gomember">회원 관리</button>
           </template>
 
           <template v-if="memberStore.grade === 'a4'">
             <button class="nav-link-custom" @click="goform">양식 관리</button>
-            <button class="nav-link-custom" @click="govol">회원 관리</button>
+            <!-- <button class="nav-link-custom" @click="govol">회원 관리</button> -->
             <button class="nav-link-custom" @click="gocenter">기관 관리</button>
           </template>
         </div>
@@ -75,12 +85,13 @@ const grades = {
 
 /* 페이지 이동 함수들 */
 const gohome = () => router.push("/home");
-const govolunteer = () => router.push("/list/info");
-const govol = () => router.push("/list/appreq");
-const gocenter = () => router.push("/list/center");
-const goform = () => router.push("/list/form");
+const govolunteer = () => router.push("/support/info");
+const govol = () => router.push("/support/appreq");
+const gocenter = () => router.push("/center");
+const goform = () => router.push("/form");
 const gomypage = () => router.push("/mypage");
-
+const godocument = () => router.push("/document");
+const gomember = () => router.push("/approval");
 const handleLogout = () => {
   if (confirm("로그아웃 하시겠습니까?")) {
     memberStore.logout();

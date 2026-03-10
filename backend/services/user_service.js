@@ -1,6 +1,7 @@
 const pool = require("../db/mapper");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { hashPassword, comparePassword, isBcryptHash } = require("../util/auth");
 
 const service = {
   // 아이디 중복 확인
@@ -17,10 +18,11 @@ const service = {
     }
   },
 
-  // 회원가입
+  // 회원가입 (비밀번호 bcrypt 해시 후 저장)
   signUp: async function (member) {
     try {
       console.log("가입 요청 데이터 상세:", member);
+      const hashedPw = await hashPassword(member.user_password || "");
       const query = `
         INSERT INTO member 
         (user_id, user_password, user_name, user_tel, user_email, registernum, grade, actived)
@@ -28,7 +30,7 @@ const service = {
 
       const params = [
         member.user_id || null,
-        member.user_password || null,
+        hashedPw,
         member.user_name || null,
         member.user_tel || null,
         member.user_email || null,
@@ -46,15 +48,16 @@ const service = {
     }
   },
 
-  // 로그인
+  // 로그인 (user_id로 조회 후 bcrypt로 비밀번호 비교)
   login: async function (id, pw) {
     try {
-      const query = `SELECT * FROM member WHERE user_id = ? AND user_password = ?`;
-      const rows = await pool.query(query, [id, pw]);
+      const query = `SELECT * FROM member WHERE user_id = ?`;
+      const rows = await pool.query(query, [id]);
+      if (!rows || rows.length === 0) return null;
 
-      if (rows && rows.length > 0) {
-        return rows[0];
-      }
+      const user = rows[0];
+      const match = await comparePassword(pw, user.user_password || "");
+      if (match) return user;
       return null;
     } catch (error) {
       console.error("로그인 서비스 에러:", error);
@@ -149,10 +152,11 @@ const service = {
       }
 
       const userId = rows[0].user_id;
+      const hashedPw = await hashPassword(newPassword);
 
-      // member 테이블의 비밀번호 업데이트
+      // member 테이블의 비밀번호 업데이트 (해시 저장)
       const updateQuery = `UPDATE member SET user_password = ? WHERE user_id = ?`;
-      await pool.query(updateQuery, [newPassword, userId]);
+      await pool.query(updateQuery, [hashedPw, userId]);
 
       // 사용된 인증 정보 삭제
       const deleteQuery = `DELETE FROM certification WHERE user_id = ?`;
@@ -164,6 +168,38 @@ const service = {
       throw error;
     }
   },
+
+  /**
+   * DB에 저장된 평문 비밀번호를 모두 bcrypt 해시로 변환.
+   * 이미 해시된 값($2a$, $2b$...)은 건너뛰고, 그 외는 평문으로 간주해 해시 후 업데이트.
+   */
+  // migratePasswordsToHash: async function () {
+  //   try {
+  //     const query = `SELECT user_id, user_password FROM member WHERE user_password IS NOT NULL AND user_password != ''`;
+  //     const rows = await pool.query(query);
+  //     let updated = 0;
+  //     let skipped = 0;
+
+  //     for (const row of rows) {
+  //       const { user_id, user_password } = row;
+  //       if (isBcryptHash(user_password)) {
+  //         skipped += 1;
+  //         continue;
+  //       }
+  //       const hashedPw = await hashPassword(user_password);
+  //       await pool.query(
+  //         `UPDATE member SET user_password = ? WHERE user_id = ?`,
+  //         [hashedPw, user_id],
+  //       );
+  //       updated += 1;
+  //     }
+
+  //     return { success: true, updated, skipped, total: rows.length };
+  //   } catch (error) {
+  //     console.error("비밀번호 마이그레이션 에러:", error);
+  //     throw error;
+  //   }
+  // },
 };
 
 module.exports = service;

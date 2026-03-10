@@ -1,7 +1,7 @@
 <script setup>
 import { useMemberStore } from "@/store/member";
 import { useDocStore } from "@/store/doc";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -10,6 +10,25 @@ const memberStore = useMemberStore();
 const docStore = useDocStore();
 const searchQuery = ref({ writer: "", maneger: "", sup: "" });
 const list = ref([]);
+const pageSize = ref(10);
+const currentPage = ref(1);
+
+const totalPages = computed(() =>
+  list.value.length ? Math.ceil(list.value.length / pageSize.value) : 1,
+);
+
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return list.value.slice(start, end);
+});
+
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+};
+const goPrev = () => changePage(currentPage.value - 1);
+const goNext = () => changePage(currentPage.value + 1);
 const isModalOpen = ref(false); // 모달 열림 상태
 const modalType = ref(""); // 어떤 서류인지 (doc, plan, result)
 const selectedDocData = ref({}); // 모달에 표시할 데이터
@@ -29,7 +48,7 @@ const docName = {
   result: "지원결과서",
 };
 const getList = async () => {
-  const result = await axios.get("http://localhost:3000/document/list", {
+  const result = await axios.get("/api/document/list", {
     params: {
       id: memberStore.id || "",
       grade: memberStore.grade || "",
@@ -40,6 +59,7 @@ const getList = async () => {
     },
   });
   list.value = result.data.result;
+  currentPage.value = 1;
   console.log(result.data);
   return result;
 };
@@ -57,7 +77,7 @@ const getDocument = async (doc) => {
 const getPlan = async (doc) => {
   modalType.value = "plan";
   const result = await axios
-    .get(`http://localhost:3000/document/planlist/${doc.doc_num}`)
+    .get(`/api/document/planlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
   console.log(result.data);
   plans.value = result.data.result;
@@ -68,7 +88,7 @@ const getPlan = async (doc) => {
 const getResult = async (doc) => {
   modalType.value = "result";
   const result = await axios
-    .get(`http://localhost:3000/document/resultlist/${doc.doc_num}`)
+    .get(`/api/document/resultlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
   console.log(result.data);
   results.value = result.data.result;
@@ -96,7 +116,7 @@ const selectDoc = (doc_num) => {
 const getForm = async (form_ver) => {
   // console.log(doc.value);
   const result = await axios.get(
-    `http://localhost:3000/form/getForm/${form_ver}`,
+    `/api/form/getForm/${form_ver}`,
   );
   // console.log(result);
   formData.value = result.data.form;
@@ -118,7 +138,7 @@ const getForm = async (form_ver) => {
 //응답 조회
 const getResp = async (doc_num) => {
   const result = await axios.get(
-    `http://localhost:3000/document/getResp/${doc_num}`,
+    `/api/document/getResp/${doc_num}`,
   );
   // console.log(result.data.response);
   for (const key in result.data.response) {
@@ -127,81 +147,83 @@ const getResp = async (doc_num) => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
+const delDoc = async (doc_num) => {
+  const result = await axios.delete(
+    `/api/document/delDoc/${doc_num}`,
+  );
+  if (result.data.retCode == "OK") {
+    alert("삭제완료");
+    router.go(0);
+  }
+};
 onBeforeMount(async () => {
   await getList();
 });
 </script>
 <template>
-  <div class="container-fluid py-4">
-    <div class="d-flex gap-4 align-items-start">
-      <aside
-        class="rounded-3 shadow-dark p-3 text-white"
-        style="
-          min-width: 240px;
-          background-color: #adb5bd;
-          border-radius: 0.75rem;
-        "
-      >
-        <div class="d-flex align-items-center mb-4 ps-2">
-          <i class="material-icons opacity-10 me-2">search</i>
-          <span class="fw-bold">검색 필터</span>
-        </div>
-
-        <div class="px-2">
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >지원자</label
-            >
-            <material-input
-              id="sup"
-              v-model="searchQuery.sup"
-              variant="static"
-              color="white"
-              placeholder="지원자명 입력"
-              class="text-white"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >보호자</label
-            >
-            <material-input
-              id="writer"
-              v-model="searchQuery.writer"
-              variant="static"
-              color="white"
-              placeholder="보호자명 입력"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label text-white text-xs fw-bolder mb-1"
-              >담당자</label
-            >
-            <material-input
-              id="maneger"
-              v-model="searchQuery.maneger"
-              variant="static"
-              color="white"
-              placeholder="담당자명 입력"
-            />
-          </div>
-
-          <material-button
-            color="success"
-            variant="gradient"
-            class="w-100 mt-3 mb-2"
-            @click="getList()"
-            >검색</material-button
+  <div class="container-fluid work-layout pt-4 pb-4">
+    <div class="work-container">
+      <div class="left">
+        <div
+          class="filter-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+        >
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
           >
+            <i class="material-icons opacity-10 me-2">search</i>
+            <span class="title text-white fw-bold">검색 필터</span>
+          </div>
+          <div class="card-body p-3">
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >지원자</label
+              >
+              <material-input
+                id="sup"
+                v-model="searchQuery.sup"
+                variant="static"
+                placeholder="지원자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >보호자</label
+              >
+              <material-input
+                id="writer"
+                v-model="searchQuery.writer"
+                variant="static"
+                placeholder="보호자명 입력"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >담당자</label
+              >
+              <material-input
+                id="maneger"
+                v-model="searchQuery.maneger"
+                variant="static"
+                placeholder="담당자명 입력"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-sm w-100 bg-gradient-success text-white"
+              @click="getList()"
+            >
+              검색
+            </button>
+          </div>
         </div>
-      </aside>
+      </div>
 
-      <main class="flex-grow-1">
-        <div class="card shadow-sm">
-          <div class="card-header p-3">
-            <h6 class="mb-0 font-weight-bolder">지원 신청 내역</h6>
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">지원 신청 내역</h6>
           </div>
 
           <div class="card-body px-0 pb-2">
@@ -257,58 +279,81 @@ onBeforeMount(async () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(doc, index) in list"
-                    :key="doc.doc_num"
-                    @click="selectDoc(doc.doc_num)"
-                  >
-                    <td class="text-center text-sm">
-                      {{ list.length - index }}
-                    </td>
-                    <td class="ps-4 text-sm font-weight-bold">
-                      {{ doc.sup_name }}
-                    </td>
-                    <td class="text-center text-sm">{{ doc.writer_name }}</td>
-                    <td class="text-center text-sm">
-                      {{ formatDate(doc.write_date) }}
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="info"
-                        variant="text"
-                        class="mb-0"
-                        @click.stop="getDocument(doc)"
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center text-sm">
-                      {{ doc.manager_name }}
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="dark"
-                        variant="outline"
-                        class="mb-0 px-3"
-                        @click.stop="getPlan(doc)"
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center">
-                      <material-button
-                        size="sm"
-                        color="dark"
-                        variant="outline"
-                        class="mb-0 px-3"
-                        @click.stop="getResult(doc)"
-                        >보기</material-button
-                      >
-                    </td>
-                    <td class="text-center">
-                      <span class="badge badge-sm bg-gradient-success">{{
-                        doc.progress
-                      }}</span>
+                  <template v-if="list && list.length > 0">
+                    <tr
+                      v-for="(doc, index) in pagedList"
+                      :key="doc.doc_num"
+                      @click="selectDoc(doc.doc_num)"
+                    >
+                      <td class="text-center text-sm">
+                        {{
+                          list.length - ((currentPage - 1) * pageSize + index)
+                        }}
+                      </td>
+                      <td class="ps-4 text-sm font-weight-bold">
+                        {{ doc.sup_name }}
+                      </td>
+                      <td class="text-center text-sm">{{ doc.writer_name }}</td>
+                      <td class="text-center text-sm">
+                        {{ formatDate(doc.write_date) }}
+                      </td>
+                      <td class="text-center">
+                        <material-button
+                          size="sm"
+                          color="info"
+                          variant="text"
+                          class="mb-0"
+                          @click.stop="getDocument(doc)"
+                          >보기</material-button
+                        >
+                      </td>
+                      <td class="text-center text-sm">
+                        {{ doc.manager_name }}
+                      </td>
+                      <td class="text-center">
+                        <material-button
+                          size="sm"
+                          color="info"
+                          variant="text"
+                          class="mb-0"
+                          @click.stop="getPlan(doc)"
+                          :disabled="
+                            doc.progress != '지원계획' &&
+                            doc.progress != '지원결과'
+                          "
+                          >보기</material-button
+                        >
+                      </td>
+                      <td class="text-center">
+                        <material-button
+                          size="sm"
+                          color="info"
+                          variant="text"
+                          class="mb-0"
+                          @click.stop="getResult(doc)"
+                          :disabled="doc.progress != '지원결과'"
+                          >보기</material-button
+                        >
+                      </td>
+                      <td class="text-center">
+                        <span class="badge badge-sm bg-gradient-success">{{
+                          doc.progress
+                        }}</span>
+                      </td>
+                    </tr>
+                  </template>
+                  <tr v-else>
+                    <td colspan="9" class="text-center py-5">
+                      <div class="d-flex flex-column align-items-center">
+                        <i
+                          class="material-icons text-secondary mb-2"
+                          style="font-size: 2rem"
+                          >info_outline</i
+                        >
+                        <p class="text-secondary mb-0">
+                          현재 표시할 내역이 없습니다.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -316,27 +361,39 @@ onBeforeMount(async () => {
             </div>
 
             <div
-              class="d-flex justify-content-between align-items-center p-3 mt-2"
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
               <material-pagination>
-                <material-pagination-item prev />
-                <material-pagination-item label="1" active />
-                <material-pagination-item label="2" />
-                <material-pagination-item next />
+                <material-pagination-item
+                  prev
+                  :disabled="currentPage === 1"
+                  @click="goPrev"
+                />
+                <material-pagination-item
+                  v-for="page in totalPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="page === currentPage"
+                  @click="changePage(page)"
+                />
+                <material-pagination-item
+                  next
+                  :disabled="currentPage === totalPages"
+                  @click="goNext"
+                />
               </material-pagination>
 
-              <material-button
-                color="success"
-                variant="gradient"
-                class="mb-0"
+              <button
+                type="button"
+                class="btn btn-sm bg-gradient-success text-white mb-0"
                 @click="moveRegister()"
               >
                 <i class="material-icons text-sm me-2">edit</i>신청서작성
-              </material-button>
+              </button>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   </div>
 
@@ -381,59 +438,73 @@ onBeforeMount(async () => {
               <label class="form-label fw-bold">상세 내용:</label>
               <div class="p-3 bg-gray-100 border-radius-lg">
                 <div v-if="modalType == 'document'">
-                  <section
-                    v-for="big in formData"
-                    :key="big.bcategory"
-                    class="big-section"
-                  >
-                    <h1 class="big-title">{{ big.bcategory }}</h1>
-
-                    <div
-                      v-for="small in big.scategory"
-                      :key="small.scategory"
-                      class="small-group"
+                  <div v-if="formData.length" class="form-sections">
+                    <section
+                      v-for="(big, bIdx) in formData"
+                      :key="big.bcategory"
+                      class="big-section mb-4"
                     >
-                      <h2 class="small-title">▣ {{ small.scategory }}</h2>
+                      <h2 class="big-title">
+                        <span class="big-title-num">{{ bIdx + 1 }}</span>
+                        {{ big.bcategory }}
+                      </h2>
 
                       <div
-                        v-for="q in small.questions"
-                        :key="q.question_num"
-                        class="question-card"
+                        v-for="(small, sIdx) in big.scategory"
+                        :key="small.scategory"
+                        class="small-group"
                       >
-                        <p class="question-text">
-                          <span class="q-num"></span>
-                          {{ q.question }}
-                        </p>
+                        <h3 class="small-title">
+                          <span class="small-title-badge"
+                            >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                          >
+                          {{ small.scategory }}
+                        </h3>
 
-                        <div class="answer-area">
-                          <div v-if="q.options.length > 0" class="radio-group">
-                            <label
-                              v-for="opt in q.options"
-                              :key="opt.exam_num"
-                              class="radio-item"
+                        <div
+                          v-for="(q, qIdx) in small.questions"
+                          :key="q.question_num"
+                          class="question-card"
+                        >
+                          <p class="question-text">
+                            <span class="q-num">{{ qIdx + 1 }}.</span>
+                            {{ q.question }}
+                          </p>
+
+                          <div class="answer-area">
+                            <div
+                              v-if="q.options.length > 0"
+                              class="radio-group"
                             >
-                              <input
-                                type="radio"
-                                :name="q.question_num"
-                                :value="opt.exam_num"
-                                v-model="userAnswers[q.question_num]"
-                                :disabled="true"
-                              />
-                              {{ opt.value }}
-                            </label>
-                          </div>
+                              <label
+                                v-for="opt in q.options"
+                                :key="opt.exam_num"
+                                class="radio-item"
+                              >
+                                <input
+                                  type="radio"
+                                  :name="'modal-q-' + q.question_num"
+                                  :value="opt.exam_num"
+                                  v-model="userAnswers[q.question_num]"
+                                  :disabled="true"
+                                />
+                                <span class="radio-label">{{ opt.value }}</span>
+                              </label>
+                            </div>
 
-                          <div v-else class="text-group">
-                            <textarea
-                              v-model="userAnswers[q.question_num]"
-                              placeholder="답변을 입력해주세요."
-                              :readonly="true"
-                            ></textarea>
+                            <div v-else class="text-group">
+                              <textarea
+                                v-model="userAnswers[q.question_num]"
+                                class="answer-textarea"
+                                placeholder="답변이 없습니다."
+                                readonly
+                              ></textarea>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </section>
+                    </section>
+                  </div>
                 </div>
                 <div v-if="modalType == 'result'">
                   <div class="card-body modal-body">
@@ -517,9 +588,9 @@ onBeforeMount(async () => {
           >
           <material-button
             v-if="modalType == 'document'"
-            color="success"
+            color="primary"
             variant="gradient"
-            @click="closeModal"
+            @click="delDoc(selectedDocData.doc_num)"
             >삭제</material-button
           >
           <material-button
@@ -550,6 +621,55 @@ export default {
 };
 </script>
 <style scoped>
+/* work.vue / list.vue 동일 레이아웃 */
+.work-layout {
+  background-color: var(--app-surface-muted);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.left,
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.left {
+  max-width: 320px;
+  flex: 0 0 auto;
+}
+
+.application-card,
+.filter-card {
+  background: var(--app-surface);
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
+.filter-card .card-body {
+  padding: 18px;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+button {
+  cursor: pointer;
+}
+
 /* 1. 모달 전체 영역에서 포인터 이벤트가 투명하게 본문으로 전달되도록 설정 */
 .modal {
   pointer-events: none;
@@ -576,5 +696,137 @@ export default {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch; /* 모바일 대응 */
   position: relative; /* 내부 요소 위치 계산 기준 */
+}
+.content-area {
+  padding: 1rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: 12px;
+  background: var(--app-surface-muted);
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 */
+.big-section {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--app-shadow-sm);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* 소분류 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--app-border-muted);
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--app-accent);
+  background: var(--app-surface);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* 질문 및 답변 영역 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
+  border-radius: 10px;
+  border-left: 4px solid var(--app-scrollbar-thumb);
+}
+
+.question-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  line-height: 1.5;
+}
+
+.q-num {
+  display: inline-block;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: var(--app-accent);
+}
+
+.answer-area {
+  margin-left: 0.25rem;
+}
+
+/* 라디오 버튼 */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* 텍스트 입력칸 (읽기 전용 스타일) */
+.answer-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: 8px;
+  background: var(
+    --app-border-muted
+  ); /* 읽기 전용 느낌을 주기 위해 살짝 회색으로 변경 */
+  color: var(--app-text-muted);
+  resize: none; /* 크기 조절 방지 */
 }
 </style>

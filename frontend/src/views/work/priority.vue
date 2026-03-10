@@ -61,48 +61,66 @@ const appSigncancel = async () => {
 };
 </script>
 <template>
-  <div class="card shadow-lg border-0 border-radius-xl p-4 priority-card">
-    <h4 class="mb-4 fw-bold text-dark">우선순위 설정</h4>
-    <p class="text-sm text-secondary mb-4">
-      {{ memberStore.id }}님의 대기단계를 선택하고 사유를 입력하세요.
-    </p>
-    <div class="mb-4 text-center">
-      <div class="wrapper">
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="circle"
-          :style="selected === item.cord ? activeStyle(item.color) : {}"
-          @click="select(item.cord)"
-        >
-          {{ item.label }}
+  <div class="work-right-center">
+    <div class="priority-card card shadow-lg border-0 border-radius-xl">
+      <h4 class="mb-3 fw-bold text-dark">우선순위 설정</h4>
+      <p class="text-sm text-secondary mb-4">
+        {{ memberStore.id }}님의 대기단계를 선택하고 사유를 입력하세요.
+      </p>
+      <div class="mb-4 text-center">
+        <div class="wrapper">
+          <div
+            v-for="item in items"
+            :key="item.id"
+            class="circle"
+            :style="selected === item.cord ? activeStyle(item.color) : {}"
+            @click="select(item.cord)"
+          >
+            {{ item.label }}
+          </div>
         </div>
       </div>
-    </div>
-    <div class="mb-3">
-      <textarea
-        name="reason"
-        id="reason"
-        placeholder="우선순위 요청 사유를 입력하세요."
-        v-model="reason"
-      ></textarea>
-    </div>
-    <div class="text-center mt-3">
-      <p v-if="count == 0">
-        <material-button type="button" color="success" @click="appSign()"
-          >승인 요청</material-button
-        >
-      </p>
-      <p v-else>
-        <material-button type="button" disabled>승인 요청 중</material-button>
-        <material-button type="button" @click="appSigncancel()" color="danger"
-          >승인 취소</material-button
-        >
-      </p>
+      <div class="mb-3">
+        <textarea
+          name="reason"
+          id="reason"
+          placeholder="우선순위 요청 사유를 입력하세요."
+          v-model="reason"
+        ></textarea>
+      </div>
+      <div class="text-center mt-3">
+        <p v-if="count == 0">
+          <material-button type="button" color="success" @click="appSign()"
+            >승인 요청</material-button
+          >
+        </p>
+        <p v-else>
+          <material-button type="button" disabled>승인 요청 중</material-button>
+          <material-button type="button" @click="appSigncancel()" color="danger"
+            >승인 취소</material-button
+          >
+        </p>
+      </div>
     </div>
   </div>
 </template>
 <style scoped>
+.work-right-center {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.priority-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  background-color: var(--app-surface);
+  padding: 18px 18px 20px;
+}
+
 .wrapper {
   display: flex;
   gap: 20px;
@@ -123,18 +141,13 @@ const appSigncancel = async () => {
   margin: 0 auto;
 }
 
-.priority-card {
-  max-width: 650px;
-  margin: 0 auto;
-  background-color: #ffffff;
-}
 #reason {
   width: 100%;
   min-height: 180px;
   vertical-align: top;
   resize: vertical;
   border-radius: 12px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   padding: 12px 14px;
 }
 </style>

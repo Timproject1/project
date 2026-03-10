@@ -12,17 +12,30 @@ const service = {
       WHERE 1=1
     `;
       const params = [];
-
+      // 지원자 검색 부분
       if (filters) {
-        // 이름 검색 로직 추가
-        if (filters.sup_name) {
+        // 이름 검색
+        if (filters.name) {
           query += ` AND S.sup_name LIKE ?`;
-          params.push(`%${filters.sup_name}%`);
+          params.push(`%${filters.name}%`);
         }
-        // 대기단계 검색 로직 추가
-        if (filters.priority && filters.priority !== "전체") {
-          query += ` AND D.priority = ?`;
-          params.push(filters.priority);
+        // 성별 검색
+        if (filters.gender && filters.gender !== "전체") {
+          query += ` AND S.gender = ?`;
+          params.push(filters.gender);
+        }
+        // 장애유형 검색
+        if (
+          filters.disability_category &&
+          filters.disability_category !== "전체"
+        ) {
+          query += ` AND D.disability_category = ?`;
+          params.push(filters.disability_category);
+        }
+        // 담당자 검색
+        if (filters.manager && filters.manager !== "전체") {
+          query += ` AND D.manager = ?`;
+          params.push(filters.manager);
         }
       }
 

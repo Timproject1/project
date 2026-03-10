@@ -1,5 +1,8 @@
 <template>
-  <div class="page-header align-items-start min-vh-100 reset-bg">
+  <div
+    class="page-header align-items-start min-vh-100 reset-bg"
+    :style="{ backgroundImage: `url(${bgImage})` }"
+  >
     <span class="mask bg-gradient-dark opacity-6"></span>
     <div
       class="container d-flex justify-content-center align-items-center min-vh-100"
@@ -53,6 +56,7 @@
 import { ref, onMounted } from "vue"; // Vue의 반응형 데이터와 마운트 시점 기능을 가져옵니다.
 import { useRoute, useRouter } from "vue-router"; // 현재 주소 정보와 페이지 이동 기능을 가져옵니다.
 import axios from "axios"; // 서버와 통신하기 위한 라이브러리를 가져옵니다.
+import bgImage from "@/assets/img2.png";
 
 const route = useRoute(); // 현재 URL의 쿼리(token 등)를 읽기 위해 생성합니다.
 const router = useRouter(); // 가입 후 이동 등을 처리하기 위해 생성합니다.
@@ -85,7 +89,7 @@ const handleResetPassword = async () => {
   try {
     // 백엔드 서버에 토큰과 새 비밀번호를 실어서 보냅니다.
     const response = await axios.post(
-      "http://localhost:3000/user/reset-password-confirm",
+      "/api/user/reset-password-confirm",
       {
         token: token.value, // 인증용 토큰입니다.
         newPassword: newPassword.value, // 변경할 비밀번호입니다.
@@ -113,18 +117,20 @@ const handleResetPassword = async () => {
 <style scoped>
 /* 배경 이미지 및 레이아웃 설정입니다. */
 .reset-bg {
-  background-image: url("https://images.unsplash.com/photo-1497294815431-9365093b7331?auto=format&fit=crop&w=1950&q=80");
   background-size: cover;
   position: relative;
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-size: cover; /* 이미지가 요소에 꽉 차도록 비율 조정 */
+  background-position: center; /* 이미지를 중앙에 배치 */
 }
 
 /* 카드 상자의 모양과 그림자 설정입니다. */
 .login-card-box {
   width: 100%;
   max-width: 500px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background: var(--app-surface);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-modal);
   position: relative;
   z-index: 5;
 }
@@ -135,7 +141,7 @@ const handleResetPassword = async () => {
   padding: 20px 0;
   border-radius: 10px;
   text-align: center;
-  background: linear-gradient(87deg, #00a000 0, #00a000);
+  background: var(--app-gradient-success);
 }
 
 /* 내부 콘텐츠 여백입니다. */
@@ -153,7 +159,7 @@ const handleResetPassword = async () => {
 .row-label {
   width: 120px;
   font-weight: bold;
-  color: #344767;
+  color: var(--app-text);
   margin-bottom: 0;
 }
 
@@ -161,19 +167,19 @@ const handleResetPassword = async () => {
 .custom-input {
   flex: 1;
   padding: 10px;
-  border: 1px solid #d2d6da;
+  border: 1px solid var(--app-border);
   border-radius: 5px;
   outline: none;
 }
 
 /* 입력창을 클릭했을 때 강조 색상입니다. */
 .custom-input:focus {
-  border-color: #00a000;
+  border-color: var(--app-accent);
 }
 
 /* 하단 버튼의 그라데이션 및 글자 스타일입니다. */
 .btn-success-gradient {
-  background: linear-gradient(87deg, #00a000 0, #00a000);
+  background: var(--app-gradient-success);
   color: white;
   border: none;
   padding: 12px;

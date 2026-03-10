@@ -78,6 +78,16 @@ const ctrl = {
       res.json({ retCode: "NG", error });
     }
   },
+  delDoc: async (req, res) => {
+    try {
+      const num = req.params.num;
+      const result = await service.delDoc(num);
+      res.json({ retCode: "OK" });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG", error });
+    }
+  },
   writeDoc: async (req, res) => {
     try {
       const form_ver = req.body.formVer;
@@ -95,6 +105,17 @@ const ctrl = {
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG", error });
+    }
+  },
+  pri: async (req, res) => {
+    const priority = req.params.id;
+    try {
+      const result = await service.pri(priority);
+      console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
     }
   },
   prioritySetting: async (req, res) => {
@@ -404,7 +425,12 @@ const ctrl = {
   priReqList: async (req, res) => {
     try {
       const center_num = req.params.num;
-      const result = await service.priReqList(center_num);
+      const filters = {
+        sup: req.query.sup || "",
+        writer: req.query.writer || "",
+        maneger: req.query.maneger || "",
+      };
+      const result = await service.priReqList(center_num, filters);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -414,7 +440,12 @@ const ctrl = {
   planReqList: async (req, res) => {
     try {
       const center_num = req.params.num;
-      const result = await service.planReqList(center_num);
+      const filters = {
+        sup: req.query.sup || "",
+        writer: req.query.writer || "",
+        maneger: req.query.maneger || "",
+      };
+      const result = await service.planReqList(center_num, filters);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -501,6 +532,17 @@ const ctrl = {
     const filename = req.params.id;
     try {
       const result = await service.resultFile(filename);
+      console.log(result);
+      res.json({ result });
+    } catch (error) {
+      console.log(error);
+      res.json({ retCode: "NG" });
+    }
+  },
+  cancelPlan: async (req, res) => {
+    const cancelplan = req.body;
+    try {
+      const result = await service.cancelPlan(cancelplan);
       console.log(result);
       res.json({ result });
     } catch (error) {

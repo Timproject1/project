@@ -30,9 +30,7 @@ const formatDate = (dateString) => {
 };
 const getForm = async () => {
   // console.log(route.params.num);
-  const result = await axios.get(
-    `http://localhost:3000/form/getForm/${route.params.num}`,
-  );
+  const result = await axios.get(`/api/form/getForm/${route.params.num}`);
   console.log(result.data);
   formData.value = result.data.form;
 
@@ -47,9 +45,7 @@ const getForm = async () => {
   // });
 };
 const getInfo = async () => {
-  const result = await axios.get(
-    `http://localhost:3000/form/getInfo/${route.params.num}`,
-  );
+  const result = await axios.get(`/api/form/getInfo/${route.params.num}`);
   // console.log(result.data);
   info.value = result.data.info;
   console.log(info.value);
@@ -59,27 +55,23 @@ onBeforeMount(async () => {
   await getForm();
 });
 const use = async () => {
-  const result = await axios.patch(
-    `http://localhost:3000/form/usage/${route.params.num}`,
-  );
+  const result = await axios.patch(`/api/form/usage/${route.params.num}`);
   if (result.data.retCode == "OK") {
     alert("사용등록 완료");
-    router.push("/list/form");
+    router.push("/form");
   }
 };
 //값 초기화
 </script>
 <template>
-  <div class="container-fluid py-4">
-    <div class="row">
-      <div class="col-12">
-        <div class="card my-4">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <div
-              class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3"
-            >
-              <h6 class="text-white text-capitalize ps-3">신청서 양식 조회</h6>
-            </div>
+  <div class="container-fluid pt-2 pb-2 work-layout">
+    <div class="work-container">
+      <div class="right">
+        <div class="application-card card shadow-lg border-0 border-radius-xl">
+          <div
+            class="card-header p-3 bg-gradient-success shadow-success border-radius-lg"
+          >
+            <h6 class="mb-0 text-white font-weight-bolder">신청서 양식 조회</h6>
           </div>
           <div class="card-body px-4 pb-2">
             <div
@@ -119,29 +111,36 @@ const use = async () => {
 
           <div class="card-body px-4 pb-2">
             <div class="content-area">
-              <!-- <p class="placeholder-text">지원신청서 내용</p> -->
-              <div v-if="Object.keys(formData).length">
+              <div v-if="Object.keys(formData).length" class="form-sections">
                 <section
-                  v-for="big in formData"
+                  v-for="(big, bIdx) in formData"
                   :key="big.bcategory"
                   class="big-section"
                 >
-                  <h1 class="big-title">{{ big.bcategory }}</h1>
+                  <h2 class="big-title">
+                    <span class="big-title-num">{{ bIdx + 1 }}</span>
+                    {{ big.bcategory }}
+                  </h2>
 
                   <div
-                    v-for="small in big.scategory"
+                    v-for="(small, sIdx) in big.scategory"
                     :key="small.scategory"
                     class="small-group"
                   >
-                    <h2 class="small-title">▣ {{ small.scategory }}</h2>
+                    <h3 class="small-title">
+                      <span class="small-title-badge"
+                        >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                      >
+                      {{ small.scategory }}
+                    </h3>
 
                     <div
-                      v-for="q in small.questions"
+                      v-for="(q, qIdx) in small.questions"
                       :key="q.question_num"
                       class="question-card"
                     >
                       <p class="question-text">
-                        <span class="q-num"></span>
+                        <span class="q-num">{{ qIdx + 1 }}.</span>
                         {{ q.question }}
                       </p>
 
@@ -154,18 +153,19 @@ const use = async () => {
                           >
                             <input
                               type="radio"
-                              :name="q.question_num"
+                              :name="'q-' + q.question_num"
                               :value="opt.exam_num"
                               disabled="true"
                             />
-                            {{ opt.value }}
+                            <span class="radio-label">{{ opt.value }}</span>
                           </label>
                         </div>
 
                         <div v-else class="text-group">
                           <textarea
                             placeholder="답변을 입력해주세요."
-                            :readonly="true"
+                            readonly
+                            class="answer-textarea"
                           ></textarea>
                         </div>
                       </div>
@@ -174,9 +174,11 @@ const use = async () => {
                 </section>
               </div>
             </div>
-            <div class="d-flex justify-content-center gap-2 mt-4">
+            <div class="d-flex justify-content-end gap-2 mt-4">
               <material-button
-                class="btn bg-gradient-secondary"
+                color="success"
+                variant="gradient"
+                class="mb-0"
                 @click="use"
                 :disabled="usage"
               >
@@ -191,37 +193,338 @@ const use = async () => {
 </template>
 
 <style scoped>
+.work-layout {
+  background-color: var(--app-surface-muted);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.right {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.application-card {
+  background: var(--app-surface);
+  padding: 18px 18px 20px;
+  position: relative;
+}
+
 .form-control,
 .form-select {
-  border: 1px solid #d2d6da !important;
+  border: 1px solid var(--app-border) !important;
 }
 .bg-light {
-  background-color: #f8f9fa !important;
+  background-color: var(--app-surface-muted) !important;
 }
 .content-area {
-  /* 최대 높이를 설정 (화면의 약 60~70% 정도가 적당합니다) */
   max-height: 70vh;
-
-  /* 내용이 넘칠 때만 세로 스크롤바 생성 */
   overflow-y: auto;
-
-  /* 안쪽 여백을 주어 스크롤바와 내용이 겹치지 않게 함 */
-  padding-right: 15px;
-
-  /* (선택사항) 스크롤바 스타일링 - Chrome, Safari */
-  border: 1px solid #f0f2f5;
-  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface-muted);
 }
 
-/* 스크롤바 디자인을 깔끔하게 만들고 싶다면 추가하세요 */
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 섹션 */
+.big-section {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
+  border-radius: var(--app-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--app-shadow-sm);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* 소분류 그룹 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--app-border-muted);
+}
+
+.small-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--app-accent);
+  background: var(--app-surface);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* 질문 카드 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
+  border-radius: var(--app-radius-md);
+  border-left: 4px solid var(--app-scrollbar-thumb);
+}
+
+.question-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  line-height: 1.5;
+}
+
+.q-num {
+  display: inline-block;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: var(--app-accent);
+}
+
+.answer-area {
+  margin-left: 0.25rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--app-text-muted);
+  cursor: default;
+}
+
+.radio-item input {
+  margin: 0;
+  accent-color: var(--app-accent);
+}
+
+.radio-label {
+  user-select: none;
+}
+
+.text-group .answer-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface-muted);
+}
+
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 대분류 섹션 */
+.big-section {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border-muted);
+  border-radius: var(--app-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--app-shadow-sm);
+}
+
+.big-title {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--app-surface);
+  background: var(--app-gradient-success);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.big-title-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+/* 소분류 그룹 */
+.small-group {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--app-border-muted);
+}
+
+.small-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.small-title {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--app-text);
+  background: var(--app-success-bg);
+  border-left: 4px solid var(--app-accent);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.small-title-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--app-accent);
+  background: var(--app-surface);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* 질문 카드 */
+.question-card {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border-muted);
+  border-radius: var(--app-radius-md);
+  border-left: 4px solid var(--app-scrollbar-thumb);
+}
+
+.question-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  line-height: 1.5;
+}
+
+.q-num {
+  display: inline-block;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: var(--app-accent);
+}
+
+.answer-area {
+  margin-left: 0.25rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--app-text-muted);
+  cursor: default;
+}
+
+.radio-item input {
+  margin: 0;
+  accent-color: var(--app-accent);
+}
+
+.radio-label {
+  user-select: none;
+}
+
+.text-group .answer-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--app-border-muted);
+  border-radius: 8px;
+  background: var(--app-surface);
+  resize: vertical;
+}
+
+.text-group .answer-textarea:focus {
+  outline: none;
+  border-color: var(--app-accent);
+  box-shadow: var(--app-focus-ring-sm);
+}
+
 .content-area::-webkit-scrollbar {
   width: 6px;
 }
 .content-area::-webkit-scrollbar-thumb {
-  background-color: #cccccc;
+  background-color: var(--app-scrollbar-thumb);
   border-radius: 10px;
 }
 .content-area::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
+  background-color: var(--app-scrollbar-track);
 }
 </style>
