@@ -20,8 +20,15 @@ const getList = async () => {
   console.log(result.data.result);
   sups.value = result.data.result;
 };
-const genderLabel = computed((gender) => {
-  if (gender == "f1") {
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleDateString("ko-KR");
+  // 결과: "2026. 2. 22."
+};
+const gender = computed((gender) => {
+  if (!selectedUser.value) return ""; // selectedUser가 없을 때의 예외 처리
+
+  if (selectedUser.value.gender == "f1") {
     return "남자";
   } else {
     return "여자";
@@ -135,14 +142,20 @@ onBeforeMount(() => {
                   v-if="selectedUser"
                   type="text"
                   class="form-control"
-                  :value="genderLabel(selectedUser.gender)"
+                  :modelValue="gender"
                   :readonly="true"
                 />
               </div>
 
               <div class="col-md-3">
                 <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
-                {{ selectedUser.birthday }}
+                <material-input
+                  v-if="selectedUser"
+                  type="text"
+                  class="form-control"
+                  :modelValue="formatDate(selectedUser.birthday)"
+                  :readonly="true"
+                />
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
