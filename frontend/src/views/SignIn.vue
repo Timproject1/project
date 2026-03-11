@@ -28,7 +28,7 @@ const handleLogin = async () => {
 
   try {
     // 서버의 로그인 API 주소로 사용자가 입력한 정보를 보냅니다.
-    const response = await axios.post("http://localhost:3000/user/login", {
+    const response = await axios.post("/api/user/login", {
       user_id: userId.value, // 입력한 아이디입니다.
       user_password: password.value, // 입력한 비밀번호입니다.
     });
@@ -45,8 +45,11 @@ const handleLogin = async () => {
         grade: response.data.user.grade,
         name: response.data.user.user_name,
       });
-
-      router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
+      if (response.data.user.approve == "k1") {
+        router.push({ name: "Home" }); // 메인 페이지(Home)로 화면을 이동시킵니다.
+      } else {
+        router.push("/wait-approval");
+      }
     } else {
       // 아이디나 비번이 틀려서 서버가 실패 응답을 보낸 경우입니다.
       loginError.value = true; // 에러 상태를 켭니다.

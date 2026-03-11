@@ -15,7 +15,7 @@ const Plans = ref([]);
 const listPlan = async () => {
   let doc = docStore.doc_num;
   let result = await axios
-    .get(`http://localhost:3000/document/planlist/${doc}`)
+    .get(`/api/document/planlist/${doc}`)
     .catch((err) => console.log(err));
   Plans.value = (result.data.result || []).map((r) => ({
     ...r,
@@ -56,7 +56,7 @@ const addPlan = async () => {
 
   const result = ref(null);
   try {
-    const res = await axios.post("http://localhost:3000/document/plan", add);
+    const res = await axios.post("/api/document/plan", add);
     console.log(res.data);
     result.value = res.data;
     addPlanName.value = "";
@@ -79,7 +79,7 @@ const draft = async () => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/saveplan",
+      "/api/document/saveplan",
       savedate,
     );
     console.log(res.data);
@@ -94,13 +94,17 @@ const draft = async () => {
 //임시저장 불러오기
 const sevedate = async () => {
   let result = await axios
-    .post(`http://localhost:3000/document/bringplan`)
+    .post(`/api/document/bringplan`)
     .catch((err) => console.log(err));
 
-  const data = result.data;
+  const data = result.data[0];
+  if (!data) {
+    alert("저장된 데이터가 없습니다");
+    return;
+  }
   newPlan.value = true;
-  addPlanName.value = data.result[0].plan_title;
-  addPlanContent.value = data.result[0].plan_content;
+  addPlanName.value = data.result.plan_title;
+  addPlanContent.value = data.result.plan_content;
   console.log(data.result[0]);
 };
 
@@ -111,7 +115,7 @@ const restart = async (id) => {
     plan_num: id,
   };
   let result = await axios
-    .post(`http://localhost:3000/document/restartplan/`, res)
+    .post(`/api/document/restartplan/`, res)
     .catch((err) => console.log(err));
 
   const data = result.data;
@@ -125,7 +129,7 @@ const cancel = async (id) => {
     plan_num: id,
   };
   let result = await axios
-    .post(`http://localhost:3000/document/cancelplan/`, res)
+    .post(`/api/document/cancelplan/`, res)
     .catch((err) => console.log(err));
 
   const data = result.data;
@@ -167,7 +171,7 @@ const Update = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/updateplan",
+      "/api/document/updateplan",
       updatedate,
     );
     console.log(res.data);
@@ -183,7 +187,7 @@ const revisions = async (id) => {
   // console.log(id);
   try {
     let result = await axios
-      .get(`http://localhost:3000/document/modifyPlanlist/${id.plan_num}`)
+      .get(`/api/document/modifyPlanlist/${id.plan_num}`)
       .catch((err) => console.log(err));
     id.revision = Array.isArray(result.data.result) ? result.data.result : [];
     id.showRevision = true;
@@ -201,7 +205,7 @@ const delplan = async (id) => {
   const result = ref(null);
   try {
     const res = await axios.post(
-      "http://localhost:3000/document/deleteplan",
+      "/api/document/deleteplan",
       del,
     );
     console.log(res.data);
@@ -228,7 +232,7 @@ const filename = ref([]);
 console.log(filename);
 const filelist = async () => {
   let result = await axios
-    .get(`http://localhost:3000/document/planFile`)
+    .get(`/api/document/planFile`)
     .catch((err) => console.log(err));
   console.log(result.data.result);
   filename.value = Array.isArray(result.data.result) ? result.data.result : [];

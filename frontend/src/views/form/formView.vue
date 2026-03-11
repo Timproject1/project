@@ -30,9 +30,7 @@ const formatDate = (dateString) => {
 };
 const getForm = async () => {
   // console.log(route.params.num);
-  const result = await axios.get(
-    `http://localhost:3000/form/getForm/${route.params.num}`,
-  );
+  const result = await axios.get(`/api/form/getForm/${route.params.num}`);
   console.log(result.data);
   formData.value = result.data.form;
 
@@ -47,9 +45,7 @@ const getForm = async () => {
   // });
 };
 const getInfo = async () => {
-  const result = await axios.get(
-    `http://localhost:3000/form/getInfo/${route.params.num}`,
-  );
+  const result = await axios.get(`/api/form/getInfo/${route.params.num}`);
   // console.log(result.data);
   info.value = result.data.info;
   console.log(info.value);
@@ -59,9 +55,7 @@ onBeforeMount(async () => {
   await getForm();
 });
 const use = async () => {
-  const result = await axios.patch(
-    `http://localhost:3000/form/usage/${route.params.num}`,
-  );
+  const result = await axios.patch(`/api/form/usage/${route.params.num}`);
   if (result.data.retCode == "OK") {
     alert("사용등록 완료");
     router.push("/form");
@@ -134,10 +128,11 @@ const use = async () => {
                     class="small-group"
                   >
                     <h3 class="small-title">
-                      <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
+                      <span class="small-title-badge"
+                        >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                      >
                       {{ small.scategory }}
                     </h3>
-
 
                     <div
                       v-for="(q, qIdx) in small.questions"

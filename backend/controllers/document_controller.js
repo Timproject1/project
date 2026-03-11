@@ -425,7 +425,12 @@ const ctrl = {
   priReqList: async (req, res) => {
     try {
       const center_num = req.params.num;
-      const result = await service.priReqList(center_num);
+      const filters = {
+        sup: req.query.sup || "",
+        writer: req.query.writer || "",
+        maneger: req.query.maneger || "",
+      };
+      const result = await service.priReqList(center_num, filters);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
@@ -435,7 +440,12 @@ const ctrl = {
   planReqList: async (req, res) => {
     try {
       const center_num = req.params.num;
-      const result = await service.planReqList(center_num);
+      const filters = {
+        sup: req.query.sup || "",
+        writer: req.query.writer || "",
+        maneger: req.query.maneger || "",
+      };
+      const result = await service.planReqList(center_num, filters);
       res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);

@@ -1,7 +1,9 @@
 <template>
   <div class="wait-approval-layout">
     <div class="wait-approval-container">
-      <div class="wait-approval-card card shadow-lg border-0 border-radius-xl overflow-hidden">
+      <div
+        class="wait-approval-card card shadow-lg border-0 border-radius-xl overflow-hidden"
+      >
         <div
           class="card-header p-3 bg-gradient-success shadow-success border-radius-lg d-flex align-items-center"
         >
@@ -20,8 +22,10 @@
             * 문의사항은 기관으로 연락주세요
           </p>
           <div class="info-box mb-4">
-            <label class="form-label text-xs fw-bolder mb-1 text-secondary">기관 연락처</label>
-            <p class="mb-0 fw-bold">{{ memberStore.center }}</p>
+            <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+              >기관 연락처</label
+            >
+            <p class="mb-0 fw-bold">010-1234-5678</p>
           </div>
           <button
             type="button"
@@ -37,10 +41,8 @@
 </template>
 
 <script setup>
-import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 
-const memberStore = useMemberStore();
 const router = useRouter();
 </script>
 

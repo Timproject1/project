@@ -1,5 +1,5 @@
 <template>
-  <li class="page-item" :class="getClasses(active, disabled)">
+  <li class="page-item" :class="getClasses(active, disabled)" @click="handleClick">
     <a class="page-link" href="javascript:;">
       {{ prev || next ? null : label }}
       <i v-if="prev" class="fa fa-angle-left"></i>
@@ -41,6 +41,10 @@ export default {
       disabledValue = disabled ? "disabled" : null;
 
       return `${activeValue} ${disabledValue}`;
+    },
+    handleClick() {
+      if (this.disabled) return;
+      this.$emit("click");
     },
   },
 };

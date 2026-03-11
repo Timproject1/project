@@ -16,37 +16,54 @@ const resetSearch = () => {
   searchGender.value = "전체";
   searchDisability.value = "";
   counsel_manager.value = "";
+  getList();
 };
 
-// --- 2. 지원자 목록 데이터 로직 (원본 유지) ---
 const supported = ref([]);
+// --- 2. 지원자 목록 데이터 로직 ---
+// --- 수정된 getList 함수 ---
 const getList = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/support/list");
-    if (response.data.retCode === "OK") {
+    // 검색 필터의 값들이 searchParams 객체에 정확히 담기도록 합니다.
+    const searchParams = {
+      name: searchName.value,
+      gender: searchGender.value,
+      disability: searchDisability.value,
+      manager: counsel_manager.value,
+    };
+
+    // 서버에 파라미터를 함께 전송합니다.
+    const response = await axios.get("/api/support/list", {
+      params: searchParams,
+    });
+
+    // 서버 응답이 OK일 때만 데이터를 업데이트합니다.
+    if (response.data && response.data.retCode === "OK") {
       supported.value = response.data.result;
+      console.log("데이터 갱신 완료:", supported.value);
+    } else {
+      console.log("데이터 조회 실패 또는 결과 없음");
     }
   } catch (err) {
-    console.error("데이터 로드 실패:", err);
+    console.error("검색 실패:", err);
   }
 };
-
 onMounted(() => {
   getList();
 });
 
 // --- 3. 모달 제어 및 수정용 변수 ---
-const detailModal = ref(false);
+const detailModel = ref(false);
 const selectMember = ref(null);
-const isEditModalOpen = ref(false);
+const isEditModelOpen = ref(false);
 const Modifymember = ref(null);
-const addModal = ref(false);
+const addModel = ref(false);
 const sup_file = ref(""); // 파일 입력 변수
 
 const newSupported = ref({
   sup_name: "",
   sup_birthday: "",
-  sup_gender: "남성",
+  gender: "남성",
   sup_tel: "",
   sup_address: "",
   disability_category: "",
@@ -55,17 +72,17 @@ const newSupported = ref({
 
 // --- 4. [사용자 요청 로직 복구] 등록, 수정, 상세, 배정 함수 ---
 
-const openAddModal = () => {
-  addModal.value = true;
+const openAddModel = () => {
+  addModel.value = true;
 };
 
 // 지원자 등록창 닫기
-const closeModal = () => {
-  addModal.value = false;
+const closeModel = () => {
+  addModel.value = false;
   newSupported.value = {
     sup_name: "",
     sup_birthday: "",
-    sup_gender: "남성",
+    gender: "남성",
     sup_tel: "",
     sup_address: "",
     disability_category: "",
@@ -77,12 +94,12 @@ const closeModal = () => {
 const addSupported = async () => {
   try {
     const response = await axios.post(
-      "http://localhost:3000/support/add",
+      "/api/support/add",
       newSupported.value,
     );
     if (response.data.retCode === "OK") {
       alert("등록 완료");
-      closeModal();
+      closeModel();
       getList();
     }
   } catch (err) {
@@ -91,14 +108,14 @@ const addSupported = async () => {
 };
 
 // 정보 수정창 열기
-const openEditModal = (member) => {
+const openEditModel = (member) => {
   Modifymember.value = { ...member };
   sup_file.value = member.sup_file || "";
-  isEditModalOpen.value = true;
+  isEditModelOpen.value = true;
 };
 
-const closeEditModal = () => {
-  isEditModalOpen.value = false;
+const closeEditModel = () => {
+  isEditModelOpen.value = false;
   Modifymember.value = null;
 };
 
@@ -107,12 +124,12 @@ const updateMember = async () => {
   try {
     Modifymember.value.sup_file = sup_file.value;
     const response = await axios.put(
-      "http://localhost:3000/support/update",
+      "/api/support/update",
       Modifymember.value,
     );
     if (response.status === 200) {
       alert("정보 수정 완료");
-      isEditModalOpen.value = false;
+      isEditModelOpen.value = false;
       getList();
     }
   } catch (error) {
@@ -121,23 +138,23 @@ const updateMember = async () => {
 };
 
 // 장애 유형 상세 보기
-const openDetailModal = async (member) => {
+const openDetailModel = async (member) => {
   selectMember.value = member;
   try {
     const response = await axios.get(
-      "http://localhost:3000/support/disabilities",
+      "/api/support/disabilities",
       { params: { sup_num: member.sup_num } },
     );
     selectMember.value.disabilities = response.data;
-    detailModal.value = true;
+    detailModel.value = true;
   } catch (err) {
     console.error(err);
   }
 };
 
 // 상세창 닫기
-const closeDetailModal = () => {
-  detailModal.value = false;
+const closeDetailModel = () => {
+  detailModel.value = false;
   selectMember.value = null;
 };
 
@@ -250,7 +267,7 @@ const requestManager = (name) =>
             <button
               type="button"
               class="btn btn-sm bg-gradient-dark text-white px-3"
-              @click="openAddModal"
+              @click="openAddModel"
             >
               신규 등록
             </button>
@@ -324,7 +341,7 @@ const requestManager = (name) =>
                       <button
                         type="button"
                         class="btn btn-sm bg-gradient-success text-white px-2"
-                        @click="openDetailModal(member)"
+                        @click="openDetailModel(member)"
                       >
                         보기
                       </button>
@@ -351,7 +368,7 @@ const requestManager = (name) =>
                       <button
                         type="button"
                         class="btn btn-sm bg-gradient-info text-white px-3"
-                        @click="openEditModal(member)"
+                        @click="openEditModel(member)"
                       >
                         정보수정
                       </button>
@@ -366,8 +383,8 @@ const requestManager = (name) =>
     </div>
   </div>
 
-  <div v-if="detailModal" class="modal-overlay" @click.self="closeDetailModal">
-    <div class="card modal-content shadow-lg p-4 border-radius-xl">
+  <div v-if="detailModel" class="model-overlay" @click.self="closeDetailModel">
+    <div class="card model-content shadow-lg p-4 border-radius-xl">
       <h5 class="font-weight-bolder text-success mb-3 fw-bold">
         장애유형 상세
       </h5>
@@ -396,7 +413,7 @@ const requestManager = (name) =>
       <button
         type="button"
         class="btn btn-sm bg-gradient-dark w-100 text-white mb-0"
-        @click="closeDetailModal"
+        @click="closeDetailModel"
       >
         창 닫기
       </button>
@@ -404,11 +421,11 @@ const requestManager = (name) =>
   </div>
 
   <div
-    v-if="isEditModalOpen && Modifymember"
-    class="modal-overlay"
-    @click.self="closeEditModal"
+    v-if="isEditModelOpen && Modifymember"
+    class="model-overlay"
+    @click.self="closeEditModel"
   >
-    <div class="card modal-content shadow-lg p-4 border-radius-xl">
+    <div class="card model-content shadow-lg p-4 border-radius-xl">
       <h5 class="font-weight-bolder text-dark mb-4 border-bottom pb-2 fw-bold">
         지원자 상세 정보 수정
       </h5>
@@ -427,7 +444,7 @@ const requestManager = (name) =>
           생년월일
         </label>
         <input
-          v-modal="Modifymember.sup_birthday"
+          v-model="Modifymember.sup_birthday"
           type="text"
           class="form-control form-control-sm"
         />
@@ -437,7 +454,7 @@ const requestManager = (name) =>
           휴대폰번호
         </label>
         <input
-          v-modal="Modifymember.sup_tel"
+          v-model="Modifymember.sup_tel"
           type="text"
           class="form-control form-control-sm"
         />
@@ -447,7 +464,7 @@ const requestManager = (name) =>
           주소
         </label>
         <input
-          v-modal="Modifymember.sup_address"
+          v-model="Modifymember.sup_address"
           type="text"
           class="form-control form-control-sm"
         />
@@ -457,7 +474,7 @@ const requestManager = (name) =>
           장애유형 수정
         </label>
         <input
-          v-modal="Modifymember.disability_category"
+          v-model="Modifymember.disability_category"
           type="text"
           class="form-control form-control-sm"
         />
@@ -483,7 +500,7 @@ const requestManager = (name) =>
         <button
           type="button"
           class="btn btn-sm btn-outline-secondary flex-fill"
-          @click="closeEditModal"
+          @click="closeEditModel"
         >
           취소
         </button>
@@ -491,8 +508,8 @@ const requestManager = (name) =>
     </div>
   </div>
 
-  <div v-if="addModal" class="modal-overlay" @click.self="closeModal">
-    <div class="card modal-content shadow-lg p-4 border-radius-xl">
+  <div v-if="addModel" class="model-overlay" @click.self="closeModel">
+    <div class="card model-content shadow-lg p-4 border-radius-xl">
       <h5
         class="font-weight-bolder text-success mb-4 border-bottom pb-2 fw-bold"
       >
@@ -579,7 +596,7 @@ const requestManager = (name) =>
         <button
           type="button"
           class="btn btn-sm btn-outline-secondary flex-fill"
-          @click="closeModal"
+          @click="closeModel"
         >
           닫기
         </button>
@@ -633,23 +650,29 @@ button {
 }
 
 /* 모달 */
-.modal-overlay {
+.model-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--app-backdrop);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  z-index: 9999;
 }
 
-.modal-content {
-  max-width: 550px;
-  width: 90%;
-  border-radius: 0.75rem;
+/* 모달 내용물 */
+.model-content {
+  background: white;
+  padding: 30px;
+  border-radius: 1rem;
+  width: 90%; /* 화면이 작을 땐 90% */
+  max-width: 500px; /* 하지만 500px을 넘지 않게 고정 */
+  max-height: 85vh; /* 화면 높이의 85%까지만 차지 */
+  overflow-y: auto; /* 내용이 많으면 내부에서만 스크롤 */
+  box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
 }
 
 .border-radius-xl {
@@ -657,6 +680,12 @@ button {
 }
 
 .bg-gray-100 {
-  background-color: var(--app-surface-muted);
+  background-color: #f8f9fa;
+}
+.model-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 500px;
 }
 </style>

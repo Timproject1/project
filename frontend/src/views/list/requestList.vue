@@ -18,14 +18,12 @@ const managerList = ref([
 ]);
 const getManagerList = async (writer) => {
   // console.log(docStore.writer);
-  const result = await axios.get(
-    `http://localhost:3000/user/getManager/${writer}`,
-  );
+  const result = await axios.get(`/api/user/getManager/${writer}`);
   managerList.value = result.data.result;
 };
 const getNomanagerList = async () => {
   try {
-    const responese = await axios.get("http://localhost:3000/support/list");
+    const responese = await axios.get("/api/support/list");
     if (responese.data.retCode === "OK") {
       const allData = responese.data.result;
       Notsupported.value = allData.map((item) => ({
@@ -60,7 +58,7 @@ const assignManager = async (manager) => {
   // console.log(selectedMember.value);
   try {
     const responese = await axios.post(
-      "http://localhost:3000/support/assign",
+      "/api/support/assign",
       {
         sup_num: selectedMember.value.sup_num,
         manager_id: manager.user_id,

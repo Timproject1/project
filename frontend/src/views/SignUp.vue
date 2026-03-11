@@ -42,7 +42,7 @@ const checkIdDuplication = async () => {
     return;
   }
   try {
-    const res = await axios.post("http://localhost:3000/user/check-id", {
+    const res = await axios.post("/api/user/check-id", {
       user_id: form.user_id, // 서버로 현재 입력된 아이디 전송
     });
     alert(
@@ -58,7 +58,7 @@ const checkIdDuplication = async () => {
 // 기관 검색 버튼 클릭 시 서버에서 기관 목록을 가져오는 함수
 const fetchInstitutions = async () => {
   try {
-    const url = `http://localhost:3000/center/list`;
+    const url = `/api/center/list`;
     const res = await axios.get(url, { params: { name: searchQuery.value } }); // 검색어를 쿼리로 전달
 
     console.log("서버 응답 데이터:", res.data);
@@ -84,7 +84,7 @@ const handleSignup = async () => {
     return;
   }
   try {
-    const res = await axios.post("http://localhost:3000/user/signup", form); // 전체 데이터 전송
+    const res = await axios.post("/api/user/signup", form); // 전체 데이터 전송
     if (res.data.success) {
       alert("회원가입 완료!"); // 가입 성공 메시지
       router.push("/sign-in"); // 로그인 페이지로 페이지 이동

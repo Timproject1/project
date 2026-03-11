@@ -37,7 +37,7 @@ const changePage = async (page) => {
   await getList(); // 페이지 바뀔 때마다 다시 호출
 };
 const getList = async () => {
-  const result = await axios.get("http://localhost:3000/form/list", {
+  const result = await axios.get("/api/form/list", {
     params: {
       page: currentPage.value,
       limit: perPage,
@@ -48,7 +48,7 @@ const getList = async () => {
   console.log(list.value);
 };
 const getCount = async () => {
-  const result = await axios.get("http://localhost:3000/form/count");
+  const result = await axios.get("/api/form/count");
   console.log(result.data);
   totalCount.value = result.data.count;
   console.log(totalCount.value);
