@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
-import { useRouter, useRoute } from "vue-router";
+
 import { useMemberStore } from "@/store/member";
 const memberStore = useMemberStore();
 // 실제 DB에서 가져온 데이터를 담을 배열 (초기값 빈 배열)
