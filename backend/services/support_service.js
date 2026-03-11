@@ -29,10 +29,13 @@ const service = {
           query += ` AND S.sup_name LIKE ?`;
           params.push(`%${filters.name}%`);
         }
-        // 성별 검색
-        if (filters.gender && filters.gender !== "전체") {
+        // 성별 검색 (프론트에서 null / 'f1' / 'f2' 로 넘어오는 기준에 맞춤)
+        if (filters.gender) {
+          // 혹시 다른 화면에서 '남성' / '여성' 문자열로 넘기는 경우도 대비
+          let genderCode = filters.gender;
+
           query += ` AND S.gender = ?`;
-          params.push(filters.gender);
+          params.push(genderCode);
         }
         // 장애유형 검색
         if (
