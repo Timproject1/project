@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 // import { useRouter } from "vue-router";
 import axios from "axios";
 import { useMemberStore } from "../../store/member";
@@ -22,6 +22,30 @@ const resetSearch = () => {
 };
 
 const supported = ref([]);
+
+// --- 페이징 상태 ---
+const pageSize = ref(10);
+const currentPage = ref(1);
+
+const totalPages = computed(() =>
+  supported.value.length
+    ? Math.ceil(supported.value.length / pageSize.value)
+    : 1,
+);
+
+const pagedSupported = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return supported.value.slice(start, end);
+});
+
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+};
+
+const goPrev = () => changePage(currentPage.value - 1);
+const goNext = () => changePage(currentPage.value + 1);
 // --- 2. 지원자 목록 데이터 로직 ---
 // --- 수정된 getList 함수 ---
 const getList = async () => {
@@ -54,6 +78,7 @@ const getList = async () => {
     // 서버 응답이 OK일 때만 데이터를 업데이트합니다.
     if (response.data && response.data.retCode === "OK") {
       supported.value = response.data.result;
+      currentPage.value = 1; // 검색 또는 초기 로드 시 1페이지로 이동
       // console.log("데이터 갱신 완료:", supported.value);
     } else {
       // console.log("데이터 조회 실패 또는 결과 없음");
@@ -323,7 +348,7 @@ const requestManager = (name) =>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="member in supported" :key="member.sup_num">
+                  <tr v-for="member in pagedSupported" :key="member.sup_num">
                     <td class="text-center text-sm">{{ member.sup_num }}</td>
                     <td class="ps-4 text-sm font-weight-bold">
                       {{ member.sup_name }}
@@ -383,6 +408,45 @@ const requestManager = (name) =>
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- 페이징 영역 -->
+            <div
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
+            >
+              <div class="pagination d-flex gap-2 align-items-center">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  :disabled="currentPage === 1"
+                  @click="goPrev"
+                >
+                  이전
+                </button>
+                <span class="pages text-secondary text-sm">
+                  <span
+                    v-for="page in totalPages"
+                    :key="page"
+                    class="mx-1"
+                    :class="{
+                      'fw-bold text-dark': page === currentPage,
+                      'text-muted': page !== currentPage,
+                    }"
+                    @click="changePage(page)"
+                    style="cursor: pointer"
+                  >
+                    {{ page }}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  :disabled="currentPage === totalPages"
+                  @click="goNext"
+                >
+                  다음
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -681,6 +745,12 @@ const requestManager = (name) =>
 
 .filter-card .card-body {
   padding: 18px;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
 }
 
 button {
