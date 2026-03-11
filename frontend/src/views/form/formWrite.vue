@@ -49,9 +49,7 @@ const getList = async () => {
 //지정한 버전 가지고 오기
 const getForm = async () => {
   // console.log(route.params.num);
-  const result = await axios.get(
-    `/api/form/getForm/${selectedVersion.value}`,
-  );
+  const result = await axios.get(`/api/form/getForm/${selectedVersion.value}`);
   console.log(result.data.form);
   // formData.value = result.data.form;
   const newForm = [];
@@ -129,7 +127,7 @@ const delScategory = (big, idx) => {
 };
 //대분류 삭제
 const delBigcategory = (idx) => {
-  console.log(formData.value);
+  // console.log(formData.value);
   formData.value.splice(idx, 1);
 };
 
@@ -175,7 +173,7 @@ onBeforeMount(async () => {
   addBcategory();
 });
 const submitForm = async () => {
-  console.log(formData);
+  // console.log(formData);
   const result = await axios.post(
     "/api/form/write",
     {
@@ -188,7 +186,7 @@ const submitForm = async () => {
   );
   if (result.data.retCode == "OK") {
     alert("등록완료 되었습니다");
-    router.push(`/form/view/${result.data.form_ver}`);
+    router.push(`/form/view/${result.data.result}`);
   }
 };
 
@@ -287,7 +285,9 @@ const submitForm = async () => {
                   class="small-group"
                 >
                   <h3 class="small-title">
-                    <span class="small-title-badge">{{ bIdx + 1 }}-{{ sIdx + 1 }}</span>
+                    <span class="small-title-badge"
+                      >{{ bIdx + 1 }}-{{ sIdx + 1 }}</span
+                    >
                     소분류
                   </h3>
                   <div class="small-group-body">
@@ -322,7 +322,8 @@ const submitForm = async () => {
                     <div class="question-card-inner">
                       <div class="type-select-area">
                         <span class="q-num">{{ qIdx + 1 }}.</span>
-                        <label class="form-label fw-bold text-secondary text-xs mb-0"
+                        <label
+                          class="form-label fw-bold text-secondary text-xs mb-0"
                           >응답 타입</label
                         >
                         <select
@@ -356,12 +357,14 @@ const submitForm = async () => {
                           :key="oIdx"
                           class="option-input-group"
                         >
-                          <span class="option-label">{{ oIdx + 1 }}번 선택지</span>
+                          <span class="option-label"
+                            >{{ oIdx + 1 }}번 선택지</span
+                          >
                           <input
                             v-model="q.options[oIdx]"
                             type="text"
                             class="form-control form-control-sm option-input"
-                            :placeholder="(oIdx + 1) + '번 내용을 입력하세요'"
+                            :placeholder="oIdx + 1 + '번 내용을 입력하세요'"
                           />
                         </div>
                       </div>

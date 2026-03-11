@@ -17,7 +17,7 @@ const getList = async () => {
       id: memberStore.id,
     },
   });
-  console.log(result.data.result);
+  // console.log(result.data.result);
   sups.value = result.data.result;
 };
 const formatDate = (dateString) => {
@@ -57,24 +57,30 @@ const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
 const inputCheck = computed(() => {
-  for (const num in userAnswers) {
-    if (!userAnswers[num]) {
-      return true;
-    }
+  const answers = userAnswers.value;
+  if (!answers || Object.keys(answers).length === 0) return true;
+
+  for (const num in answers) {
+    const resp = answers[num]?.response;
+
+    // 라디오(번호) / 주관식(문자열) 모두 처리
+    if (resp === null || resp === undefined) return true;
+    if (typeof resp === "string" && resp.trim() === "") return true;
   }
+
   return false;
 });
 const selectedUser = computed(() => {
   return sups.value.find((sup) => {
     if (sup.sup_num == sup_num.value) {
-      console.log(sup);
+      // console.log(sup);
     }
     return sup.sup_num == sup_num.value;
   });
 });
 //제출
 const submitForm = async () => {
-  console.log(userAnswers.value);
+  // console.log(userAnswers.value);
   const surveyData = {
     sup_num: sup_num.value,
     user_id: memberStore.id,
@@ -82,7 +88,7 @@ const submitForm = async () => {
     response: userAnswers.value,
   };
   const result = await axios.post(`/api/document/write`, surveyData);
-  console.log(result);
+  // console.log(result);
   if (result.data.retCode == "OK") {
     alert("작성완료");
     router.push("/document");
@@ -166,7 +172,7 @@ onBeforeMount(() => {
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
-                  불러오기
+                  작성시작
                 </material-button>
               </div>
             </div>

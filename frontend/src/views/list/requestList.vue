@@ -33,7 +33,7 @@ const getNomanagerList = async () => {
     }
     // console.log(responese.data);
   } catch (err) {
-    console.error("데이터 불러오기 실패", err);
+    // console.error("데이터 불러오기 실패", err);
   }
 };
 onMounted(() => {

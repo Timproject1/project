@@ -17,7 +17,7 @@ import { useRoute, useRouter } from "vue-router";
 // };
 const route = useRoute();
 const router = useRouter();
-console.log(`route:${route.params.num}`);
+// console.log(`route:${route.params.num}`);
 const formData = ref([]); //설문지 양식
 const info = ref({});
 const usage = computed(() => {
@@ -31,7 +31,7 @@ const formatDate = (dateString) => {
 const getForm = async () => {
   // console.log(route.params.num);
   const result = await axios.get(`/api/form/getForm/${route.params.num}`);
-  console.log(result.data);
+  // console.log(result.data);
   formData.value = result.data.form;
 
   // formData.value.forEach((bcategory) => {
