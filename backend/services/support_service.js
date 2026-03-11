@@ -14,6 +14,16 @@ const service = {
       const params = [];
       // 지원자 검색 부분
       if (filters) {
+        // 로그인한 담당자/사용자 ID로 필터
+        if (filters.id) {
+          query += ` AND S.user_id = ?`;
+          params.push(filters.id);
+        } else if (filters.user_id) {
+          // 다른 화면에서 user_id로 넘기는 경우도 지원
+          query += ` AND S.user_id = ?`;
+          params.push(filters.user_id);
+        }
+
         // 이름 검색
         if (filters.name) {
           query += ` AND S.sup_name LIKE ?`;
