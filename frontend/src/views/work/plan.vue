@@ -485,17 +485,6 @@ const filelist = async () => {
               @click="Plan.returnPlan = true"
               >반려</material-button
             >
-            <Modal v-if="Plan.returnPlan" @close="Plan.returnPlan = false">
-              <template #content>
-                <h4>반려 사유</h4>
-                <p>{{ Plan.plan_return_reason }}</p>
-              </template>
-              <template #actions="{ close }">
-                <material-button type="button" @click="close"
-                  >닫기</material-button
-                >
-              </template>
-            </Modal>
           </p>
           <p v-else>
             <material-button
@@ -506,6 +495,21 @@ const filelist = async () => {
             >
           </p>
         </div>
+      </div>
+
+      <!-- 반려 사유 모달: 카드 전체 가로 사용 -->
+      <div v-if="Plan.returnPlan" class="plan-return-modal-wrapper">
+        <Modal class="plan-return-modal" @close="Plan.returnPlan = false">
+          <template #content>
+            <h4>반려 사유</h4>
+            <p class="mb-0">{{ Plan.plan_return_reason }}</p>
+          </template>
+          <template #actions="{ close }">
+            <material-button type="button" @click="close"
+              >닫기</material-button
+            >
+          </template>
+        </Modal>
       </div>
     </div>
   </div>
@@ -630,6 +634,16 @@ const filelist = async () => {
   background-color: #5a6268;
   border-color: #545b62;
   color: #fff;
+}
+
+.plan-return-modal-wrapper {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.plan-return-modal-wrapper :deep(.work-modal) {
+  width: 100%;
+  max-width: 100%;
 }
 
 .add-modal-file-row {
