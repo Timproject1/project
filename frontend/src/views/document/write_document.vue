@@ -54,7 +54,7 @@ const getForm = async () => {
   });
 };
 const saveTemp = () => {
-  console.log("임시저장", userAnswers.value);
+  // console.log("임시저장", userAnswers.value);
 };
 const inputCheck = computed(() => {
   const answers = userAnswers.value;
