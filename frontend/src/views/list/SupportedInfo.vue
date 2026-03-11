@@ -26,13 +26,22 @@ const supported = ref([]);
 // --- 수정된 getList 함수 ---
 const getList = async () => {
   try {
+    // 화면에는 '전체 / 남성 / 여성'을 보여주지만,
+    // 서버로는 null / 'f1' / 'f2' 코드로 전달
+    let genderCode = null;
+    if (searchGender.value === "남성") {
+      genderCode = "f1";
+    } else if (searchGender.value === "여성") {
+      genderCode = "f2";
+    }
+
     // 검색 필터의 값들이 searchParams 객체에 정확히 담기도록 합니다.
     const searchParams = {
       // 로그인한 담당자/사용자 ID
       id: memberStore.id || "",
       // 검색 필터
       name: searchName.value,
-      gender: searchGender.value,
+      gender: genderCode,
       disability: searchDisability.value,
       manager: counsel_manager.value,
     };
