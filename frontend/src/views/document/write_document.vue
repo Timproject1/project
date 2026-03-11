@@ -153,6 +153,7 @@ onBeforeMount(() => {
                 <label class="text-xs fw-bold text-dark mb-2">성별</label>
                 <material-input
                   v-if="selectedUser"
+                  id="document-gender"
                   type="text"
                   class="form-control"
                   :modelValue="gender"
@@ -164,6 +165,7 @@ onBeforeMount(() => {
                 <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
                 <material-input
                   v-if="selectedUser"
+                  id="document-birthday"
                   type="text"
                   class="form-control"
                   :modelValue="formatDate(selectedUser.birthday)"
