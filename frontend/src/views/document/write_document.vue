@@ -56,7 +56,14 @@ const getForm = async () => {
 const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
-
+const inputCheck = computed(() => {
+  for (const num in userAnswers) {
+    if (!userAnswers[num]) {
+      return true;
+    }
+  }
+  return false;
+});
 const selectedUser = computed(() => {
   return sups.value.find((sup) => {
     if (sup.sup_num == sup_num.value) {
@@ -225,6 +232,7 @@ onBeforeMount(() => {
               <material-button
                 class="btn bg-gradient-success"
                 @click="submitForm"
+                :disabled="inputCheck"
               >
                 제출
               </material-button>

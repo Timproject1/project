@@ -93,10 +93,7 @@ const closeModel = () => {
 // 신규 등록 실행
 const addSupported = async () => {
   try {
-    const response = await axios.post(
-      "/api/support/add",
-      newSupported.value,
-    );
+    const response = await axios.post("/api/support/add", newSupported.value);
     if (response.data.retCode === "OK") {
       alert("등록 완료");
       closeModel();
@@ -123,10 +120,7 @@ const closeEditModel = () => {
 const updateMember = async () => {
   try {
     Modifymember.value.sup_file = sup_file.value;
-    const response = await axios.put(
-      "/api/support/update",
-      Modifymember.value,
-    );
+    const response = await axios.put("/api/support/update", Modifymember.value);
     if (response.status === 200) {
       alert("정보 수정 완료");
       isEditModelOpen.value = false;
@@ -141,10 +135,9 @@ const updateMember = async () => {
 const openDetailModel = async (member) => {
   selectMember.value = member;
   try {
-    const response = await axios.get(
-      "/api/support/disabilities",
-      { params: { sup_num: member.sup_num } },
-    );
+    const response = await axios.get("/api/support/disabilities", {
+      params: { sup_num: member.sup_num },
+    });
     selectMember.value.disabilities = response.data;
     detailModel.value = true;
   } catch (err) {
@@ -535,15 +528,19 @@ const requestManager = (name) =>
           class="form-control form-control-sm"
         />
       </div>
-      <div class="mb-3">
+      <div class="col-12 mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
           >성별</label
         >
-        <input
-          v-model="newSupported.gender"
-          type="text"
-          class="form-control form-control-sm"
-        />
+
+        <label class="mb-0">
+          <input v-model="newSupported.sup_gender" type="radio" value="남성" />
+          남성
+        </label>
+        <label class="mb-0">
+          <input v-model="newSupported.sup_gender" type="radio" value="여성" />
+          여성
+        </label>
       </div>
       <div class="mb-3">
         <label class="form-label text-xs fw-bolder mb-1 text-secondary"
