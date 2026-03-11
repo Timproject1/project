@@ -42,10 +42,7 @@ const addCenter = async () => {
     return;
   }
   try {
-    const response = await axios.post(
-      "/api/center/addCenter",
-      newCenter.value,
-    );
+    const response = await axios.post("/api/center/addCenter", newCenter.value);
     if (response.data.retCode === "OK") {
       alert("기관 등록완료");
       showAddModal.value = false;
@@ -60,12 +57,12 @@ const addCenter = async () => {
         runed: "운영",
       };
       await getCenterList();
-      console.log("기관 목록 등록완료");
+      // console.log("기관 목록 등록완료");
     } else {
-      console.log("서버 응답은 왔으나 OK가 아님:", response.data);
+      // console.log("서버 응답은 왔으나 OK가 아님:", response.data);
     }
   } catch (err) {
-    console.error("기관 등록실패:", err);
+    // console.error("기관 등록실패:", err);
     alert("기관 등록이 실패하였습니다");
   }
 };
@@ -83,17 +80,14 @@ const openCenterEditModal = (center) => {
 // 수정된 데이터를 서버로 전송
 const updateCenter = async () => {
   try {
-    const response = await axios.put(
-      "/api/center/update",
-      modifyCenter.value,
-    );
+    const response = await axios.put("/api/center/update", modifyCenter.value);
     if (response.status === 200) {
       alert("기관 정보 수정 완료");
       isCenterModalOpen.value = false;
       getCenterList(); // 목록 새로고침 함수 (기존 getList와 유사한 이름일 것임)
     }
   } catch (error) {
-    console.error("기관 수정 실패:", error);
+    // console.error("기관 수정 실패:", error);
     alert("기관 정보 수정 중 오류가 발생했습니다.");
   }
 };

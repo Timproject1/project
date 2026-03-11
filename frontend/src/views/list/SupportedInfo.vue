@@ -40,9 +40,9 @@ const getList = async () => {
     // 서버 응답이 OK일 때만 데이터를 업데이트합니다.
     if (response.data && response.data.retCode === "OK") {
       supported.value = response.data.result;
-      console.log("데이터 갱신 완료:", supported.value);
+      // console.log("데이터 갱신 완료:", supported.value);
     } else {
-      console.log("데이터 조회 실패 또는 결과 없음");
+      // console.log("데이터 조회 실패 또는 결과 없음");
     }
   } catch (err) {
     console.error("검색 실패:", err);
@@ -549,11 +549,19 @@ const requestManager = (name) =>
               >
               <div class="d-flex gap-4 align-items-center flex-wrap">
                 <label class="mb-0 text-sm">
-                  <input v-model="newSupported.gender" type="radio" value="남성" />
+                  <input
+                    v-model="newSupported.gender"
+                    type="radio"
+                    value="남성"
+                  />
                   남성
                 </label>
                 <label class="mb-0 text-sm">
-                  <input v-model="newSupported.gender" type="radio" value="여성" />
+                  <input
+                    v-model="newSupported.gender"
+                    type="radio"
+                    value="여성"
+                  />
                   여성
                 </label>
               </div>
@@ -738,7 +746,9 @@ button {
   background-clip: padding-box;
   border: 1px solid #d2d6da;
   border-radius: 0.5rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .form-control:focus {

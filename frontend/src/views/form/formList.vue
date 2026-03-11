@@ -43,15 +43,15 @@ const getList = async () => {
       limit: perPage,
     },
   });
-  console.log(result.data);
+  // console.log(result.data);
   list.value = result.data.result;
-  console.log(list.value);
+  // console.log(list.value);
 };
 const getCount = async () => {
   const result = await axios.get("/api/form/count");
-  console.log(result.data);
+  // console.log(result.data);
   totalCount.value = result.data.count;
-  console.log(totalCount.value);
+  // console.log(totalCount.value);
   totalPages.value = Math.ceil(Number(totalCount.value) / perPage);
 };
 const getForm = (form_ver) => {

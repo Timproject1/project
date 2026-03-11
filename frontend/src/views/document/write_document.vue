@@ -17,7 +17,7 @@ const getList = async () => {
       id: memberStore.id,
     },
   });
-  console.log(result.data.result);
+  // console.log(result.data.result);
   sups.value = result.data.result;
 };
 const formatDate = (dateString) => {
@@ -73,14 +73,14 @@ const inputCheck = computed(() => {
 const selectedUser = computed(() => {
   return sups.value.find((sup) => {
     if (sup.sup_num == sup_num.value) {
-      console.log(sup);
+      // console.log(sup);
     }
     return sup.sup_num == sup_num.value;
   });
 });
 //제출
 const submitForm = async () => {
-  console.log(userAnswers.value);
+  // console.log(userAnswers.value);
   const surveyData = {
     sup_num: sup_num.value,
     user_id: memberStore.id,
@@ -88,7 +88,7 @@ const submitForm = async () => {
     response: userAnswers.value,
   };
   const result = await axios.post(`/api/document/write`, surveyData);
-  console.log(result);
+  // console.log(result);
   if (result.data.retCode == "OK") {
     alert("작성완료");
     router.push("/document");

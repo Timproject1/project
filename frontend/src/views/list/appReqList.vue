@@ -56,13 +56,13 @@ const getList = async () => {
   );
   list.value = result.data.result;
   currentPage.value = 1;
-  console.log(result.data);
+  // console.log(result.data);
   return result;
 };
 
 const selectDoc = (doc_num) => {
   // console.log("test");
-  console.log(doc_num);
+  // console.log(doc_num);
   docStore.doc_num = doc_num;
   router.push(`/work/${movePath[currentTab.value]}`);
 };
