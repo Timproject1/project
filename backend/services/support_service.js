@@ -50,7 +50,7 @@ const service = {
       }
 
       // 데이터 중복 방지를 위해 번호로 그룹화
-      query += ` GROUP BY S.sup_num ORDER BY S.sup_num DESC`;
+      query += `ORDER BY CAST(SUBSTRING_INDEX(sup_num, '-', -1) AS UNSIGNED) DESC`;
 
       const rows = await pool.query(query, params);
       return rows;
