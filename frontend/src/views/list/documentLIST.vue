@@ -318,7 +318,8 @@ onBeforeMount(async () => {
                           @click.stop="getPlan(doc)"
                           :disabled="
                             doc.progress != '지원계획' &&
-                            doc.progress != '지원결과'
+                            doc.progress != '지원결과' &&
+                            doc.progress != '종결'
                           "
                           >보기</material-button
                         >
@@ -330,7 +331,9 @@ onBeforeMount(async () => {
                           variant="text"
                           class="mb-0"
                           @click.stop="getResult(doc)"
-                          :disabled="doc.progress != '지원결과'"
+                          :disabled="
+                            doc.progress != '지원결과' && doc.progress != '종결'
+                          "
                           >보기</material-button
                         >
                       </td>
