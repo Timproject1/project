@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -20,13 +20,13 @@ const getList = async () => {
   console.log(result.data.result);
   sups.value = result.data.result;
 };
-const genderLabel = computed((gender) => {
-  if (gender == "f1") {
-    return "남자";
-  } else {
-    return "여자";
-  }
-});
+// const genderLabel = (gender) => {
+//   if (gender == "f1") {
+//     return "남자";
+//   } else {
+//     return "여자";
+//   }
+// };
 //설문지 양식을 가져온다
 const getForm = async () => {
   const result = await axios.get(`/api/form/usageForm`);
@@ -50,14 +50,15 @@ const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
 
-const selectedUser = computed(() => {
-  return sups.value.find((sup) => {
-    if (sup.sup_num == sup_num.value) {
-      console.log(sup);
-    }
-    return sup.sup_num == sup_num.value;
-  });
-});
+// const selectedUser = () => {
+//   return sups.value.find((sup) => {
+//     if (sup.sup_num == sup_num.value) {
+//       console.log(sup);
+//     }
+//     return sup.sup_num == sup_num.value;
+//   });
+// };
+
 //제출
 const submitForm = async () => {
   console.log(userAnswers.value);
@@ -131,18 +132,10 @@ onBeforeMount(() => {
               </div>
               <div class="col-md-2">
                 <label class="text-xs fw-bold text-dark mb-2">성별</label>
-                <material-input
-                  v-if="selectedUser"
-                  type="text"
-                  class="form-control"
-                  :value="genderLabel(selectedUser.gender)"
-                  :readonly="true"
-                />
               </div>
 
               <div class="col-md-3">
                 <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
-                {{ selectedUser.birthday }}
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
@@ -231,13 +224,12 @@ onBeforeMount(() => {
 <script>
 import MaterialButton from "@/components/MaterialButton.vue";
 
-import MaterialInput from "@/components/MaterialInput.vue";
+// import MaterialInput from "@/components/MaterialInput.vue";
 
 export default {
   name: "tables",
   components: {
     MaterialButton,
-    MaterialInput,
   },
 };
 </script>
