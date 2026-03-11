@@ -1,7 +1,12 @@
 <template>
   <div
     class="input-group"
-    :class="`input-group-${variant} ${getStatus(error, success)}`"
+    :class="[
+      `input-group-${variant} ${getStatus(error, success)}`,
+      modelValue !== '' && modelValue !== null && modelValue !== undefined
+        ? 'is-filled'
+        : '',
+    ]"
   >
     <label :class="variant === 'static' ? '' : 'form-label'">{{ label }}</label>
     <input
