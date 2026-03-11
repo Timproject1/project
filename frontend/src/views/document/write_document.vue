@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -252,13 +252,12 @@ onBeforeMount(() => {
 <script>
 import MaterialButton from "@/components/MaterialButton.vue";
 
-import MaterialInput from "@/components/MaterialInput.vue";
+// import MaterialInput from "@/components/MaterialInput.vue";
 
 export default {
   name: "tables",
   components: {
     MaterialButton,
-    MaterialInput,
   },
 };
 </script>

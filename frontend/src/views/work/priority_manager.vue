@@ -128,28 +128,6 @@ const returnPri = async () => {
       </div>
       <div id="reasonbox" class="mb-3">
         <p class="reason-view">{{ prioritydb.priority_reason }}</p>
-        <!-- 반려 사유 작성 모달창 -->
-        <div class="return" ref="box">
-          <h6 class="fw-bold mb-2">반려 사유</h6>
-          <textarea
-            name="return"
-            id="return"
-            placeholder="반려 사유를 작성하세요."
-            v-model="returnReason"
-          ></textarea>
-          <div class="mt-3 d-flex gap-2 justify-content-center">
-            <material-button type="button" class="app" @click="returnPri()"
-              >반려</material-button
-            >
-            <material-button
-              type="button"
-              class="app"
-              @click="nonedisplay()"
-              color="danger"
-              >취소</material-button
-            >
-          </div>
-        </div>
       </div>
 
       <div
@@ -176,6 +154,25 @@ const returnPri = async () => {
             @click="display()"
             color="danger"
             >반려</material-button
+          >
+        </div>
+      </div>
+
+      <!-- 반려 사유 작성 모달창 (승인/반려 버튼 아래) -->
+      <div class="return" ref="box">
+        <h6 class="fw-bold mb-2">반려 사유</h6>
+        <textarea
+          name="return"
+          id="return"
+          placeholder="반려 사유를 작성하세요."
+          v-model="returnReason"
+        ></textarea>
+        <div class="priority-return-actions">
+          <material-button type="button" color="danger" @click="returnPri()"
+            >반려</material-button
+          >
+          <material-button type="button" @click="nonedisplay()"
+            >취소</material-button
           >
         </div>
       </div>
@@ -220,13 +217,43 @@ const returnPri = async () => {
 }
 .return {
   display: none;
-  text-align: center;
-  background-color: var(--app-surface);
-  padding: 5px;
+  background-color: #ffffff;
+  padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid var(--app-border);
+  border: 1px solid var(--app-border-muted);
   width: 100%;
   margin: 0 auto;
+  margin-top: 12px;
+}
+
+.priority-return-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.priority-return-actions :deep(button.btn) {
+  min-width: 100px;
+}
+
+.priority-return-actions :deep(button.btn + button.btn) {
+  /* ensures consistent spacing even if gap fails */
+  margin-left: 0;
+}
+
+/* 취소 버튼(2번째 버튼)을 회색으로 강제 */
+.priority-return-actions :deep(button.btn:nth-child(2)) {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.priority-return-actions :deep(button.btn:nth-child(2):hover) {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+  color: #fff !important;
 }
 #return {
   margin: 0 auto;
