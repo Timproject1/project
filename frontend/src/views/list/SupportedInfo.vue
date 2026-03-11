@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 // import { useRouter } from "vue-router";
 import axios from "axios";
+import { useMemberStore } from "../../store/member";
 
 // const router = useRouter();
 
@@ -10,6 +11,7 @@ const searchName = ref("");
 const searchGender = ref("전체");
 const searchDisability = ref("");
 const counsel_manager = ref("");
+const memberStore = useMemberStore();
 
 const resetSearch = () => {
   searchName.value = "";
@@ -26,6 +28,9 @@ const getList = async () => {
   try {
     // 검색 필터의 값들이 searchParams 객체에 정확히 담기도록 합니다.
     const searchParams = {
+      // 로그인한 담당자/사용자 ID
+      id: memberStore.id || "",
+      // 검색 필터
       name: searchName.value,
       gender: searchGender.value,
       disability: searchDisability.value,
