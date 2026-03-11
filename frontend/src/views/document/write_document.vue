@@ -20,13 +20,20 @@ const getList = async () => {
   console.log(result.data.result);
   sups.value = result.data.result;
 };
-// const genderLabel = (gender) => {
-//   if (gender == "f1") {
-//     return "남자";
-//   } else {
-//     return "여자";
-//   }
-// };
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleDateString("ko-KR");
+  // 결과: "2026. 2. 22."
+};
+const gender = computed((gender) => {
+  if (!selectedUser.value) return ""; // selectedUser가 없을 때의 예외 처리
+
+  if (selectedUser.value.gender == "f1") {
+    return "남자";
+  } else {
+    return "여자";
+  }
+});
 //설문지 양식을 가져온다
 const getForm = async () => {
   const result = await axios.get(`/api/form/usageForm`);
@@ -49,16 +56,22 @@ const getForm = async () => {
 const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
-
-// const selectedUser = () => {
-//   return sups.value.find((sup) => {
-//     if (sup.sup_num == sup_num.value) {
-//       console.log(sup);
-//     }
-//     return sup.sup_num == sup_num.value;
-//   });
-// };
-
+const inputCheck = computed(() => {
+  for (const num in userAnswers) {
+    if (!userAnswers[num]) {
+      return true;
+    }
+  }
+  return false;
+});
+const selectedUser = computed(() => {
+  return sups.value.find((sup) => {
+    if (sup.sup_num == sup_num.value) {
+      console.log(sup);
+    }
+    return sup.sup_num == sup_num.value;
+  });
+});
 //제출
 const submitForm = async () => {
   console.log(userAnswers.value);
@@ -132,10 +145,24 @@ onBeforeMount(() => {
               </div>
               <div class="col-md-2">
                 <label class="text-xs fw-bold text-dark mb-2">성별</label>
+                <material-input
+                  v-if="selectedUser"
+                  type="text"
+                  class="form-control"
+                  :modelValue="gender"
+                  :readonly="true"
+                />
               </div>
 
               <div class="col-md-3">
                 <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
+                <material-input
+                  v-if="selectedUser"
+                  type="text"
+                  class="form-control"
+                  :modelValue="formatDate(selectedUser.birthday)"
+                  :readonly="true"
+                />
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
@@ -205,6 +232,7 @@ onBeforeMount(() => {
               <material-button
                 class="btn bg-gradient-success"
                 @click="submitForm"
+                :disabled="inputCheck"
               >
                 제출
               </material-button>

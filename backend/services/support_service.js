@@ -67,16 +67,15 @@ const service = {
       // 2. INSERT
       const query = `INSERT INTO supported 
       (sup_num, user_id, sup_name, sup_address, sup_email, sup_tel, sup_reg_date, sup_approved, birthday, gender) 
-      VALUES (?, ?, ?, ?, ?, ?, now(), ?, ?, ?)`;
+      VALUES (concat("sup-",NEXT VALUE FOR create_sup_num_seq), ?, ?, ?, ?, ?, now(), ?, ?, ?)`;
       const values = [
-        newSupNum,
         data.user_id || "user", // user_id가 없을 경우 대비
         data.sup_name,
         data.sup_address,
         data.sup_email || "",
         data.sup_tel,
         "d1", // 기본 상태값
-        data.sup_gender === "남성" ? "m1" : "f1",
+        data.gender == "남성" ? "f1" : "f2",
         data.sup_birthday,
       ];
 

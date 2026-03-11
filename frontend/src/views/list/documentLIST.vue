@@ -115,9 +115,7 @@ const selectDoc = (doc_num) => {
 //양식조회
 const getForm = async (form_ver) => {
   // console.log(doc.value);
-  const result = await axios.get(
-    `/api/form/getForm/${form_ver}`,
-  );
+  const result = await axios.get(`/api/form/getForm/${form_ver}`);
   // console.log(result);
   formData.value = result.data.form;
 
@@ -137,9 +135,7 @@ const getForm = async (form_ver) => {
 };
 //응답 조회
 const getResp = async (doc_num) => {
-  const result = await axios.get(
-    `/api/document/getResp/${doc_num}`,
-  );
+  const result = await axios.get(`/api/document/getResp/${doc_num}`);
   // console.log(result.data.response);
   for (const key in result.data.response) {
     if (!Object.hasOwn(result.data.response, key)) continue;
@@ -147,15 +143,18 @@ const getResp = async (doc_num) => {
     userAnswers.value[key] = result.data.response[key];
   }
 };
+//지우기
 const delDoc = async (doc_num) => {
-  const result = await axios.delete(
-    `/api/document/delDoc/${doc_num}`,
-  );
+  const result = await axios.delete(`/api/document/delDoc/${doc_num}`);
   if (result.data.retCode == "OK") {
     alert("삭제완료");
     router.go(0);
   }
 };
+//지울수있는지
+const canDelete = computed(() => {
+  return memberStore.id == selectedDocData.value.writer_id;
+});
 onBeforeMount(async () => {
   await getList();
 });
@@ -387,6 +386,7 @@ onBeforeMount(async () => {
                 type="button"
                 class="btn btn-sm bg-gradient-success text-white mb-0"
                 @click="moveRegister()"
+                v-if="memberStore.grade == 'a1'"
               >
                 <i class="material-icons text-sm me-2">edit</i>신청서작성
               </button>
@@ -587,7 +587,7 @@ onBeforeMount(async () => {
             >수정</material-button
           >
           <material-button
-            v-if="modalType == 'document'"
+            v-if="modalType == 'document' && canDelete"
             color="primary"
             variant="gradient"
             @click="delDoc(selectedDocData.doc_num)"

@@ -303,7 +303,7 @@ onMounted(() => {
                     </td>
                     <td class="text-center text-sm">
                       {{
-                        member.gender === "m1" || member.gender === "남성"
+                        member.gender === "f1" || member.gender === "남성"
                           ? "남성"
                           : "여성"
                       }}
@@ -537,24 +537,23 @@ onMounted(() => {
           <label class="form-label text-xs fw-bolder mb-1 text-secondary"
             >성별</label
           >
-          <div class="d-flex gap-3 p-2 bg-gray-100 rounded text-sm">
-            <label class="mb-0">
-              <input
-                v-model="newSupported.sup_gender"
-                type="radio"
-                value="남성"
-              />
-              남성
-            </label>
-            <label class="mb-0">
-              <input
-                v-model="newSupported.sup_gender"
-                type="radio"
-                value="여성"
-              />
-              여성
-            </label>
-          </div>
+
+          <label class="mb-0">
+            <input
+              v-model="newSupported.sup_gender"
+              type="radio"
+              value="남성"
+            />
+            남성
+          </label>
+          <label class="mb-0">
+            <input
+              v-model="newSupported.sup_gender"
+              type="radio"
+              value="여성"
+            />
+            여성
+          </label>
         </div>
         <div class="col-12 mb-3">
           <label class="form-label text-xs fw-bolder mb-1 text-secondary"
