@@ -151,26 +151,24 @@ onBeforeMount(() => {
               </div>
               <div class="col-md-2">
                 <label class="text-xs fw-bold text-dark mb-2">성별</label>
-                <material-input
+                <div
                   v-if="selectedUser"
-                  id="document-gender"
-                  type="text"
-                  class="form-control"
-                  :modelValue="gender"
-                  :readonly="true"
-                />
+                  class="form-control bg-light"
+                  style="min-height: 38px; display: flex; align-items: center"
+                >
+                  {{ gender }}
+                </div>
               </div>
 
               <div class="col-md-3">
                 <label class="text-xs fw-bold text-dark mb-2">생년월일</label>
-                <material-input
+                <div
                   v-if="selectedUser"
-                  id="document-birthday"
-                  type="text"
-                  class="form-control"
-                  :modelValue="formatDate(selectedUser.birthday)"
-                  :readonly="true"
-                />
+                  class="form-control bg-light"
+                  style="min-height: 38px; display: flex; align-items: center"
+                >
+                  {{ formatDate(selectedUser.birthday) }}
+                </div>
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
