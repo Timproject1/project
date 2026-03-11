@@ -318,13 +318,13 @@ const requestManager = (name) =>
                       <span
                         class="badge badge-sm"
                         :class="
-                          member.gender === 'm1' || member.gender === '남성'
+                          member.gender === 'f1' || member.gender === '남성'
                             ? 'bg-gradient-info'
                             : 'bg-gradient-danger'
                         "
                       >
                         {{
-                          member.gender === "m1" || member.gender === "남성"
+                          member.gender === "f1" || member.gender === "남성"
                             ? "남성"
                             : "여성"
                         }}
@@ -501,102 +501,121 @@ const requestManager = (name) =>
     </div>
   </div>
 
-  <div v-if="addModel" class="model-overlay" @click.self="closeModel">
-    <div class="card model-content shadow-lg p-4 border-radius-xl">
-      <h5
-        class="font-weight-bolder text-success mb-4 border-bottom pb-2 fw-bold"
-      >
-        신규 지원자 등록
-      </h5>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >지원자명</label
+  <!-- 신규 등록 모달: documentLIST.vue 느낌(bootstrap modal 구조) -->
+  <div v-if="addModel" class="modal-backdrop fade show"></div>
+  <div
+    class="modal fade"
+    :class="{ 'show d-block': addModel }"
+    tabindex="-1"
+    role="dialog"
+    @click.self="closeModel"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="card shadow-lg w-100 modal-content-scroll">
+        <div
+          class="card-header p-3 pb-0 d-flex justify-content-between align-items-center"
         >
-        <input
-          v-model="newSupported.sup_name"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >생년월일</label
-        >
-        <input
-          v-model="newSupported.sup_birthday"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="col-12 mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >성별</label
-        >
-
-        <label class="mb-0">
-          <input v-model="newSupported.sup_gender" type="radio" value="남성" />
-          남성
-        </label>
-        <label class="mb-0">
-          <input v-model="newSupported.sup_gender" type="radio" value="여성" />
-          여성
-        </label>
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >휴대폰번호</label
-        >
-        <input
-          v-model="newSupported.sup_tel"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >주소</label
-        >
-        <input
-          v-model="newSupported.sup_address"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >장애유형</label
-        >
-        <input
-          v-model="newSupported.disability_category"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-xs fw-bolder mb-1 text-secondary"
-          >첨부파일</label
-        >
-        <input
-          v-model="newSupported.sup_file"
-          type="text"
-          class="form-control form-control-sm"
-        />
-      </div>
-      <div class="d-flex gap-2">
-        <button
-          type="button"
-          class="btn btn-sm bg-gradient-success text-white flex-fill"
-          @click="addSupported"
-        >
-          등록 완료
-        </button>
-        <button
-          type="button"
-          class="btn btn-sm btn-outline-secondary flex-fill"
-          @click="closeModel"
-        >
-          닫기
-        </button>
+          <h5 class="mb-0 fw-bold text-success">신규 지원자 등록</h5>
+          <button type="button" class="btn-close text-dark" @click="closeModel">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <hr class="dark horizontal my-2" />
+        <div class="card-body modal-body p-4">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >지원자명</label
+              >
+              <input
+                v-model="newSupported.sup_name"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >생년월일</label
+              >
+              <input
+                v-model="newSupported.sup_birthday"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >성별</label
+              >
+              <div class="d-flex gap-4 align-items-center flex-wrap">
+                <label class="mb-0 text-sm">
+                  <input v-model="newSupported.gender" type="radio" value="남성" />
+                  남성
+                </label>
+                <label class="mb-0 text-sm">
+                  <input v-model="newSupported.gender" type="radio" value="여성" />
+                  여성
+                </label>
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >휴대폰번호</label
+              >
+              <input
+                v-model="newSupported.sup_tel"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >주소</label
+              >
+              <input
+                v-model="newSupported.sup_address"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >장애유형</label
+              >
+              <input
+                v-model="newSupported.disability_category"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label text-xs fw-bolder mb-1 text-secondary"
+                >첨부파일</label
+              >
+              <input
+                v-model="newSupported.sup_file"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end p-3 gap-2">
+          <button
+            type="button"
+            class="btn btn-sm bg-gradient-success text-white mb-0"
+            @click="addSupported"
+          >
+            등록 완료
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary mb-0"
+            @click="closeModel"
+          >
+            닫기
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -644,6 +663,109 @@ const requestManager = (name) =>
 
 button {
   cursor: pointer;
+}
+
+/* documentLIST.vue 모달 동작/스크롤 느낌 */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  display: none;
+}
+
+.modal.show.d-block {
+  display: block;
+}
+
+.modal.fade {
+  opacity: 0;
+  transition: opacity 0.15s linear;
+}
+
+.modal.fade.show {
+  opacity: 1;
+}
+
+.modal {
+  pointer-events: none;
+}
+
+.modal-dialog {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 3.5rem);
+  margin: 1.75rem auto;
+  max-width: 800px;
+  width: calc(100% - 2rem);
+}
+
+.modal-content-scroll {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+.modal-body {
+  flex: 1 1 auto;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.modal-body .row {
+  row-gap: 0.75rem;
+}
+
+/* bootstrap CSS가 약한 환경에서도 입력 UI가 무너지지 않도록 최소 스타일 보강 */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #344767;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #d2d6da;
+  border-radius: 0.5rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+  outline: 0;
+  border-color: rgba(46, 204, 113, 0.65);
+  box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.15);
+}
+
+.form-control-sm {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
+  border-radius: 0.5rem;
+}
+
+.btn-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  opacity: 0.65;
+}
+
+.btn-close:hover {
+  opacity: 1;
 }
 
 /* 모달 */

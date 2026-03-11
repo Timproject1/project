@@ -57,11 +57,17 @@ const saveTemp = () => {
   console.log("임시저장", userAnswers.value);
 };
 const inputCheck = computed(() => {
-  for (const num in userAnswers) {
-    if (!userAnswers[num]) {
-      return true;
-    }
+  const answers = userAnswers.value;
+  if (!answers || Object.keys(answers).length === 0) return true;
+
+  for (const num in answers) {
+    const resp = answers[num]?.response;
+
+    // 라디오(번호) / 주관식(문자열) 모두 처리
+    if (resp === null || resp === undefined) return true;
+    if (typeof resp === "string" && resp.trim() === "") return true;
   }
+
   return false;
 });
 const selectedUser = computed(() => {
@@ -166,7 +172,7 @@ onBeforeMount(() => {
               </div>
               <div class="col-md-2 d-flex align-items-end">
                 <material-button class="btn bg-gradient-success w-100 mb-0">
-                  불러오기
+                  작성시작
                 </material-button>
               </div>
             </div>
