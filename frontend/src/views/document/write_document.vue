@@ -258,13 +258,10 @@ onBeforeMount(() => {
 <script>
 import MaterialButton from "@/components/MaterialButton.vue";
 
-import MaterialInput from "@/components/MaterialInput.vue";
-
 export default {
   name: "tables",
   components: {
     MaterialButton,
-    MaterialInput,
   },
 };
 </script>

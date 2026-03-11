@@ -12,17 +12,27 @@ const docStore = useDocStore();
 
 const memberStore = useMemberStore();
 
-let prioritydb = ref({});
+const emptyPriority = {
+  priority_req_num: null,
+  doc_num: null,
+  priority: null,
+  priority_reason: "",
+  priority_approved: null,
+};
+let prioritydb = ref({ ...emptyPriority });
 // console.log(prioritydb);
 //get으로 데이터 당겨오기
 const priorityData = async () => {
   let doc = docStore.doc_num;
-  let result = await axios
-    .get(`/api/document/priority/${doc}`)
-    .catch((err) => console.log(err));
-  prioritydb.value = result.data.result;
-  console.log(result.data.result);
-  console.log(prioritydb.value);
+  try {
+    const res = await axios.get(`/api/document/priority/${doc}`);
+    const data = res?.data?.result;
+    prioritydb.value =
+      data && typeof data === "object" ? { ...emptyPriority, ...data } : { ...emptyPriority };
+  } catch (err) {
+    console.error(err);
+    prioritydb.value = { ...emptyPriority };
+  }
 };
 onBeforeMount(() => {
   priorityData();
@@ -36,6 +46,10 @@ const items = [
 
 const box = ref(null);
 
+const hasRequest = () => {
+  return !!prioritydb.value?.priority_req_num;
+};
+
 const display = () => {
   if (box.value) {
     box.value.style.display = "block";
@@ -48,6 +62,7 @@ const nonedisplay = () => {
 };
 //승인요청
 const appPri = async () => {
+  if (!hasRequest()) return;
   let appcontent = {
     priority_req_num: prioritydb.value.priority_req_num,
     doc_num: docStore.doc_num,
@@ -70,6 +85,7 @@ const returnReason = ref("");
 
 //반려
 const returnPri = async () => {
+  if (!hasRequest()) return;
   let returncontent = {
     priority_req_num: prioritydb.value.priority_req_num,
     priority_return_reason: returnReason.value,
@@ -97,8 +113,13 @@ const returnPri = async () => {
         {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를
         선택하세요.
       </p>
+
+      <div v-if="!hasRequest()" class="text-center text-secondary mb-4">
+        현재 처리할 우선순위 승인요청이 없습니다.
+      </div>
+
       <div class="text-center mb-4">
-        <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
+        <div class="wrapper" v-if="hasRequest() && prioritydb?.priority == 'c3'">
           <div
             class="circle"
             :style="{ backgroundColor: items[0].color, color: '#fff' }"
@@ -107,7 +128,7 @@ const returnPri = async () => {
             {{ items[0].label }}
           </div>
         </div>
-        <div class="wrapper" v-else-if="prioritydb?.priority == 'c4'">
+        <div class="wrapper" v-else-if="hasRequest() && prioritydb?.priority == 'c4'">
           <div
             class="circle"
             :style="{ backgroundColor: items[1].color, color: '#fff' }"
@@ -119,15 +140,19 @@ const returnPri = async () => {
         <div class="wrapper" v-else>
           <div
             class="circle"
-            :style="{ backgroundColor: items[2].color, color: '#fff' }"
+            :style="
+              hasRequest()
+                ? { backgroundColor: items[2].color, color: '#fff' }
+                : { backgroundColor: '#adb5bd', color: '#fff', borderColor: '#adb5bd' }
+            "
             disabled
           >
-            {{ items[2].label }}
+            {{ hasRequest() ? items[2].label : "요청 없음" }}
           </div>
         </div>
       </div>
       <div id="reasonbox" class="mb-3">
-        <p class="reason-view">{{ prioritydb.priority_reason }}</p>
+        <p class="reason-view">{{ prioritydb?.priority_reason || "" }}</p>
         <!-- 반려 사유 작성 모달창 -->
         <div class="return" ref="box">
           <h6 class="fw-bold mb-2">반려 사유</h6>
@@ -138,7 +163,11 @@ const returnPri = async () => {
             v-model="returnReason"
           ></textarea>
           <div class="mt-3 d-flex gap-2 justify-content-center">
-            <material-button type="button" class="app" @click="returnPri()"
+            <material-button
+              type="button"
+              class="app"
+              @click="returnPri()"
+              :disabled="!hasRequest()"
               >반려</material-button
             >
             <material-button
@@ -167,7 +196,11 @@ const returnPri = async () => {
           >
         </div>
         <div v-else>
-          <material-button type="button" class="app" @click="appPri()"
+          <material-button
+            type="button"
+            class="app"
+            @click="appPri()"
+            :disabled="!hasRequest()"
             >승인</material-button
           >
           <material-button
@@ -175,6 +208,7 @@ const returnPri = async () => {
             class="app"
             @click="display()"
             color="danger"
+            :disabled="!hasRequest()"
             >반려</material-button
           >
         </div>
