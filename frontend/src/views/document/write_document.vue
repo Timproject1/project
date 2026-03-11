@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, computed,onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 import axios from "axios";
