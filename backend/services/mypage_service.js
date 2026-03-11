@@ -34,12 +34,21 @@ const service = {
     const result = await pool.query(query, params);
     return result.affectedRows > 0;
   },
-  // 1. 일반 회원 승인 신청 목록 조회
-  getPendingUsers: async () => {
-    // user_status가 '0'(승인대기)인 회원만 조회
-    const query =
-      "SELECT user_id, user_name, user_email, user_reg_date, user_tel FROM member WHERE approve = 'k2' ORDER BY user_reg_date ASC";
-    const rows = await pool.query(query);
+  // 1. 일반 회원 승인 신청 목록 조회 (센터 기준)
+  getPendingUsers: async (centerCode) => {
+    let query = `SELECT user_id, user_name, user_email, user_reg_date, user_tel 
+                 FROM member 
+                 WHERE approve = 'k2'`;
+    const params = [];
+
+    if (centerCode) {
+      query += " AND registernum = ?";
+      params.push(centerCode);
+    }
+
+    query += " ORDER BY user_reg_date ASC";
+
+    const rows = await pool.query(query, params);
     return rows;
   },
 
