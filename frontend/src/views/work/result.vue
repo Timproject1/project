@@ -114,10 +114,7 @@ const Update = async (id) => {
   console.log(id);
   const result = ref(null);
   try {
-    const res = await axios.post(
-      "/api/document/updateresult",
-      updatedate,
-    );
+    const res = await axios.post("/api/document/updateresult", updatedate);
     console.log(res.data);
     result.value = res.data;
     id.modifyResult = false;
@@ -137,10 +134,7 @@ const draft = async () => {
   };
   const result = ref(null);
   try {
-    const res = await axios.post(
-      "/api/document/saveresult",
-      savedate,
-    );
+    const res = await axios.post("/api/document/saveresult", savedate);
     console.log(res.data);
     result.value = res.data;
     addresultsName.value = "";
@@ -180,10 +174,7 @@ const delresult = async (id) => {
   };
   const result = ref(null);
   try {
-    const res = await axios.post(
-      "/api/document/deleteresult",
-      del,
-    );
+    const res = await axios.post("/api/document/deleteresult", del);
     console.log(res.data);
     result.value = res.data;
     results.value.showResultDelete = false;
@@ -350,7 +341,7 @@ const filelist = async () => {
         @close="result.showResultDelete = false"
       >
         <template #content>
-          <p class="mb-3">해당 지원계획서를 <br />삭제하시겠습니까?</p>
+          <p class="mb-3">해당 지원결과서를 <br />삭제하시겠습니까?</p>
         </template>
         <template #actions="{ close }">
           <material-button
