@@ -12,7 +12,7 @@ const memberStore = useMemberStore();
 
 // --- 2. 검색 필터 (Reactive) ---
 const search = reactive({
-  sup_name: "",
+  name: "",
   priority: "전체",
   disability_category: "",
 });
@@ -185,7 +185,7 @@ onMounted(() => {
                 >지원자 명</label
               >
               <input
-                v-model="search.sup_name"
+                v-model="search.name"
                 type="text"
                 class="form-control form-control-sm"
                 placeholder="지원자명 입력"
