@@ -22,6 +22,16 @@ const totalPages = computed(() =>
   userInfo.value.length ? Math.ceil(userInfo.value.length / pageSize.value) : 1,
 );
 
+// formList.vue와 동일: 현재 페이지 앞뒤로 보여줄 번호 (range 2)
+const displayedPages = computed(() => {
+  const range = 2;
+  let start = Math.max(1, currentPage.value - range);
+  let end = Math.min(totalPages.value, currentPage.value + range);
+  const pages = [];
+  for (let i = start; i <= end; i++) pages.push(i);
+  return pages;
+});
+
 // 현재 페이지에 보여줄 데이터(10개씩 자름)
 const pagedList = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
@@ -221,17 +231,17 @@ const confirmReject = () => {
             </div>
 
             <div
-              class="bottom-actions d-flex justify-content-center align-items-center p-3 mt-2"
+              class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
               v-if="userInfo.length > 0"
             >
-              <material-pagination>
+              <material-pagination color="success" size="sm">
                 <material-pagination-item
                   prev
                   :disabled="currentPage === 1"
                   @click="goPrev"
                 />
                 <material-pagination-item
-                  v-for="page in totalPages"
+                  v-for="page in displayedPages"
                   :key="page"
                   :label="String(page)"
                   :active="page === currentPage"
@@ -409,10 +419,10 @@ const confirmReject = () => {
   position: relative;
 }
 
-/* 하단 페이징 관련 영역 지정 */
+/* 하단 페이징 관련 영역 지정 (formList와 동일: 좌우 정렬) */
 .bottom-actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 5px;
 }
 
