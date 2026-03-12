@@ -1,11 +1,11 @@
 <script setup>
 import axios from "axios";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, useRouter } from "vue";
 import { useDocStore } from "../../store/doc";
 const managers = ref(["정찬우", "장수연", "이민호", "안형주", "김진환"]);
 const selectedManager = ref("");
 const docStore = useDocStore();
-
+const router = useRouter();
 const handleRegister = async () => {
   if (!selectedManager.value) {
     alert("담당자를 먼저 선택해주세요.");
@@ -16,6 +16,7 @@ const handleRegister = async () => {
   );
   if (result.data.retCode == "OK") {
     alert(`${selectedManager.value} 담당자로 등록되었습니다.`);
+    router.go(0);
   } else {
     alert("오류발생 관리자에게 문의해주세요");
   }
