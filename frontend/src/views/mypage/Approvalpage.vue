@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from "vue";
 import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 
+import { useMemberStore } from "@/store/member";
+const memberStore = useMemberStore();
 // 실제 DB에서 가져온 데이터를 담을 배열 (초기값 빈 배열)
 const userInfo = ref([]);
 
@@ -36,10 +38,16 @@ const goPrev = () => changePage(currentPage.value - 1);
 const goNext = () => changePage(currentPage.value + 1);
 // ------------------------------
 
-// DB에서 일반회원 승인신청목록 받아오기
+// DB에서 일반회원 승인신청목록 받아오기 (센터 기준)
 const fetchUsers = async () => {
   try {
-    const response = await fetch("/api/mypage/admin/users/pending");
+    const centerCode = memberStore.center || "";
+    const query = centerCode
+      ? `?centerCode=${encodeURIComponent(centerCode)}`
+      : "";
+    const response = await fetch(
+      `/api/mypage/admin/users/pending${query}`,
+    );
     if (response.ok) {
       userInfo.value = await response.json();
       currentPage.value = 1; // 데이터를 새로 불러오면 1페이지로 초기화

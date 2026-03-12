@@ -46,7 +46,8 @@ const ctrl = {
   },
   getPendingUsers: async (req, res) => {
     try {
-      const users = await MypageService.getPendingUsers();
+      const centerCode = req.query.centerCode || "";
+      const users = await MypageService.getPendingUsers(centerCode);
       res.status(200).json(users);
     } catch (err) {
       res.status(500).json({ error: err.message });
