@@ -2,6 +2,8 @@
 // 최종 완결본: getlabel 미사용 에러 해결 + 모든 모달 필드 복구 + 스타일 최적화 + 페이징
 import { ref, onMounted, reactive, computed } from "vue";
 import axios from "axios";
+import MaterialPagination from "@/components/MaterialPagination.vue";
+import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 // import { useRouter } from "vue-router";
 import { useMemberStore } from "../../store/member";
 
@@ -45,27 +47,13 @@ const goToPage = (page) => {
 const prevPage = () => goToPage(currentPage.value - 1);
 const nextPage = () => goToPage(currentPage.value + 1);
 
-// 페이지 번호 배열 (1 ... 현재 주변 ... 마지막)
-const pageNumbers = computed(() => {
-  const total = totalPages.value;
-  const cur = currentPage.value;
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+// formList.vue와 동일: 현재 페이지 앞뒤 range 2
+const displayedPages = computed(() => {
+  const range = 2;
+  let start = Math.max(1, currentPage.value - range);
+  let end = Math.min(totalPages.value, currentPage.value + range);
   const pages = [];
-  if (cur <= 4) {
-    for (let i = 1; i <= 5; i++) pages.push(i);
-    pages.push("…");
-    pages.push(total);
-  } else if (cur >= total - 3) {
-    pages.push(1);
-    pages.push("…");
-    for (let i = total - 4; i <= total; i++) pages.push(i);
-  } else {
-    pages.push(1);
-    pages.push("…");
-    for (let i = cur - 1; i <= cur + 1; i++) pages.push(i);
-    pages.push("…");
-    pages.push(total);
-  }
+  for (let i = start; i <= end; i++) pages.push(i);
   return pages;
 });
 
@@ -416,48 +404,29 @@ onMounted(() => {
             <div
               class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
-              <div class="text-secondary text-sm">
-                {{ startItem }}-{{ endItem }} / 전체 {{ totalItems }}건
-              </div>
-              <div class="pagination d-flex gap-2 align-items-center">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-outline-secondary"
-                  :disabled="currentPage <= 1"
+              <material-pagination color="success" size="sm">
+                <material-pagination-item
+                  prev
                   @click="prevPage"
-                >
-                  이전
-                </button>
-                <span class="pages text-secondary text-sm d-flex gap-1 align-items-center">
-                  <template v-for="(p, i) in pageNumbers" :key="i">
-                    <span
-                      v-if="p === '…'"
-                      class="px-1"
-                    >…</span>
-                    <button
-                      v-else
-                      type="button"
-                      class="btn btn-sm py-0 px-2"
-                      :class="
-                        p === currentPage
-                          ? 'bg-gradient-success text-white'
-                          : 'btn-outline-secondary'
-                      "
-                      @click="goToPage(p)"
-                    >
-                      {{ p }}
-                    </button>
-                  </template>
-                </span>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-outline-secondary"
-                  :disabled="currentPage >= totalPages"
+                  :disabled="currentPage <= 1"
+                />
+                <material-pagination-item
+                  v-for="page in displayedPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="currentPage === page"
+                  @click="goToPage(page)"
+                />
+                <material-pagination-item
+                  next
                   @click="nextPage"
-                >
-                  다음
-                </button>
-              </div>
+                  :disabled="currentPage >= totalPages"
+                />
+              </material-pagination>
+
+              <span class="text-secondary text-sm mb-0">
+                {{ startItem }}-{{ endItem }} / 전체 {{ totalItems }}건
+              </span>
             </div>
           </div>
         </div>

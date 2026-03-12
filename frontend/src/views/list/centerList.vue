@@ -1,12 +1,36 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
+import MaterialPagination from "@/components/MaterialPagination.vue";
+import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 
 const searchName = ref("");
-// const resetSearch = () => {
-//   searchName.value = "";
-// };
 const centerList = ref([]);
+
+// 페이징 (formList.vue와 동일 스타일)
+const pageSize = 10;
+const currentPage = ref(1);
+const totalPages = computed(() =>
+  centerList.value.length
+    ? Math.ceil(centerList.value.length / pageSize)
+    : 1
+);
+const pagedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return centerList.value.slice(start, start + pageSize);
+});
+const displayedPages = computed(() => {
+  const range = 2;
+  let start = Math.max(1, currentPage.value - range);
+  let end = Math.min(totalPages.value, currentPage.value + range);
+  const pages = [];
+  for (let i = start; i <= end; i++) pages.push(i);
+  return pages;
+});
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  currentPage.value = page;
+};
 const getCenterList = async () => {
   try {
     const response = await axios.get("/api/center/list");
@@ -198,7 +222,7 @@ const updateCenter = async () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="center in centerList" :key="center.registernum">
+                  <tr v-for="center in pagedList" :key="center.registernum">
                     <td class="text-center text-sm">
                       {{ center.registernum }}
                     </td>
@@ -238,17 +262,25 @@ const updateCenter = async () => {
             <div
               class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
-              <div class="pagination d-flex gap-2 align-items-center">
-                <button type="button" class="btn btn-sm btn-outline-secondary">
-                  이전
-                </button>
-                <span class="pages text-secondary text-sm">
-                  <span class="fw-bold">1</span> <span>2</span> <span>3</span>
-                </span>
-                <button type="button" class="btn btn-sm btn-outline-secondary">
-                  다음
-                </button>
-              </div>
+              <material-pagination color="success" size="sm">
+                <material-pagination-item
+                  prev
+                  @click="changePage(currentPage - 1)"
+                  :disabled="currentPage === 1"
+                />
+                <material-pagination-item
+                  v-for="page in displayedPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="currentPage === page"
+                  @click="changePage(page)"
+                />
+                <material-pagination-item
+                  next
+                  @click="changePage(currentPage + 1)"
+                  :disabled="currentPage === totalPages"
+                />
+              </material-pagination>
             </div>
           </div>
         </div>
