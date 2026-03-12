@@ -1,6 +1,6 @@
 <script setup>
-// 최종 완결본: getlabel 미사용 에러 해결 + 모든 모달 필드 복구 + 스타일 최적화
-import { ref, onMounted, reactive } from "vue";
+// 최종 완결본: getlabel 미사용 에러 해결 + 모든 모달 필드 복구 + 스타일 최적화 + 페이징
+import { ref, onMounted, reactive, computed } from "vue";
 import axios from "axios";
 // import { useRouter } from "vue-router";
 import { useMemberStore } from "../../store/member";
@@ -18,6 +18,56 @@ const search = reactive({
 });
 
 const supported = ref([]);
+
+// --- 페이징 ---
+const pageSize = ref(10);
+const currentPage = ref(1);
+
+const totalItems = computed(() => supported.value.length);
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(totalItems.value / pageSize.value))
+);
+const paginatedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return supported.value.slice(start, start + pageSize.value);
+});
+const startItem = computed(() =>
+  totalItems.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value + 1
+);
+const endItem = computed(() =>
+  Math.min(currentPage.value * pageSize.value, totalItems.value)
+);
+
+const goToPage = (page) => {
+  const p = Number(page);
+  if (p >= 1 && p <= totalPages.value) currentPage.value = p;
+};
+const prevPage = () => goToPage(currentPage.value - 1);
+const nextPage = () => goToPage(currentPage.value + 1);
+
+// 페이지 번호 배열 (1 ... 현재 주변 ... 마지막)
+const pageNumbers = computed(() => {
+  const total = totalPages.value;
+  const cur = currentPage.value;
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages = [];
+  if (cur <= 4) {
+    for (let i = 1; i <= 5; i++) pages.push(i);
+    pages.push("…");
+    pages.push(total);
+  } else if (cur >= total - 3) {
+    pages.push(1);
+    pages.push("…");
+    for (let i = total - 4; i <= total; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    pages.push("…");
+    for (let i = cur - 1; i <= cur + 1; i++) pages.push(i);
+    pages.push("…");
+    pages.push(total);
+  }
+  return pages;
+});
 
 // --- 3. 모달 제어 및 수정 변수 ---
 const detailModal = ref(false);
@@ -52,6 +102,7 @@ const updateTableData = (data) => {
     }
     return { ...item, temp_priority: pVal, temp_class: pClass };
   });
+  currentPage.value = 1; // 검색/새로고침 시 1페이지로
 };
 
 const getSupportedList = async () => {
@@ -296,7 +347,7 @@ onMounted(() => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="member in supported" :key="member.sup_num">
+                  <tr v-for="member in paginatedList" :key="member.sup_num">
                     <td class="text-center text-sm">{{ member.sup_num }}</td>
                     <td class="ps-4 text-sm font-weight-bold">
                       {{ member.sup_name }}
@@ -365,14 +416,45 @@ onMounted(() => {
             <div
               class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
+              <div class="text-secondary text-sm">
+                {{ startItem }}-{{ endItem }} / 전체 {{ totalItems }}건
+              </div>
               <div class="pagination d-flex gap-2 align-items-center">
-                <button type="button" class="btn btn-sm btn-outline-secondary">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  :disabled="currentPage <= 1"
+                  @click="prevPage"
+                >
                   이전
                 </button>
-                <span class="pages text-secondary text-sm">
-                  <span class="fw-bold">1</span> <span>2</span> <span>3</span>
+                <span class="pages text-secondary text-sm d-flex gap-1 align-items-center">
+                  <template v-for="(p, i) in pageNumbers" :key="i">
+                    <span
+                      v-if="p === '…'"
+                      class="px-1"
+                    >…</span>
+                    <button
+                      v-else
+                      type="button"
+                      class="btn btn-sm py-0 px-2"
+                      :class="
+                        p === currentPage
+                          ? 'bg-gradient-success text-white'
+                          : 'btn-outline-secondary'
+                      "
+                      @click="goToPage(p)"
+                    >
+                      {{ p }}
+                    </button>
+                  </template>
                 </span>
-                <button type="button" class="btn btn-sm btn-outline-secondary">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  :disabled="currentPage >= totalPages"
+                  @click="nextPage"
+                >
                   다음
                 </button>
               </div>
