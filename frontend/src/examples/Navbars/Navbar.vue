@@ -85,7 +85,7 @@ const grades = {
 
 /* 페이지 이동 함수들 */
 const gohome = () => router.push("/home");
-const govolunteer = () => router.push("/support/info");
+const govolunteer = () => router.push("/support/list");
 const govol = () => router.push("/support/appreq");
 const gocenter = () => router.push("/center");
 const goform = () => router.push("/form");
