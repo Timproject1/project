@@ -60,7 +60,7 @@ const getList = async () => {
   });
   list.value = result.data.result;
   currentPage.value = 1;
-  console.log(result.data);
+  // console.log(result.data);
   return result;
 };
 //선택한 신청서 조회
@@ -69,7 +69,7 @@ const getDocument = async (doc) => {
   await getForm(doc.form_ver);
   await getResp(doc.doc_num);
   // console.log(formData.value);
-  console.log(userAnswers.value);
+  // console.log(userAnswers.value);
   selectedDocData.value = doc;
   isModalOpen.value = true;
 };
@@ -90,7 +90,7 @@ const getResult = async (doc) => {
   const result = await axios
     .get(`/api/document/resultlist/${doc.doc_num}`)
     .catch((err) => console.log(err));
-  console.log(result.data);
+  // console.log(result.data);
   results.value = result.data.result;
   selectedDocData.value = doc;
   isModalOpen.value = true;
@@ -108,7 +108,7 @@ const selectDoc = (doc_num) => {
   if (memberStore.grade == "a1") {
     return;
   }
-  console.log(doc_num);
+  // console.log(doc_num);
   docStore.setDoc(doc_num);
   router.push("/work");
 };
@@ -318,7 +318,8 @@ onBeforeMount(async () => {
                           @click.stop="getPlan(doc)"
                           :disabled="
                             doc.progress != '지원계획' &&
-                            doc.progress != '지원결과'
+                            doc.progress != '지원결과' &&
+                            doc.progress != '종결'
                           "
                           >보기</material-button
                         >
@@ -330,7 +331,9 @@ onBeforeMount(async () => {
                           variant="text"
                           class="mb-0"
                           @click.stop="getResult(doc)"
-                          :disabled="doc.progress != '지원결과'"
+                          :disabled="
+                            doc.progress != '지원결과' && doc.progress != '종결'
+                          "
                           >보기</material-button
                         >
                       </td>

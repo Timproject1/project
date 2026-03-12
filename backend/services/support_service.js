@@ -14,15 +14,28 @@ const service = {
       const params = [];
       // 지원자 검색 부분
       if (filters) {
+        // 로그인한 담당자/사용자 ID로 필터
+        if (filters.id) {
+          query += ` AND S.user_id = ?`;
+          params.push(filters.id);
+        } else if (filters.user_id) {
+          // 다른 화면에서 user_id로 넘기는 경우도 지원
+          query += ` AND S.user_id = ?`;
+          params.push(filters.user_id);
+        }
+
         // 이름 검색
         if (filters.name) {
           query += ` AND S.sup_name LIKE ?`;
           params.push(`%${filters.name}%`);
         }
-        // 성별 검색
-        if (filters.gender && filters.gender !== "전체") {
+        // 성별 검색 (프론트에서 null / 'f1' / 'f2' 로 넘어오는 기준에 맞춤)
+        if (filters.gender) {
+          // 혹시 다른 화면에서 '남성' / '여성' 문자열로 넘기는 경우도 대비
+          let genderCode = filters.gender;
+
           query += ` AND S.gender = ?`;
-          params.push(filters.gender);
+          params.push(genderCode);
         }
         // 장애유형 검색
         if (
@@ -39,8 +52,8 @@ const service = {
         }
       }
 
-      // 데이터 중복 방지를 위해 번호로 그룹화
-      query += ` GROUP BY S.sup_num ORDER BY S.sup_num DESC`;
+      // 데이터 중복 방지를 위해 번호로 그룹화 + 번호 역순 정렬
+      query += ` GROUP BY S.sup_num ORDER BY CAST(SUBSTRING_INDEX(S.sup_num, '-', -1) AS UNSIGNED) DESC`;
 
       const rows = await pool.query(query, params);
       return rows;

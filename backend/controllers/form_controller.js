@@ -86,10 +86,7 @@ const ctrl = {
       // console.log(form);
       console.log(comment);
       const result = await service.writeForm(form, comment);
-      if (result.form_ver) {
-        res.json({ retCode: "OK", form_ver: result.form_ver });
-        // res.send("ok");
-      }
+      res.json({ retCode: "OK", result });
     } catch (error) {
       console.log(error);
       res.json({ retCode: "NG", error });
