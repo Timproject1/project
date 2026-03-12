@@ -260,8 +260,8 @@ const filelist = async () => {
         >
           <template #content>
             <h4>반려사유</h4>
-            <material-input
-              id="text"
+            <material-textarea
+              id="return-reason"
               placeholder="반려사유작성"
               v-model="returnReason"
             />
