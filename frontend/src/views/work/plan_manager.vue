@@ -160,34 +160,6 @@ const filelist = async () => {
         </p>
       </div>
 
-      <!-- 수정내역 모달 -->
-      <Modal v-if="Plan.showRevision" @close="Plan.showRevision = false">
-        <template #actions="{ close }">
-          <material-button type="button" @click="close">X</material-button>
-        </template>
-        <template #content>
-          <table class="table table-bordered table-sm mb-0">
-            <thead>
-              <tr>
-                <th>수정날짜</th>
-                <th>이름</th>
-                <th>수정내용</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="revisions in Plan.revision"
-                :key="revisions.plan_modifi_num"
-              >
-                <td>{{ timedate(revisions.plan_modified_date) }}</td>
-                <td>{{ revisions.plan_modified_by }}</td>
-                <td>{{ revisions.plan_modified_comment }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </template>
-      </Modal>
-
       <div class="doc-display mt-2">
         <div class="doc-section">
           <div class="doc-label">제목</div>
@@ -250,6 +222,36 @@ const filelist = async () => {
             >
           </p>
         </div>
+      </div>
+
+      <!-- 수정내역 모달: 수정내역 버튼 아래에 표시 -->
+      <div v-if="Plan.showRevision" class="plan-manager-revision-modal-wrapper">
+        <Modal @close="Plan.showRevision = false">
+          <template #actions="{ close }">
+            <material-button type="button" @click="close">X</material-button>
+          </template>
+          <template #content>
+            <table class="table table-bordered table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>수정날짜</th>
+                  <th>이름</th>
+                  <th>수정내용</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="revisions in Plan.revision"
+                  :key="revisions.plan_modifi_num"
+                >
+                  <td>{{ timedate(revisions.plan_modified_date) }}</td>
+                  <td>{{ revisions.plan_modified_by }}</td>
+                  <td>{{ revisions.plan_modified_comment }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </template>
+        </Modal>
       </div>
 
       <!-- 반려 사유 모달: 수정내역~오른쪽 끝 가로 전체, [반려][취소] 버튼 -->
@@ -355,6 +357,16 @@ const filelist = async () => {
 
 .plan-revision-actions {
   flex: 0 0 auto;
+}
+
+.plan-manager-revision-modal-wrapper {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.plan-manager-revision-modal-wrapper :deep(.work-modal) {
+  width: 100%;
+  max-width: 100%;
 }
 
 .plan-status-actions {
