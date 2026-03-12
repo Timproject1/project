@@ -12,13 +12,16 @@ const formData = ref([]); //설문지 양식
 let formVer = ""; //설문지 버전
 //지원자 목록을 가져온다
 const getList = async () => {
+  const id = (memberStore.id ?? "").toString().trim();
   const result = await axios.get(`/api/support/list`, {
-    params: {
-      id: memberStore.id,
-    },
+    // id가 비어있거나 undefined면 아예 파라미터를 보내지 않음(목록 0건 방지)
+    params: id ? { id } : undefined,
   });
-  // console.log(result.data.result);
-  sups.value = result.data.result;
+  if (result.data?.retCode === "OK") {
+    sups.value = Array.isArray(result.data.result) ? result.data.result : [];
+  } else {
+    sups.value = [];
+  }
 };
 const formatDate = (dateString) => {
   if (!dateString) return "";
