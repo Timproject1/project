@@ -12,27 +12,17 @@ const docStore = useDocStore();
 
 const memberStore = useMemberStore();
 
-const emptyPriority = {
-  priority_req_num: null,
-  doc_num: null,
-  priority: null,
-  priority_reason: "",
-  priority_approved: null,
-};
-let prioritydb = ref({ ...emptyPriority });
+let prioritydb = ref({});
 // console.log(prioritydb);
 //get으로 데이터 당겨오기
 const priorityData = async () => {
   let doc = docStore.doc_num;
-  try {
-    const res = await axios.get(`/api/document/priority/${doc}`);
-    const data = res?.data?.result;
-    prioritydb.value =
-      data && typeof data === "object" ? { ...emptyPriority, ...data } : { ...emptyPriority };
-  } catch (err) {
-    console.error(err);
-    prioritydb.value = { ...emptyPriority };
-  }
+  let result = await axios
+    .get(`/api/document/priority/${doc}`)
+    .catch((err) => console.log(err));
+  prioritydb.value = result.data.result;
+  console.log(result.data.result);
+  console.log(prioritydb.value);
 };
 onBeforeMount(() => {
   priorityData();
@@ -46,10 +36,6 @@ const items = [
 
 const box = ref(null);
 
-const hasRequest = () => {
-  return !!prioritydb.value?.priority_req_num;
-};
-
 const display = () => {
   if (box.value) {
     box.value.style.display = "block";
@@ -62,7 +48,6 @@ const nonedisplay = () => {
 };
 //승인요청
 const appPri = async () => {
-  if (!hasRequest()) return;
   let appcontent = {
     priority_req_num: prioritydb.value.priority_req_num,
     doc_num: docStore.doc_num,
@@ -85,7 +70,6 @@ const returnReason = ref("");
 
 //반려
 const returnPri = async () => {
-  if (!hasRequest()) return;
   let returncontent = {
     priority_req_num: prioritydb.value.priority_req_num,
     priority_return_reason: returnReason.value,
@@ -113,13 +97,8 @@ const returnPri = async () => {
         {{ memberStore.id }}님의 요청 우선순위를 확인하고 승인 또는 반려를
         선택하세요.
       </p>
-
-      <div v-if="!hasRequest()" class="text-center text-secondary mb-4">
-        현재 처리할 우선순위 승인요청이 없습니다.
-      </div>
-
       <div class="text-center mb-4">
-        <div class="wrapper" v-if="hasRequest() && prioritydb?.priority == 'c3'">
+        <div class="wrapper" v-if="prioritydb?.priority == 'c3'">
           <div
             class="circle"
             :style="{ backgroundColor: items[0].color, color: '#fff' }"
@@ -128,7 +107,7 @@ const returnPri = async () => {
             {{ items[0].label }}
           </div>
         </div>
-        <div class="wrapper" v-else-if="hasRequest() && prioritydb?.priority == 'c4'">
+        <div class="wrapper" v-else-if="prioritydb?.priority == 'c4'">
           <div
             class="circle"
             :style="{ backgroundColor: items[1].color, color: '#fff' }"
@@ -140,19 +119,15 @@ const returnPri = async () => {
         <div class="wrapper" v-else>
           <div
             class="circle"
-            :style="
-              hasRequest()
-                ? { backgroundColor: items[2].color, color: '#fff' }
-                : { backgroundColor: '#adb5bd', color: '#fff', borderColor: '#adb5bd' }
-            "
+            :style="{ backgroundColor: items[2].color, color: '#fff' }"
             disabled
           >
-            {{ hasRequest() ? items[2].label : "요청 없음" }}
+            {{ items[2].label }}
           </div>
         </div>
       </div>
       <div id="reasonbox" class="mb-3">
-        <p class="reason-view">{{ prioritydb?.priority_reason || "" }}</p>
+        <p class="reason-view">{{ prioritydb.priority_reason }}</p>
         <!-- 반려 사유 작성 모달창 -->
         <div class="return" ref="box">
           <h6 class="fw-bold mb-2">반려 사유</h6>
@@ -163,11 +138,7 @@ const returnPri = async () => {
             v-model="returnReason"
           ></textarea>
           <div class="mt-3 d-flex gap-2 justify-content-center">
-            <material-button
-              type="button"
-              class="app"
-              @click="returnPri()"
-              :disabled="!hasRequest()"
+            <material-button type="button" class="app" @click="returnPri()"
               >반려</material-button
             >
             <material-button
@@ -196,11 +167,7 @@ const returnPri = async () => {
           >
         </div>
         <div v-else>
-          <material-button
-            type="button"
-            class="app"
-            @click="appPri()"
-            :disabled="!hasRequest()"
+          <material-button type="button" class="app" @click="appPri()"
             >승인</material-button
           >
           <material-button
@@ -208,27 +175,7 @@ const returnPri = async () => {
             class="app"
             @click="display()"
             color="danger"
-            :disabled="!hasRequest()"
             >반려</material-button
-          >
-        </div>
-      </div>
-
-      <!-- 반려 사유 작성 모달창 (승인/반려 버튼 아래) -->
-      <div class="return" ref="box">
-        <h6 class="fw-bold mb-2">반려 사유</h6>
-        <textarea
-          name="return"
-          id="return"
-          placeholder="반려 사유를 작성하세요."
-          v-model="returnReason"
-        ></textarea>
-        <div class="priority-return-actions">
-          <material-button type="button" color="danger" @click="returnPri()"
-            >반려</material-button
-          >
-          <material-button type="button" @click="nonedisplay()"
-            >취소</material-button
           >
         </div>
       </div>
@@ -273,43 +220,13 @@ const returnPri = async () => {
 }
 .return {
   display: none;
-  background-color: #ffffff;
-  padding: 14px 16px;
+  text-align: center;
+  background-color: var(--app-surface);
+  padding: 5px;
   border-radius: 12px;
-  border: 1px solid var(--app-border-muted);
+  border: 1px solid var(--app-border);
   width: 100%;
   margin: 0 auto;
-  margin-top: 12px;
-}
-
-.priority-return-actions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.priority-return-actions :deep(button.btn) {
-  min-width: 100px;
-}
-
-.priority-return-actions :deep(button.btn + button.btn) {
-  /* ensures consistent spacing even if gap fails */
-  margin-left: 0;
-}
-
-/* 취소 버튼(2번째 버튼)을 회색으로 강제 */
-.priority-return-actions :deep(button.btn:nth-child(2)) {
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
-  color: #fff !important;
-}
-
-.priority-return-actions :deep(button.btn:nth-child(2):hover) {
-  background-color: #5a6268 !important;
-  border-color: #545b62 !important;
-  color: #fff !important;
 }
 #return {
   margin: 0 auto;
