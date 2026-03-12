@@ -17,6 +17,15 @@ const totalPages = computed(() =>
   list.value.length ? Math.ceil(list.value.length / pageSize.value) : 1,
 );
 
+const displayedPages = computed(() => {
+  const range = 2;
+  let start = Math.max(1, currentPage.value - range);
+  let end = Math.min(totalPages.value, currentPage.value + range);
+  const pages = [];
+  for (let i = start; i <= end; i++) pages.push(i);
+  return pages;
+});
+
 const pagedList = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
@@ -365,14 +374,14 @@ onBeforeMount(async () => {
             <div
               class="bottom-actions d-flex justify-content-between align-items-center p-3 mt-2"
             >
-              <material-pagination>
+              <material-pagination color="success" size="sm">
                 <material-pagination-item
                   prev
                   :disabled="currentPage === 1"
                   @click="goPrev"
                 />
                 <material-pagination-item
-                  v-for="page in totalPages"
+                  v-for="page in displayedPages"
                   :key="page"
                   :label="String(page)"
                   :active="page === currentPage"
