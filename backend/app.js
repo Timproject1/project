@@ -25,7 +25,12 @@ BigInt.prototype.toJSON = function () {
 app.use(express.json()); // 클라이언트가 보낸 JSON 데이터를 해석
 app.use(express.urlencoded({ extended: true })); // URL 인코딩된 데이터를 해석
 app.use(cors()); // 모든 도메인에서의 API 요청을 허용
-
+app.use("/center", center_route); // /center 경로로 오는 요청은 center_route에서 처리
+app.use("/user", user_route); // /user 경로로 오는 요청은 user_route에서 처리
+app.use("/document", doc_route); // /document 경로 처리
+app.use("/form", form_route); // /form 경로 처리
+app.use("/support", sup_route); // /support 경로 처리
+app.use("/mypage", mypage_route); // /mypage 경로 처리
 // 각 경로(Path)별로 라우터를 연결합니다.
 app.use("/api/center", center_route); // /center 경로로 오는 요청은 center_route에서 처리
 app.use("/api/user", user_route); // /user 경로로 오는 요청은 user_route에서 처리

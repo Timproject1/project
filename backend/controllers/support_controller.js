@@ -38,7 +38,7 @@ const ctrl = {
 
       const values = [
         generatedSupNum,
-        "user",
+        data.user_id || "user",
         data.sup_name,
         data.sup_address,
         data.sup_email || "",

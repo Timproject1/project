@@ -6,9 +6,11 @@ import MaterialPagination from "@/components/MaterialPagination.vue";
 import MaterialPaginationItem from "@/components/MaterialPaginationItem.vue";
 // import { useRouter } from "vue-router";
 import { useMemberStore } from "../../store/member";
+import { storeToRefs } from "pinia";
 
 // const router = useRouter();
 const memberStore = useMemberStore();
+const { id: memberId } = storeToRefs(memberStore);
 
 // --- 1. 상태 제어 변수 ---
 
@@ -27,17 +29,17 @@ const currentPage = ref(1);
 
 const totalItems = computed(() => supported.value.length);
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(totalItems.value / pageSize.value))
+  Math.max(1, Math.ceil(totalItems.value / pageSize.value)),
 );
 const paginatedList = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   return supported.value.slice(start, start + pageSize.value);
 });
 const startItem = computed(() =>
-  totalItems.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value + 1
+  totalItems.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value + 1,
 );
 const endItem = computed(() =>
-  Math.min(currentPage.value * pageSize.value, totalItems.value)
+  Math.min(currentPage.value * pageSize.value, totalItems.value),
 );
 
 const goToPage = (page) => {
@@ -69,7 +71,7 @@ const sup_file = ref("");
 const newSupported = ref({
   sup_name: "",
   sup_birthday: "",
-  sup_gender: "남성",
+  sup_gender: "f1",
   sup_tel: "",
   sup_address: "",
   disability_category: "",
@@ -93,10 +95,24 @@ const updateTableData = (data) => {
   currentPage.value = 1; // 검색/새로고침 시 1페이지로
 };
 
+const buildSupportListParams = () => {
+  const params = {};
+  const name = (search.name ?? "").toString().trim();
+  if (name) params.name = name;
+
+  const disability = (search.disability_category ?? "").toString().trim();
+  if (disability && disability !== "전체") params.disability_category = disability;
+
+  // search.priority는 현재 백엔드 필터에 없음(프론트 UI용)
+  return Object.keys(params).length ? params : undefined;
+};
+
 const getSupportedList = async () => {
   try {
-    const response = await axios.get("/api/support/list");
-    if (response.data.retCode === "OK") updateTableData(response.data.result);
+    const response = await axios.get(`/api/support/list?id=${memberStore.id}`, {
+      params: buildSupportListParams(),
+    });
+    if (response.data?.retCode === "OK") updateTableData(response.data.result || []);
   } catch (err) {
     console.error("로드 실패:", err);
   }
@@ -105,9 +121,9 @@ const getSupportedList = async () => {
 const fetchData = async () => {
   try {
     const response = await axios.get("/api/support/list", {
-      params: search,
+      params: buildSupportListParams(),
     });
-    if (response.data.retCode === "OK") updateTableData(response.data.result);
+    if (response.data?.retCode === "OK") updateTableData(response.data.result || []);
   } catch (error) {
     console.error("검색 실패:", error);
   }
@@ -147,7 +163,7 @@ const closeModal = () => {
   newSupported.value = {
     sup_name: "",
     sup_birthday: "",
-    sup_gender: "남성",
+    sup_gender: "f1",
     sup_tel: "",
     sup_address: "",
     disability_category: "",
@@ -156,7 +172,8 @@ const closeModal = () => {
 };
 const addSupported = async () => {
   try {
-    await axios.post("/api/support/add", newSupported.value);
+    const user_id = (memberId.value ?? "").toString().trim();
+    await axios.post("/api/support/add", { ...newSupported.value, user_id });
     alert("신규 등록 완료");
     closeModal();
     getSupportedList();
@@ -198,9 +215,6 @@ const getlabel = (code) => {
 };
 
 onMounted(() => {
-  // memberStore 경고 방지용 로그
-  memberStore.id = memberStore.id || "admin";
-  console.log(`접속 관리자: ${memberStore.id}`);
   getSupportedList();
 });
 </script>
@@ -593,7 +607,7 @@ onMounted(() => {
             <input
               v-model="newSupported.sup_gender"
               type="radio"
-              value="남성"
+              value="f1"
             />
             남성
           </label>
@@ -601,7 +615,7 @@ onMounted(() => {
             <input
               v-model="newSupported.sup_gender"
               type="radio"
-              value="여성"
+              value="f2"
             />
             여성
           </label>
