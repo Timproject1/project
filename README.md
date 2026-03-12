@@ -27,8 +27,9 @@
  - 프로젝트 발표 : 2026.03.13
 
 ## 커밋 메시지 형식
- - (이름 / 작업내용 / yyyyMMdd)
- - EX) 홍길동 / README.md 작성 / 202X0XXX
+ - (이름 / yyyyMMdd / 작업내용 )
+ - EX) 홍길동 / 202X0XXX / README.md 작성
+
 
 
 
