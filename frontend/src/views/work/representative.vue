@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
-import { ref, onBeforeMount, useRouter } from "vue";
+import { ref, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
 import { useDocStore } from "../../store/doc";
 const managers = ref(["정찬우", "장수연", "이민호", "안형주", "김진환"]);
 const selectedManager = ref("");
