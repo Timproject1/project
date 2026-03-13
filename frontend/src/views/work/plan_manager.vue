@@ -160,34 +160,6 @@ const filelist = async () => {
         </p>
       </div>
 
-      <!-- 수정내역 모달 -->
-      <Modal v-if="Plan.showRevision" @close="Plan.showRevision = false">
-        <template #actions="{ close }">
-          <material-button type="button" @click="close">X</material-button>
-        </template>
-        <template #content>
-          <table class="table table-bordered table-sm mb-0">
-            <thead>
-              <tr>
-                <th>수정날짜</th>
-                <th>이름</th>
-                <th>수정내용</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="revisions in Plan.revision"
-                :key="revisions.plan_modifi_num"
-              >
-                <td>{{ timedate(revisions.plan_modified_date) }}</td>
-                <td>{{ revisions.plan_modified_by }}</td>
-                <td>{{ revisions.plan_modified_comment }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </template>
-      </Modal>
-
       <div class="doc-display mt-2">
         <div class="doc-section">
           <div class="doc-label">제목</div>
@@ -238,27 +210,6 @@ const filelist = async () => {
               @click="Plan.returnplan = true"
               >반려</material-button
             >
-
-            <Modal v-if="Plan.returnplan" @close="Plan.returnplan = false">
-              <template #content>
-                <h4>반려사유</h4>
-                <material-input
-                  id="text"
-                  placeholder="반려사유작성"
-                  v-model="returnReason"
-                />
-                <material-button
-                  type="button"
-                  @click="returnplan(Plan.plan_num)"
-                  >반려</material-button
-                >
-              </template>
-              <template #actions="{ close }">
-                <material-button type="button" @click="close"
-                  >취소</material-button
-                >
-              </template>
-            </Modal>
           </p>
           <p v-else-if="Plan.plan_approved == 'd2'">
             <material-button type="button" color="warning" disabled
@@ -271,6 +222,65 @@ const filelist = async () => {
             >
           </p>
         </div>
+      </div>
+
+      <!-- 수정내역 모달: 수정내역 버튼 아래에 표시 -->
+      <div v-if="Plan.showRevision" class="plan-manager-revision-modal-wrapper">
+        <Modal @close="Plan.showRevision = false">
+          <template #actions="{ close }">
+            <material-button type="button" @click="close">X</material-button>
+          </template>
+          <template #content>
+            <table class="table table-bordered table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>수정날짜</th>
+                  <th>이름</th>
+                  <th>수정내용</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="revisions in Plan.revision"
+                  :key="revisions.plan_modifi_num"
+                >
+                  <td>{{ timedate(revisions.plan_modified_date) }}</td>
+                  <td>{{ revisions.plan_modified_by }}</td>
+                  <td>{{ revisions.plan_modified_comment }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </template>
+        </Modal>
+      </div>
+
+      <!-- 반려 사유 모달: 수정내역~오른쪽 끝 가로 전체, [반려][취소] 버튼 -->
+      <div v-if="Plan.returnplan" class="plan-manager-return-modal-wrapper">
+        <Modal
+          class="plan-manager-return-modal"
+          @close="Plan.returnplan = false"
+        >
+          <template #content>
+            <h4>반려사유</h4>
+            <material-textarea
+              id="return-reason"
+              placeholder="반려사유작성"
+              v-model="returnReason"
+            />
+          </template>
+          <template #actions="{ close }">
+            <material-button
+              type="button"
+              color="danger"
+              class="btn-register"
+              @click="returnplan(Plan.plan_num)"
+              >반려</material-button
+            >
+            <material-button type="button" class="btn-cancel" @click="close"
+              >취소</material-button
+            >
+          </template>
+        </Modal>
       </div>
     </div>
   </div>
@@ -349,6 +359,16 @@ const filelist = async () => {
   flex: 0 0 auto;
 }
 
+.plan-manager-revision-modal-wrapper {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.plan-manager-revision-modal-wrapper :deep(.work-modal) {
+  width: 100%;
+  max-width: 100%;
+}
+
 .plan-status-actions {
   flex: 1 1 auto;
   display: flex;
@@ -398,6 +418,34 @@ const filelist = async () => {
 }
 
 .plan-add-modal :deep(.btn-cancel:hover) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: #fff;
+}
+
+/* 반려 사유 모달: 가로 전체, [반려][취소] 동일 크기·취소 회색 */
+.plan-manager-return-modal-wrapper {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.plan-manager-return-modal-wrapper :deep(.work-modal) {
+  width: 100%;
+  max-width: 100%;
+}
+
+.plan-manager-return-modal :deep(.mt-3) .btn-register,
+.plan-manager-return-modal :deep(.mt-3) .btn-cancel {
+  min-width: 100px;
+}
+
+.plan-manager-return-modal :deep(.btn-cancel) {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.plan-manager-return-modal :deep(.btn-cancel:hover) {
   background-color: #5a6268;
   border-color: #545b62;
   color: #fff;
