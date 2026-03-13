@@ -20,5 +20,5 @@ export const useMemberStore = defineStore("member", {
       this.$reset();
     },
   },
-  persist: true,
+  // persist: true,
 });
