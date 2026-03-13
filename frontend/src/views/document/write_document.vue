@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed,onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { useMemberStore } from "@/store/member";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -143,6 +143,9 @@ onBeforeMount(() => {
               <div class="col-md-3">
                 <label class="text-xs fw-bold text-success mb-2">지원자</label>
                 <select class="form-select" v-model="sup_num">
+                  <option value="" disabled selected>
+                    담당자를 선택하세요
+                  </option>
                   <option
                     v-for="sup in sups"
                     :value="sup.sup_num"
